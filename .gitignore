@@ -1,0 +1,12 @@
+.vs/
+.idea/
+.gradle/
+*.VC.db
+*.user
+build/
+out/
+bin/
+obj/
+csharp/tools
+!csharp/tools/packages.config
+artifacts/

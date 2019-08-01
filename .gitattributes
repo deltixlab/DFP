@@ -1,0 +1,16 @@
+gradlew     text eol=lf
+gradle.properties text
+*.cmd text eol=crlf
+*.cs text diff=csharp
+*.gradle text
+*.cake text diff=csharp
+*.vcproj text
+*.vcxproj text
+*.csproj text
+*.vcxproj.user text
+*.vcxproj.filters text
+*.wixproj text
+*.wxs text
+*.sln text
+*.cfg text
+*.yml text
