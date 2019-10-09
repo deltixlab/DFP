@@ -226,6 +226,7 @@ public class Decimal64Utils {
      */
     @Decimal
     public static long fromFixedPoint(final long mantissa, final int numberOfDigits) {
+        // TODO: Can also create java version for this one
         return NativeImpl.fromFixedPoint64(mantissa, numberOfDigits);
     }
 
@@ -233,6 +234,12 @@ public class Decimal64Utils {
     @Decimal
     public static long fromFixedPoint(final int mantissa, final int numberOfDigits) {
         return JavaImpl.fromFixedPoint32(mantissa, numberOfDigits);
+    }
+
+
+    @Decimal
+    public static long fromDecimalDouble(double value) {
+        return JavaImpl.fromDecimalDouble(value);
     }
 
     /**

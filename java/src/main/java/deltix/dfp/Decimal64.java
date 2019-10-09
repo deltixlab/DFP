@@ -71,6 +71,10 @@ public class Decimal64 extends Number implements Comparable<Decimal64> {
         return new Decimal64(Decimal64Utils.fromFixedPoint(mantissa, numberOfDigits));
     }
 
+    public static Decimal64 fromDecimalDouble(double value) {
+        return new Decimal64(Decimal64Utils.fromDecimalDouble(value));
+    }
+
     public long toFixedPoint(int numberOfDigits) {
         return Decimal64Utils.toFixedPoint(value, numberOfDigits);
     }

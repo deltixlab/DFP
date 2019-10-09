@@ -175,6 +175,42 @@ class JavaImpl {
         return pack(parts.sign, parts.exponent, parts.coefficient, BID_ROUNDING_TO_NEAREST);
     }
 
+    public static long fromDecimalDouble(double x) {
+        long y = Decimal64Utils.fromDouble(x);
+        long m;
+
+        NeedAdjustment:
+        do {
+            // Odd + special encoding(16 digits)
+            if (((SPECIAL_ENCODING_MASK + 1) & y) == (SPECIAL_ENCODING_MASK + 1)) {
+                // Now need that last digit
+                m = (y & LARGE_COEFFICIENT_MASK) + 2; // Minor perf hack, adjust digit to compensate for missing high bit
+                if (m != (MAX_COEFFICIENT & LARGE_COEFFICIENT_MASK) + 2)
+                    break NeedAdjustment;
+                // put 1 into mantissa, retain sign, move exponent field to default location, increment exponent
+                // We can't overflow because mantissa can't be too large
+                return ((y << 2) & EXPONENT_MASK_SMALL) + (y & Long.MIN_VALUE) + ((16L << EXPONENT_SHIFT_SMALL) + 1);
+            }
+
+            m = y & SMALL_COEFFICIENT_MASK;
+            // 16 digits + odd
+            if ((y & 1) != 0 && m > MAX_COEFFICIENT / 10 + 1)
+                break NeedAdjustment;
+
+            // No adjustment. NaN, Inf etc. should end here as well.
+            return y;
+        } while(false);
+
+        // Now need that last digit
+        m = (m + 1) % 10;
+        if (m <= 2) {
+            long z = y - m + 1;
+            return Decimal64Utils.toDouble(z) == x ? z : y;
+        }
+
+        return y;
+    }
+
     public static class Context {
         public final Decimal64Parts x = new Decimal64Parts();
     }
@@ -326,6 +362,8 @@ class JavaImpl {
     private static final int EXPONENT_MASK = 0x03FF;
     private static final int EXPONENT_SHIFT_LARGE = 51;
     private static final int EXPONENT_SHIFT_SMALL = 53;
+    private static final long EXPONENT_MASK_SMALL = (long)EXPONENT_MASK << EXPONENT_SHIFT_SMALL;
+    private static final long EXPONENT_MASK_LARGE = (long)EXPONENT_MASK << EXPONENT_SHIFT_LARGE;
 
     private static final int MAX_FORMAT_DIGITS = 16;
 
