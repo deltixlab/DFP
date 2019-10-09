@@ -411,6 +411,14 @@ namespace Deltix.DFP.Test
 			stream.Close();
 		}
 
+		[Test]
+		public void TestFromDecimalDoubleBasic()
+		{
+			Assert.AreNotEqual("9.2", Decimal64.FromDouble(9.2).ToString());
+			Assert.AreEqual("9.199999999999999", Decimal64.FromDouble(9.2).ToString());
+			Assert.AreEqual("9.2", Decimal64.FromDecimalDouble(9.2).ToString());
+		}
+
 		static void Main(string[] args)
 		{
 		}

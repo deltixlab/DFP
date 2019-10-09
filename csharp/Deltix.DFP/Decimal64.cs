@@ -160,6 +160,11 @@ namespace Deltix.DFP
 			return new Decimal64(NativeImpl.fromFloat64(value));
 		}
 
+		public static Decimal64 FromDecimalDouble(Double value)
+		{
+			return new Decimal64(DotNetImpl.FromDecimalFloat64(value));
+		}
+
 		public Double ToDouble()
 		{
 			return NativeImpl.toFloat64(Bits);

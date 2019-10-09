@@ -133,6 +133,7 @@ namespace Deltix.DFP
 			return rv;
 		}
 
+
 		public static UInt64 FromFixedPoint32(int mantissa, int numDigits)
 		{
 			// TODO: Unsigned comparison could be slightly faster, maybe
@@ -205,6 +206,43 @@ namespace Deltix.DFP
 				return new Decimal((int)mantissa, (int)(mantissa >> 32), 0, signBit, (byte)exponent);
 
 			return ToDecimalFallback(value);
+		}
+
+		internal static UInt64 FromDecimalFloat64(Double x)
+		{
+			UInt64 y = NativeImpl.fromFloat64(x);
+			UInt64 m;
+
+			// Odd + special encoding(16 digits)
+			if (((SpecialEncodingMask + 1) & y) == (SpecialEncodingMask + 1))
+			{
+				// Now need that last digit
+				m = (y & LargeCoefficientMask) + 2; // Minor perf hack, adjust digit to compensate for missing high bit
+				if (m != (MaxCoefficient & LargeCoefficientMask) + 2)
+					goto NeedAdjustment;
+				// put 1 into mantissa, retain sign, move exponent field to default location, increment exponent
+				// We can't overflow because mantissa can't be too large
+				return ((y << 2) & SmallCoefficientExponentMask) + (y & 0x8000000000000000L) + ((16L << ExponentShiftSmall) + 1);
+			}
+
+			m = y & SmallCoefficientExponentMask;
+			// 16 digits + odd
+			if ((y & 1) != 0 && m > MaxCoefficient / 10 + 1)
+				goto NeedAdjustment;
+
+			// No adjustment. NaN, Inf etc. should end here as well.
+			return y;
+
+		NeedAdjustment:
+			// Now need that last digit
+			m = (m + 1) % 10;
+			if (m <= 2)
+			{
+				UInt64 z = y - m + 1;
+				return NativeImpl.toFloat64(z) == x ? z : y;
+			}
+
+			return y;
 		}
 
 		#endregion
@@ -393,6 +431,8 @@ namespace Deltix.DFP
 		private const UInt64 ShiftedExponentMask	= 0x3FF;
 		private const Int32 ExponentShiftLarge		= 51;
 		private const Int32 ExponentShiftSmall		= 53;
+		private const UInt64 LargeCoefficientExponentMask = ShiftedExponentMask << ExponentShiftLarge;
+		private const UInt64 SmallCoefficientExponentMask = ShiftedExponentMask << ExponentShiftSmall;
 
 		private const Int32 MinExponent				= -383;
 		private const Int32 MaxExponent				= 384;
