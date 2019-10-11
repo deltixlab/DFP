@@ -18,7 +18,12 @@ import java.util.concurrent.TimeUnit;
 @State(Scope.Thread)
 public class ConversionBenchmark {
     private double doubleValue;
+    private double doubleRoundableValue;
+    private long infValue;
+    private long nanValue;
     private long decimalValue;
+    private long decimalRoundableValue;
+    private long decimalRoundableValue2;
     private long longIntegerValue;
     private int integerValue;
     private long hugeLongValue;
@@ -26,13 +31,16 @@ public class ConversionBenchmark {
     @Setup
     public void setUp() {
         doubleValue = new Random().nextDouble();
-        decimalValue = Decimal64Utils.fromDouble(doubleValue);
+        doubleRoundableValue = 920000000000000.0;
+        infValue = Decimal64Utils.NEGATIVE_INFINITY;
+        nanValue = Decimal64Utils.NaN;
+        decimalValue = Decimal64Utils.fromDecimalDouble(doubleValue);
         longIntegerValue = (long)(10000.0 * doubleValue);
         integerValue = (int)(10000.0 * doubleValue);
         hugeLongValue = 100000000000000000L +  (long)(10000.0 * doubleValue) * 10000;
+        decimalRoundableValue = Decimal64Utils.fromLong(920000000000000L);
+        decimalRoundableValue2 = Decimal64Utils.fromFixedPoint(9200000000000000L, 8);
     }
-
-    @Benchmark
     public long fromDouble() {
         return Decimal64Utils.fromDouble(doubleValue);
     }

@@ -287,21 +287,25 @@ public class Decimal64UtilsTest {
         assertFalse(Decimal64Utils.isInfinity(Decimal64Utils.ZERO));
         assertFalse(Decimal64Utils.isPositiveInfinity(Decimal64Utils.ZERO));
         assertFalse(Decimal64Utils.isNegativeInfinity(Decimal64Utils.ZERO));
+        assertTrue(Decimal64Utils.isFinite(Decimal64Utils.ZERO));
 
         assertTrue(Decimal64Utils.isNaN(Decimal64Utils.NaN));
         assertFalse(Decimal64Utils.isInfinity(Decimal64Utils.NaN));
         assertFalse(Decimal64Utils.isPositiveInfinity(Decimal64Utils.NaN));
         assertFalse(Decimal64Utils.isNegativeInfinity(Decimal64Utils.NaN));
+        assertFalse(Decimal64Utils.isFinite(Decimal64Utils.NaN));
 
         assertFalse(Decimal64Utils.isNaN(Decimal64Utils.POSITIVE_INFINITY));
         assertTrue(Decimal64Utils.isInfinity(Decimal64Utils.POSITIVE_INFINITY));
         assertTrue(Decimal64Utils.isPositiveInfinity(Decimal64Utils.POSITIVE_INFINITY));
         assertFalse(Decimal64Utils.isNegativeInfinity(Decimal64Utils.POSITIVE_INFINITY));
+        assertFalse(Decimal64Utils.isFinite(Decimal64Utils.POSITIVE_INFINITY));
 
         assertFalse(Decimal64Utils.isNaN(Decimal64Utils.NEGATIVE_INFINITY));
         assertTrue(Decimal64Utils.isInfinity(Decimal64Utils.NEGATIVE_INFINITY));
         assertFalse(Decimal64Utils.isPositiveInfinity(Decimal64Utils.NEGATIVE_INFINITY));
         assertTrue(Decimal64Utils.isNegativeInfinity(Decimal64Utils.NEGATIVE_INFINITY));
+        assertFalse(Decimal64Utils.isFinite(Decimal64Utils.NEGATIVE_INFINITY));
 
         final double x = random.nextDouble();
 
@@ -343,6 +347,10 @@ public class Decimal64UtilsTest {
 
     @Test
     public void comparisonWithZero() {
+        assertFalse(Decimal64Utils.isZero(Decimal64Utils.NaN));
+        assertFalse(Decimal64Utils.isZero(Decimal64Utils.POSITIVE_INFINITY));
+        assertFalse(Decimal64Utils.isZero(Decimal64Utils.NEGATIVE_INFINITY));
+
         final long value0 = Decimal64Utils.negate(Decimal64Utils.ZERO);
         assertTrue(Decimal64Utils.isZero(value0));
         assertFalse(Decimal64Utils.isPositive(value0));

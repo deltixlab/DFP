@@ -187,6 +187,24 @@ public class Decimal64Test {
         zero1 = zero1.canonize();
         zero2 = zero2.canonize();
         Assert.assertEquals(zero1, zero2);
+
+
+    }
+
+    @Test
+    public void canonizeTest2() {
+        Decimal64 a = Decimal64.fromUnderlying((JavaImpl.BIASED_EXPONENT_MAX_VALUE + 0L << JavaImpl.EXPONENT_SHIFT_SMALL) + 10_000_000);
+        Decimal64 b = Decimal64.fromUnderlying((JavaImpl.BIASED_EXPONENT_MAX_VALUE - 1L << JavaImpl.EXPONENT_SHIFT_SMALL) + 100_000_000);
+        Assert.assertEquals(a.toString(), b.toString());
+        Decimal64 ac = a.canonize();
+        Decimal64 bc = b.canonize();
+        Assert.assertEquals(a.canonize(), b.canonize());
+        Assert.assertEquals(ac, bc);
+        Assert.assertEquals(a.canonize().toString(), b.canonize().toString());
+        Assert.assertEquals(a.toString(), b.canonize().toString());
+        Assert.assertEquals(a.canonize().toString(), b.toString());
+        Assert.assertTrue(a.equals(b));
+        Assert.assertTrue(b.equals(a));
     }
 
     @Test

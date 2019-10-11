@@ -46,6 +46,14 @@ public class JavaImplTest {
     public void testConstants() {
         final int EXPONENT_BIAS = 398;
 
+        // Relationships between internal representation constants
+        assertTrue((JavaImpl.MASK_STEERING_BITS & JavaImpl.MASK_INFINITY_AND_NAN) == JavaImpl.MASK_STEERING_BITS);
+        assertTrue((JavaImpl.MASK_STEERING_BITS | JavaImpl.MASK_INFINITY_AND_NAN) == JavaImpl.MASK_INFINITY_AND_NAN);
+
+        assertTrue((JavaImpl.MASK_INFINITY_AND_NAN & JavaImpl.MASK_INFINITY_NAN) == JavaImpl.MASK_INFINITY_AND_NAN);
+        assertTrue((JavaImpl.MASK_INFINITY_AND_NAN | JavaImpl.MASK_INFINITY_NAN) == JavaImpl.MASK_INFINITY_NAN);
+
+
         assertTrue(JavaImpl.fromUInt32(0) == JavaImpl.ZERO);
         assertTrue(JavaImpl.fromUInt32(1) == Decimal64Utils.ONE);
         assertTrue(JavaImpl.fromUInt32(2) == Decimal64Utils.TWO);
