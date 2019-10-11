@@ -75,23 +75,27 @@ class JavaImpl {
 
 
     public static boolean isNaN(final long value) {
-        return (value & MASK_NAN) == MASK_NAN;
+        return (value & MASK_INFINITY_NAN) == MASK_INFINITY_NAN;
     }
 
     public static boolean isNull(final long value) {
         return value == NULL;
     }
 
+    private static boolean isSpecial(long value) {
+        return (value & MASK_SPECIAL) == MASK_SPECIAL;
+    }
+
     public static boolean isInfinity(final long value) {
-        return (value & (MASK_INFINITY | MASK_NAN)) == MASK_INFINITY;
+        return (value & MASK_INFINITY_NAN) == POSITIVE_INFINITY;
     }
 
     public static boolean isPositiveInfinity(final long value) {
-        return (value & (MASK_SIGNED_INFINITY | MASK_NAN)) == POSITIVE_INFINITY;
+        return (value & MASK_SIGN_INFINITY_NAN) == POSITIVE_INFINITY;
     }
 
     public static boolean isNegativeInfinity(final long value) {
-        return (value & (MASK_SIGNED_INFINITY | MASK_NAN)) == NEGATIVE_INFINITY;
+        return (value & MASK_SIGN_INFINITY_NAN) == NEGATIVE_INFINITY;
     }
 
     public static boolean signBit(final long value) {
@@ -99,15 +103,17 @@ class JavaImpl {
     }
 
     public static boolean isFinite(final long value) {
-        return (value & MASK_INFINITY) != MASK_INFINITY;
+        return (value & MASK_INFINITY_AND_NAN) != MASK_INFINITY_AND_NAN;
+    }
+
+    public static boolean isNonFinite(final long value) {
+        return (value & MASK_INFINITY_AND_NAN) == MASK_INFINITY_AND_NAN;
     }
 
     public static boolean isZero(final long value) {
-        if (!isFinite(value))
-            return false;
-        if ((value & MASK_STEERING_BITS) == MASK_STEERING_BITS)
-            return UnsignedLong.compare((value & MASK_BINARY_SIG2) | MASK_BINARY_OR2, MAX_COEFFICIENT) > 0;
-        return (value & MASK_BINARY_SIG1) == 0;
+        if (isSpecial(value))
+            return isFinite(value) && UnsignedLong.compare(value & LARGE_COEFFICIENT_MASK, MAX_COEFFICIENT - LARGE_COEFFICIENT_HIGH_BIT) > 0;
+        return (value & SMALL_COEFFICIENT_MASK) == 0;
     }
 
     public static long negate(final long value) {
@@ -137,15 +143,15 @@ class JavaImpl {
     public static long toParts(final long value, final Decimal64Parts parts) {
         parts.sign = signBit(value);
 
-        if ((value & SPECIAL_ENCODING_MASK) == SPECIAL_ENCODING_MASK) {
-            if ((value & MASK_INFINITY) == MASK_INFINITY) {
+        if (isSpecial(value)) {
+            if (isNonFinite(value)) {
                 parts.exponent = 0;
 
                 parts.coefficient = value & 0xFE03_FFFF_FFFF_FFFFL;
                 if (UnsignedLong.compare(value & 0x0003_FFFF_FFFF_FFFFL, MAX_COEFFICIENT) > 0)
                     parts.coefficient = value & ~MASK_COEFFICIENT;
-                if ((value & MASK_NAN) == MASK_INFINITY)
-                    parts.coefficient = value & MASK_SIGNED_INFINITY;
+                if (isInfinity(value))
+                    parts.coefficient = value & MASK_SIGN_INFINITY_NAN; // TODO: Why this was done??
                 return 0;
             }
 
@@ -166,9 +172,7 @@ class JavaImpl {
         parts.exponent = (int) (tmp & EXPONENT_MASK);
 
         // Extract coefficient.
-        parts.coefficient = (value & SMALL_COEFFICIENT_MASK);
-
-        return parts.coefficient;
+        return parts.coefficient = (value & SMALL_COEFFICIENT_MASK);
     }
 
     public static long fromParts(final Decimal64Parts parts) {
@@ -177,38 +181,52 @@ class JavaImpl {
 
     public static long fromDecimalDouble(double x) {
         long y = Decimal64Utils.fromDouble(x);
-        long m;
+        long m, signAndExp;
 
-        NeedAdjustment:
+        NeedCanonize:
         do {
-            // Odd + special encoding(16 digits)
-            if (((SPECIAL_ENCODING_MASK + 1) & y) == (SPECIAL_ENCODING_MASK + 1)) {
-                // Now need that last digit
-                m = (y & LARGE_COEFFICIENT_MASK) + 2; // Minor perf hack, adjust digit to compensate for missing high bit
-                if (m != (MAX_COEFFICIENT & LARGE_COEFFICIENT_MASK) + 2)
-                    break NeedAdjustment;
-                // put 1 into mantissa, retain sign, move exponent field to default location, increment exponent
-                // We can't overflow because mantissa can't be too large
-                return ((y << 2) & EXPONENT_MASK_SMALL) + (y & Long.MIN_VALUE) + ((16L << EXPONENT_SHIFT_SMALL) + 1);
-            }
+            NeedAdjustment:
+            do {
+                // Odd + special encoding(16 digits)
+                long notY = ~y;
+                if ((MASK_SPECIAL & notY) == 0) {
+                    if ((MASK_INFINITY_AND_NAN & notY) == 0)
+                        return y;
 
-            m = y & SMALL_COEFFICIENT_MASK;
-            // 16 digits + odd
-            if ((y & 1) != 0 && m > MAX_COEFFICIENT / 10 + 1)
-                break NeedAdjustment;
+                    m = (y & LARGE_COEFFICIENT_MASK) + LARGE_COEFFICIENT_HIGH_BIT;
+                    signAndExp = ((y << 2) & EXPONENT_MASK_SMALL) + (y & MASK_SIGN);
+                    if ((y & 1) != 0)
+                        break NeedAdjustment;
+                } else {
 
-            // No adjustment. NaN, Inf etc. should end here as well.
-            return y;
+                    m = y & SMALL_COEFFICIENT_MASK;
+                    // 16 digits + odd
+                    signAndExp = y & (-1L << EXPONENT_SHIFT_SMALL);
+                    if ((y & 1) != 0 && m > MAX_COEFFICIENT / 10 + 1)
+                        break NeedAdjustment;
+                }
+
+                break NeedCanonize;
+            } while(false);
+            // NeedAdjustment
+            // Check the last digit
+            long m1 = m + 1;
+            m = m1 / 10;
+            if (m1 - m * 10 > 2)
+                return y;
+
+            signAndExp += 1L << EXPONENT_SHIFT_SMALL;
+            if (Decimal64Utils.toDouble(signAndExp + m) != x)
+                return y;
         } while(false);
-
-        // Now need that last digit
-        m = (m + 1) % 10;
-        if (m <= 2) {
-            long z = y - m + 1;
-            return Decimal64Utils.toDouble(z) == x ? z : y;
+        // NeedCanonize
+        for (long n = m;;) {
+            long m1 = n / 10;
+            if (m1 * 10 != n)
+                return signAndExp + n;
+            n = m1;
+            signAndExp += 1L << EXPONENT_SHIFT_SMALL;
         }
-
-        return y;
     }
 
     public static class Context {
@@ -342,32 +360,32 @@ class JavaImpl {
         return 19;
     }
 
-    private static final long MASK_SIGN                     = 0x8000_0000_0000_0000L;
+    static final long MASK_SIGN                     = 0x8000_0000_0000_0000L;
+    static final long MASK_SPECIAL                  = 0x6000_0000_0000_0000L;
+    static final long MASK_INFINITY_NAN             = 0x7C00_0000_0000_0000L;
+    static final long MASK_SIGN_INFINITY_NAN        = 0xFC00_0000_0000_0000L; // SIGN|INF|NAN
 
-    private static final long MASK_INFINITY                 = 0x7800_0000_0000_0000L;
-    private static final long MASK_NAN                      = 0x7C00_0000_0000_0000L;
-    private static final long MASK_SIGNED_INFINITY          = 0xFC00_0000_0000_0000L;
+    static final long MASK_INFINITY_AND_NAN         = 0x7800_0000_0000_0000L;
 
-    private static final int EXPONENT_BIAS = 398;
-    private static final int BIASED_EXPONENT_MAX_VALUE = 767;
-    private static final int BIASED_EXPONENT_MIN_VALUE = 0;
+    static final int EXPONENT_BIAS = 398;
+    static final int BIASED_EXPONENT_MAX_VALUE = 767;
+    static final int BIASED_EXPONENT_MIN_VALUE = 0;
 
-    private static final long SPECIAL_ENCODING_MASK         = 0x6000_0000_0000_0000L;
-    private static final long LARGE_COEFFICIENT_MASK        = 0x0007_FFFF_FFFF_FFFFL;
-    private static final long LARGE_COEFFICIENT_HIGH_BIT    = 0x0020_0000_0000_0000L;
+    static final long LARGE_COEFFICIENT_MASK        = 0x0007_FFFF_FFFF_FFFFL;
+    static final long LARGE_COEFFICIENT_HIGH_BIT    = 0x0020_0000_0000_0000L;
 
-    private static final long SMALL_COEFFICIENT_MASK        = 0x001F_FFFF_FFFF_FFFFL;
-    private static final long MASK_COEFFICIENT              = 0x0001_FFFF_FFFF_FFFFL;
+    static final long SMALL_COEFFICIENT_MASK        = 0x001F_FFFF_FFFF_FFFFL;
+    static final long MASK_COEFFICIENT              = 0x0001_FFFF_FFFF_FFFFL;
 
-    private static final int EXPONENT_MASK = 0x03FF;
-    private static final int EXPONENT_SHIFT_LARGE = 51;
-    private static final int EXPONENT_SHIFT_SMALL = 53;
-    private static final long EXPONENT_MASK_SMALL = (long)EXPONENT_MASK << EXPONENT_SHIFT_SMALL;
-    private static final long EXPONENT_MASK_LARGE = (long)EXPONENT_MASK << EXPONENT_SHIFT_LARGE;
+    static final int EXPONENT_MASK = 0x03FF;
+    static final int EXPONENT_SHIFT_LARGE = 51;
+    static final int EXPONENT_SHIFT_SMALL = 53;
+    static final long EXPONENT_MASK_SMALL = (long)EXPONENT_MASK << EXPONENT_SHIFT_SMALL;
+    static final long EXPONENT_MASK_LARGE = (long)EXPONENT_MASK << EXPONENT_SHIFT_LARGE;
 
     private static final int MAX_FORMAT_DIGITS = 16;
 
-    private static final long MASK_STEERING_BITS            = 0x6000_0000_0000_0000L;
+    static final long MASK_STEERING_BITS                    = 0x6000_0000_0000_0000L;
     private static final long MASK_BINARY_EXPONENT1         = 0x7FE0_0000_0000_0000L;
     private static final long MASK_BINARY_SIG1              = 0x001F_FFFF_FFFF_FFFFL;
     private static final long MASK_BINARY_EXPONENT2         = 0x1FF8_0000_0000_0000L;
@@ -379,8 +397,6 @@ class JavaImpl {
     private static final int UPPER_EXPON_LIMIT = 51;
     private static final long MASK_EXP                      = 0x7FFE_0000_0000_0000L;
     private static final long MASK_EXP2                     = 0x1FFF_8000_0000_0000L;
-
-    private static final long MASK_SPECIAL                  = 0x7800_0000_0000_0000L;
 
     private static final long MASK_SNAN                     = 0x7E00_0000_0000_0000L;
     private static final long MASK_ANY_INF                  = 0x7C00_0000_0000_0000L;
@@ -594,7 +610,7 @@ class JavaImpl {
                     coefficient = (coefficient << 3) + (coefficient << 1);
                 }
                 if (exponent > BIASED_EXPONENT_MAX_VALUE)
-                    return signMask | MASK_INFINITY;
+                    return signMask | POSITIVE_INFINITY;
             }
         }
 
@@ -618,7 +634,7 @@ class JavaImpl {
 
         result = exponent;
         result <<= EXPONENT_SHIFT_LARGE;
-        result |= (signMask | SPECIAL_ENCODING_MASK);
+        result |= (signMask | MASK_SPECIAL);
 
         // Add coefficient, without leading bits.
         mask = (mask >> 2) - 1;
@@ -1036,7 +1052,7 @@ class JavaImpl {
             }
             if (exponent > BIASED_EXPONENT_MAX_VALUE) {
                 // Overflow
-                r = sgn | MASK_INFINITY;
+                r = sgn | MASK_INFINITY_AND_NAN;
                 switch (roundingMode) {
                     case BID_ROUNDING_DOWN:
                         if (!isSigned)
@@ -1077,7 +1093,7 @@ class JavaImpl {
 
         r = exponent;
         r <<= EXPONENT_SHIFT_LARGE;
-        r |= (sgn | SPECIAL_ENCODING_MASK);
+        r |= (sgn | MASK_SPECIAL);
 
         // Add coefficient, without leading bits.
         mask = (mask >>> 2) - 1;
@@ -1085,6 +1101,22 @@ class JavaImpl {
         r |= coefficient;
 
         return r;
+    }
+
+    /**
+     * pack value where exponent is within allowable range and coefficient does not require extended format
+     * @param sgn
+     * @param exponent
+     * @param coefficient
+     * @return
+     */
+    private static long packBasic(final long sgn, final int exponent, final long coefficient) {
+        assert (exponent >= 0);
+        assert (exponent <= BIASED_EXPONENT_MAX_VALUE);
+        assert (coefficient <= SMALL_COEFFICIENT_MASK);
+        assert (coefficient >= 0);
+
+        return sgn + ((long)exponent << EXPONENT_SHIFT_SMALL) + coefficient;
     }
 }
 
