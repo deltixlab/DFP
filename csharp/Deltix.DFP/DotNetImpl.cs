@@ -225,7 +225,7 @@ namespace Deltix.DFP
 				return ((y << 2) & SmallCoefficientExponentMask) + (y & 0x8000000000000000L) + ((16L << ExponentShiftSmall) + 1);
 			}
 
-			m = y & SmallCoefficientExponentMask;
+			m = y & SmallCoefficientMask;
 			// 16 digits + odd
 			if ((y & 1) != 0 && m > MaxCoefficient / 10 + 1)
 				goto NeedAdjustment;
