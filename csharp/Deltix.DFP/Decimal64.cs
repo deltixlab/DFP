@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Runtime.Serialization;
 using System.Text;
 
@@ -746,19 +747,19 @@ namespace Deltix.DFP
 
 		public static Decimal64 Parse(String text)
 		{
-			return FromDouble(Double.Parse(text));
+			return FromDecimalDouble(Double.Parse(text, NumberStyles.Float, CultureInfo.InvariantCulture));
 		}
 
 		public static Boolean TryParse(String text, out Decimal64 result)
 		{
 			Double value;
-			if (!Double.TryParse(text, out value))
+			if (!Double.TryParse(text, NumberStyles.Float, CultureInfo.InvariantCulture, out value))
 			{
 				result = NaN;
 				return false;
 			}
 
-			result = FromDouble(value);
+			result = FromDecimalDouble(value);
 			return true;
 		}
 
