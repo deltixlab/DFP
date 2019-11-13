@@ -204,6 +204,8 @@ class JavaImpl {
                     signAndExp = y & (-1L << EXPONENT_SHIFT_SMALL);
                     if ((y & 1) != 0 && m > MAX_COEFFICIENT / 10 + 1)
                         break NeedAdjustment;
+                    if (0 == m)
+                        return ZERO;
                 }
 
                 break NeedCanonize;
