@@ -417,6 +417,8 @@ namespace Deltix.DFP.Test
 			Assert.AreNotEqual("9.2", Decimal64.FromDouble(9.2).ToString());
 			Assert.AreEqual("9.199999999999999", Decimal64.FromDouble(9.2).ToString());
 			Assert.AreEqual("9.2", Decimal64.FromDecimalDouble(9.2).ToString());
+			Assert.AreEqual("-0.065013624", Decimal64.FromDecimalDouble(-0.065013624).ToString());
+			Assert.AreEqual("0", Decimal64.FromDecimalDouble(0).ToString());
 		}
 
 		static void Main(string[] args)

@@ -210,39 +210,65 @@ namespace Deltix.DFP
 
 		internal static UInt64 FromDecimalFloat64(Double x)
 		{
-			UInt64 y = NativeImpl.fromFloat64(x);
-			UInt64 m;
-
-			// Odd + special encoding(16 digits)
-			if (((SpecialEncodingMask + 1) & y) == (SpecialEncodingMask + 1))
+			unchecked
 			{
-				// Now need that last digit
-				m = (y & LargeCoefficientMask) + 2; // Minor perf hack, adjust digit to compensate for missing high bit
-				if (m != (MaxCoefficient & LargeCoefficientMask) + 2)
-					goto NeedAdjustment;
-				// put 1 into mantissa, retain sign, move exponent field to default location, increment exponent
-				// We can't overflow because mantissa can't be too large
-				return ((y << 2) & SmallCoefficientExponentMask) + (y & 0x8000000000000000L) + ((16L << ExponentShiftSmall) + 1);
+				UInt64 y = NativeImpl.fromFloat64(x);
+				// Using signed values because unsigned division optimizations are worse than signed
+				// in MS .NET, esp. Core2.0 while it should be opposite
+				Int64 m;
+				UInt64 signAndExp;
+
+				UInt64 notY = ~y;
+				if ((SpecialEncodingMask & notY) == 0)
+				{
+					// Special value or large coefficient
+					if ((InfinityMask & notY) == 0)
+						return y; // Infinity etc.
+
+					m = (Int64)((y & LargeCoefficientMask) + LargeCoefficientHighBits);
+					//signAndExp = ((y << 2) & SmallCoefficientExponentMask) + (y & SignMask);
+					signAndExp = (y & LargeCoefficientExponentMask) * 4 + (y & SignMask);
+					if ((y & 1) != 0)
+						goto NeedAdjustment;
+				}
+				else
+				{
+					// "Normal" value
+					m = (Int64)(y & SmallCoefficientMask);
+					// 16 digits + odd
+					signAndExp = y & (UInt64.MaxValue << ExponentShiftSmall);
+					if ((y & 1) != 0 && (UInt64)m > MaxCoefficient / 10 + 1)
+						goto NeedAdjustment;
+
+					if (0 == m)
+						return Zero;
+				}
+
+				NeedCanonize:
+				for (Int64 n = m; ;)
+				{
+					Int64 mNext = n / 10;
+					if (mNext * 10 != n)
+						return signAndExp + (UInt64)n;
+
+					n = mNext;
+					signAndExp += 1L << ExponentShiftSmall;
+				}
+
+				NeedAdjustment:
+				// Check the last digit
+
+				Int64 m1 = m + 1;
+				m = m1 / 10;
+				if (m1 - m * 10 > 2)
+					return y;
+
+				signAndExp += 1L << ExponentShiftSmall;
+				if (NativeImpl.toFloat64(signAndExp + (UInt64)m) != x)
+					return y;
+
+				goto NeedCanonize;
 			}
-
-			m = y & SmallCoefficientMask;
-			// 16 digits + odd
-			if ((y & 1) != 0 && m > MaxCoefficient / 10 + 1)
-				goto NeedAdjustment;
-
-			// No adjustment. NaN, Inf etc. should end here as well.
-			return y;
-
-		NeedAdjustment:
-			// Now need that last digit
-			m = (m + 1) % 10;
-			if (m <= 2)
-			{
-				UInt64 z = y - m + 1;
-				return NativeImpl.toFloat64(z) == x ? z : y;
-			}
-
-			return y;
 		}
 
 		#endregion
