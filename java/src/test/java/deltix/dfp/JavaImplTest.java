@@ -5,8 +5,8 @@ import org.junit.Test;
 import java.io.IOException;
 import java.util.Random;
 
-import static deltix.dfp.TestUtils.assertDfp;
-import static deltix.dfp.TestUtils.assertDfpEq;
+import static deltix.dfp.TestUtils.assertDecimalIdentical;
+import static deltix.dfp.TestUtils.assertDecimalEqual;
 import static org.junit.Assert.*;
 
 public class JavaImplTest {
@@ -98,9 +98,9 @@ public class JavaImplTest {
         for (int i = 0; i < N ; ++i) {
             final long dfp = (i & 1) > 0 ? JavaImpl.fromInt32(m) : JavaImpl.fromInt32V2(m);
             assertEquals(Decimal64Utils.toInt(dfp), m);
-            assertDfp(NativeImpl.fromInt32(m), dfp);
-            assertDfp(NativeImpl.fromInt64(m), dfp);
-            assertDfp(NativeImpl.fromFloat64(m), dfp);
+            assertDecimalIdentical(NativeImpl.fromInt32(m), dfp);
+            assertDecimalIdentical(NativeImpl.fromInt64(m), dfp);
+            assertDecimalIdentical(NativeImpl.fromFloat64(m), dfp);
             m = random.nextInt();
         }
     }
@@ -144,27 +144,27 @@ public class JavaImplTest {
 
     @Test
     public void fromFixedPointFastConsts() {
-        assertDfp(Decimal64Utils.ZERO, JavaImpl.fromFixedPointFast(0, 0));
-        assertDfp(Decimal64Utils.ONE, JavaImpl.fromFixedPointFast(1, 0));
-        assertDfp(Decimal64Utils.TWO, JavaImpl.fromFixedPointFast(2, 0));
-        assertDfp(Decimal64Utils.TEN, JavaImpl.fromFixedPointFast(10, 0));
-        assertDfpEq(Decimal64Utils.TEN, JavaImpl.fromFixedPointFast(1, -1));
-        assertDfp(Decimal64Utils.HUNDRED, JavaImpl.fromFixedPointFast(100, 0));
-        assertDfpEq(Decimal64Utils.HUNDRED, JavaImpl.fromFixedPointFast(1, -2));
-        assertDfpEq(Decimal64Utils.THOUSAND, JavaImpl.fromFixedPointFast(1, -3));
-        assertDfpEq(Decimal64Utils.MILLION, JavaImpl.fromFixedPointFast(1, -6));
-        assertDfp(Decimal64Utils.ONE_TENTH, JavaImpl.fromFixedPointFast(1, 1));
-        assertDfp(Decimal64Utils.ONE_HUNDREDTH, JavaImpl.fromFixedPointFast(1, 2));
+        assertDecimalIdentical(Decimal64Utils.ZERO, JavaImpl.fromFixedPointFast(0, 0));
+        assertDecimalIdentical(Decimal64Utils.ONE, JavaImpl.fromFixedPointFast(1, 0));
+        assertDecimalIdentical(Decimal64Utils.TWO, JavaImpl.fromFixedPointFast(2, 0));
+        assertDecimalIdentical(Decimal64Utils.TEN, JavaImpl.fromFixedPointFast(10, 0));
+        assertDecimalEqual(Decimal64Utils.TEN, JavaImpl.fromFixedPointFast(1, -1));
+        assertDecimalIdentical(Decimal64Utils.HUNDRED, JavaImpl.fromFixedPointFast(100, 0));
+        assertDecimalEqual(Decimal64Utils.HUNDRED, JavaImpl.fromFixedPointFast(1, -2));
+        assertDecimalEqual(Decimal64Utils.THOUSAND, JavaImpl.fromFixedPointFast(1, -3));
+        assertDecimalEqual(Decimal64Utils.MILLION, JavaImpl.fromFixedPointFast(1, -6));
+        assertDecimalIdentical(Decimal64Utils.ONE_TENTH, JavaImpl.fromFixedPointFast(1, 1));
+        assertDecimalIdentical(Decimal64Utils.ONE_HUNDREDTH, JavaImpl.fromFixedPointFast(1, 2));
 
-        assertDfp(Decimal64Utils.ZERO, JavaImpl.fromFixedPointFastUnsigned(0, 0));
-        assertDfp(Decimal64Utils.ONE, JavaImpl.fromFixedPointFastUnsigned(1, 0));
-        assertDfp(Decimal64Utils.TWO, JavaImpl.fromFixedPointFastUnsigned(2, 0));
-        assertDfp(Decimal64Utils.TEN, JavaImpl.fromFixedPointFastUnsigned(10, 0));
-        assertDfpEq(Decimal64Utils.TEN, JavaImpl.fromFixedPointFastUnsigned(1, -1));
-        assertDfp(Decimal64Utils.HUNDRED, JavaImpl.fromFixedPointFastUnsigned(100, 0));
-        assertDfpEq(Decimal64Utils.HUNDRED, JavaImpl.fromFixedPointFastUnsigned(1, -2));
-        assertDfpEq(Decimal64Utils.THOUSAND, JavaImpl.fromFixedPointFastUnsigned(1, -3));
-        assertDfpEq(Decimal64Utils.MILLION, JavaImpl.fromFixedPointFastUnsigned(1, -6));
+        assertDecimalIdentical(Decimal64Utils.ZERO, JavaImpl.fromFixedPointFastUnsigned(0, 0));
+        assertDecimalIdentical(Decimal64Utils.ONE, JavaImpl.fromFixedPointFastUnsigned(1, 0));
+        assertDecimalIdentical(Decimal64Utils.TWO, JavaImpl.fromFixedPointFastUnsigned(2, 0));
+        assertDecimalIdentical(Decimal64Utils.TEN, JavaImpl.fromFixedPointFastUnsigned(10, 0));
+        assertDecimalEqual(Decimal64Utils.TEN, JavaImpl.fromFixedPointFastUnsigned(1, -1));
+        assertDecimalIdentical(Decimal64Utils.HUNDRED, JavaImpl.fromFixedPointFastUnsigned(100, 0));
+        assertDecimalEqual(Decimal64Utils.HUNDRED, JavaImpl.fromFixedPointFastUnsigned(1, -2));
+        assertDecimalEqual(Decimal64Utils.THOUSAND, JavaImpl.fromFixedPointFastUnsigned(1, -3));
+        assertDecimalEqual(Decimal64Utils.MILLION, JavaImpl.fromFixedPointFastUnsigned(1, -6));
     }
 
     @Test
@@ -173,21 +173,21 @@ public class JavaImplTest {
         for (int exp = 398 - 0x2FF; exp <= 398; ++exp) {
             for (int j = 0; j < N; ++j) {
                 int mantissa = random.nextInt();
-                assertDfp(NativeImpl.fromFixedPoint32(mantissa, exp), JavaImpl.fromFixedPointFast(mantissa, exp));
-                assertDfp(NativeImpl.fromFixedPoint64(mantissa, exp), JavaImpl.fromFixedPointFast(mantissa, exp));
+                assertDecimalIdentical(NativeImpl.fromFixedPoint32(mantissa, exp), JavaImpl.fromFixedPointFast(mantissa, exp));
+                assertDecimalIdentical(NativeImpl.fromFixedPoint64(mantissa, exp), JavaImpl.fromFixedPointFast(mantissa, exp));
 
                 if (mantissa >= 0) {
-                    assertDfp(NativeImpl.fromFixedPoint32(mantissa, exp), JavaImpl.fromFixedPointFastUnsigned(mantissa, exp));
-                    assertDfp(NativeImpl.fromFixedPoint64(mantissa, exp), JavaImpl.fromFixedPointFastUnsigned(mantissa, exp));
+                    assertDecimalIdentical(NativeImpl.fromFixedPoint32(mantissa, exp), JavaImpl.fromFixedPointFastUnsigned(mantissa, exp));
+                    assertDecimalIdentical(NativeImpl.fromFixedPoint64(mantissa, exp), JavaImpl.fromFixedPointFastUnsigned(mantissa, exp));
                 }
             }
 
-            assertDfp(NativeImpl.fromFixedPoint32(0, exp), JavaImpl.fromFixedPointFast(0, exp));
-            assertDfp(NativeImpl.fromFixedPoint32(Integer.MIN_VALUE, exp), JavaImpl.fromFixedPointFast(Integer.MIN_VALUE, exp));
-            assertDfp(NativeImpl.fromFixedPoint32(Integer.MAX_VALUE, exp), JavaImpl.fromFixedPointFast(Integer.MAX_VALUE, exp));
-            assertDfp(NativeImpl.fromFixedPoint64(0, exp), JavaImpl.fromFixedPointFast(0, exp));
-            assertDfp(NativeImpl.fromFixedPoint64(Integer.MIN_VALUE, exp), JavaImpl.fromFixedPointFast(Integer.MIN_VALUE, exp));
-            assertDfp(NativeImpl.fromFixedPoint64(Integer.MAX_VALUE, exp), JavaImpl.fromFixedPointFast(Integer.MAX_VALUE, exp));
+            assertDecimalIdentical(NativeImpl.fromFixedPoint32(0, exp), JavaImpl.fromFixedPointFast(0, exp));
+            assertDecimalIdentical(NativeImpl.fromFixedPoint32(Integer.MIN_VALUE, exp), JavaImpl.fromFixedPointFast(Integer.MIN_VALUE, exp));
+            assertDecimalIdentical(NativeImpl.fromFixedPoint32(Integer.MAX_VALUE, exp), JavaImpl.fromFixedPointFast(Integer.MAX_VALUE, exp));
+            assertDecimalIdentical(NativeImpl.fromFixedPoint64(0, exp), JavaImpl.fromFixedPointFast(0, exp));
+            assertDecimalIdentical(NativeImpl.fromFixedPoint64(Integer.MIN_VALUE, exp), JavaImpl.fromFixedPointFast(Integer.MIN_VALUE, exp));
+            assertDecimalIdentical(NativeImpl.fromFixedPoint64(Integer.MAX_VALUE, exp), JavaImpl.fromFixedPointFast(Integer.MAX_VALUE, exp));
         }
     }
 

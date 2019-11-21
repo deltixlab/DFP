@@ -1,9 +1,11 @@
 package deltix.dfp;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
-
+import static deltix.dfp.TestUtils.*;
 import java.util.Objects;
+import java.util.function.BiConsumer;
 
 public class Decimal64Test {
     @Test
@@ -30,7 +32,6 @@ public class Decimal64Test {
         Assert.assertFalse("null != a", Decimal64.equals(null, (Decimal64) a));
         Assert.assertFalse("null != a", Decimal64.isIdentical(null, (Object) a));
         Assert.assertFalse("null != a", Decimal64.isIdentical(null, (Decimal64) a));
-
 
 
         Assert.assertFalse("null != s", Decimal64.equals(null, (Object) s));
@@ -84,117 +85,85 @@ public class Decimal64Test {
         // TODO: Check if compareTo throws
     }
 
+    /**
+     * Combined method that checks both Decimal64Utils and Decimal64 canonize() and methods that use canonize(),
+     * such as equal(), hashCode()
+     */
     @Test
     public void canonizeTest() {
-        long al = Decimal64Utils.fromFixedPoint(10000, 4);
-        long bl = Decimal64Utils.fromFixedPoint(1, 0);
-        long cl = Decimal64Utils.fromFixedPoint(10, 1);
-        long dl = Decimal64Utils.fromFixedPoint(100, 2);
-        long el = Decimal64Utils.fromFixedPoint(1000, 3);
+        long a = Decimal64Utils.fromFixedPoint(10000, 4);
+        long b = Decimal64Utils.fromFixedPoint(1, 0);
+        long c = Decimal64Utils.fromFixedPoint(10, 1);
+        long d = Decimal64Utils.fromFixedPoint(100, 2);
+        long e = Decimal64Utils.fromFixedPoint(1000, 3);
 
-        Decimal64 a = Decimal64.fromUnderlying(al), b = Decimal64.fromUnderlying(bl), c = Decimal64.fromUnderlying(cl), d = Decimal64.fromUnderlying(dl), e = Decimal64.fromUnderlying(el);
-
-
-        Assert.assertEquals(false, a.isIdentical(b));
-        Assert.assertEquals(false, b.isIdentical(c));
-        Assert.assertEquals(false, c.isIdentical(d));
-        Assert.assertEquals(false, d.isIdentical(e));
-        Assert.assertEquals(false, e.isIdentical(a));
-
-        Assert.assertNotEquals(a.identityHashCode(), b.identityHashCode());
-        Assert.assertNotEquals(b.identityHashCode(), c.identityHashCode());
-        Assert.assertNotEquals(c.identityHashCode(), d.identityHashCode());
-        Assert.assertNotEquals(d.identityHashCode(), e.identityHashCode());
-        Assert.assertNotEquals(e.identityHashCode(), a.identityHashCode());
-
-        Assert.assertEquals(true, a.equals(b));
-        Assert.assertEquals(true, b.equals(c));
-        Assert.assertEquals(true, c.equals(d));
-        Assert.assertEquals(true, d.equals(e));
-        Assert.assertEquals(true, e.equals(a));
-
-        Assert.assertEquals(a.hashCode(), b.hashCode());
-        Assert.assertEquals(b.hashCode(), c.hashCode());
-        Assert.assertEquals(c.hashCode(), d.hashCode());
-        Assert.assertEquals(d.hashCode(), e.hashCode());
-        Assert.assertEquals(e.hashCode(), a.hashCode());
-
-        a = a.canonize();
-        b = b.canonize();
-        c = c.canonize();
-        d = d.canonize();
-        e = e.canonize();
-        Assert.assertTrue(a.isIdentical(b));
-        Assert.assertTrue(a.isIdentical(c));
-        Assert.assertTrue(a.isIdentical(d));
-        Assert.assertTrue(a.isIdentical(e));
+        checkCanonize(a, b);
+        checkCanonize(b, c);
+        checkCanonize(c, d);
+        checkCanonize(d, e);
+        checkCanonize(e, a);
 
         long nan1l = Decimal64Utils.NaN;
         long nan2l = nan1l + 20;
-        Decimal64 nan1 = Decimal64.fromUnderlying(nan1l), nan2 = Decimal64.fromUnderlying(nan2l);
+        checkCanonize(nan1l, nan2l);
 
-        Assert.assertEquals(false, nan1.isIdentical(nan2));
-        Assert.assertNotEquals(nan1.identityHashCode(), nan2.identityHashCode());
-        Assert.assertEquals(true, nan1.equals(nan2));
-        Assert.assertEquals(nan1.hashCode(), nan2.hashCode());
-
-        nan1 = nan1.canonize();
-        nan2 = nan2.canonize();
-        Assert.assertTrue(nan1.isIdentical(nan2));
 
         long posInf1l = Decimal64Utils.POSITIVE_INFINITY;
         long posInf2l = posInf1l + 10;
+        checkCanonize(posInf1l, posInf2l);
 
-        Decimal64 posInf1 = Decimal64.fromUnderlying(posInf1l), posInf2 = Decimal64.fromUnderlying(posInf2l);
-
-        Assert.assertEquals(false, posInf1.isIdentical(posInf2));
-        Assert.assertNotEquals(posInf1.identityHashCode(), posInf2.identityHashCode());
-        Assert.assertEquals(true, posInf1.equals(posInf2));
-        Assert.assertEquals(posInf1.hashCode(), posInf2.hashCode());
-
-
-        posInf1 = posInf1.canonize();
-        posInf2 = posInf2.canonize();
-
-        Assert.assertEquals(true, posInf1.isIdentical(posInf2));
 
         long negInf1l = Decimal64Utils.NEGATIVE_INFINITY;
         long negInf2l = negInf1l + 10;
-
-        Decimal64 negInf1 = Decimal64.fromUnderlying(negInf1l), negInf2 = Decimal64.fromUnderlying(negInf2l);
-
-        Assert.assertEquals(false, negInf1.isIdentical(negInf2));
-        Assert.assertNotEquals(negInf1.identityHashCode(), negInf2.identityHashCode());
-        Assert.assertEquals(true, negInf1.equals(negInf2));
-        Assert.assertEquals(negInf1.hashCode(), negInf2.hashCode());
+        checkCanonize(negInf1l, negInf2l);
 
 
-        negInf1 = negInf1.canonize();
-        negInf2 = negInf2.canonize();
-        Assert.assertEquals(true, negInf1.isIdentical(negInf2));
+        a = Decimal64Utils.canonize(a);
+        Assert.assertEquals(1.0, Decimal64Utils.toDouble(a), 0.00000000000001);
 
-        long zero1l = Decimal64Utils.fromFixedPoint(0, 1);
-        long zero2l = Decimal64Utils.fromFixedPoint(0, 2);
+        long zero1 = Decimal64Utils.fromFixedPoint(0, 1);
+        long zero2 = Decimal64Utils.fromFixedPoint(0, 2);
+        long zero3 = Decimal64Utils.fromFixedPoint(0, 3);
+        checkCanonize(zero1, zero2);
+        checkCanonize(zero1, zero3);
 
-        Decimal64 zero1 = Decimal64.fromUnderlying(zero1l);
-        Decimal64 zero2 = Decimal64.fromUnderlying(zero2l);
+        zero1 = Decimal64Utils.canonize(zero1);
+        Assert.assertEquals(0.0, Decimal64Utils.toDouble(zero1), 0.00000000000001);
 
-        Assert.assertEquals(false, zero1.isIdentical(zero2));
-        Assert.assertNotEquals(zero1.identityHashCode(), zero2.identityHashCode());
-        Assert.assertEquals(true, zero1.equals(zero2));
-        Assert.assertEquals(zero1.hashCode(), zero2.hashCode());
-
-        zero1 = zero1.canonize();
-        zero2 = zero2.canonize();
-        Assert.assertEquals(zero1, zero2);
-
-
+        a = (JavaImpl.BIASED_EXPONENT_MAX_VALUE + 0L << JavaImpl.EXPONENT_SHIFT_SMALL) + 10_000_000;
+        b = (JavaImpl.BIASED_EXPONENT_MAX_VALUE - 1L << JavaImpl.EXPONENT_SHIFT_SMALL) + 100_000_000;
+        checkCanonize(a, b);
     }
 
-    @Test
-    public void canonizeTest2() {
-        Decimal64 a = Decimal64.fromUnderlying((JavaImpl.BIASED_EXPONENT_MAX_VALUE + 0L << JavaImpl.EXPONENT_SHIFT_SMALL) + 10_000_000);
-        Decimal64 b = Decimal64.fromUnderlying((JavaImpl.BIASED_EXPONENT_MAX_VALUE - 1L << JavaImpl.EXPONENT_SHIFT_SMALL) + 100_000_000);
+    void checkCanonize(final long value1l, long value2l_) {
+        final long value2l = value2l_;
+        Decimal64 value1 = Decimal64.fromUnderlying(value1l), value2 = Decimal64.fromUnderlying(value2l);
+        String msg = "checkCanonize() failed";
+        assertDecimalEqualNotIdentical(value1l, value2l, msg);
+        assertDecimalEqualHashCode(value1l, value2l, msg, true);
+        assertDecimalEqualIdentityHashCode(value1l, value2l, msg, false);
+
+        assertDecimalEqualNotIdentical(value1, value2, msg);
+        assertDecimalEqualHashCode(value1, value2, msg, true);
+        assertDecimalEqualIdentityHashCode(value1, value2, msg, false);
+
+        final Decimal64 value1c = value1.canonize();
+        final Decimal64 value2c = value2.canonize();
+        assertDecimalIdentical(value1c, value2c, msg);
+        assertDecimalEqualIdentityHashCode(value1c, value2c, msg, true);
+
+        assertDecimalIdentical(value1c.value, value2c.value, msg);
+        assertDecimalEqualIdentityHashCode(value1c.value, value2c.value, msg, true);
+
+        Assert.assertEquals(value1.toString(), value2.toString());
+        Assert.assertTrue(value1c.equals(value2c));
+        Assert.assertTrue(value2c.equals(value1c));
+    }
+
+    void checkCanonize2(long value1, long value2) {
+        Decimal64 a = Decimal64.fromUnderlying(value1);
+        Decimal64 b = Decimal64.fromUnderlying(value2);
+
         Assert.assertEquals(a.toString(), b.toString());
         Decimal64 ac = a.canonize();
         Decimal64 bc = b.canonize();
@@ -205,6 +174,39 @@ public class Decimal64Test {
         Assert.assertEquals(a.canonize().toString(), b.toString());
         Assert.assertTrue(a.equals(b));
         Assert.assertTrue(b.equals(a));
+    }
+
+    @Test
+    public void canonizeRandomTest() {
+        mantissaZerosCombinations((m, l)->{
+            long x = Decimal64Utils.fromFixedPoint(m, l);
+            long y = Decimal64Utils.fromFixedPoint(m / POWERS_OF_TEN[l], 0);
+
+            checkCanonize(x, y);
+            checkCanonize2(x, y);
+        });
+        partsCombinationsWithoutEndingZeros((m, e)->{
+            long x = Decimal64Utils.fromFixedPoint(m, e);
+            checkCanonize2(x, Decimal64Utils.canonize(x));
+        });
+    }
+
+    @Test
+    public void canonizeZeroTest() {
+        for (int exp = 398 - 0x2FF; exp <= 398; ++exp) {
+            Decimal64 zero = Decimal64.fromFixedPoint(0, exp);
+            checkCanonize2(zero.value, zero.canonize().value);
+        }
+    }
+
+    @Test
+    public void canonizeMantissaZerosCombinationsTest() {
+        mantissaZerosCombinations((m, l)->{
+            Decimal64 x = Decimal64.fromFixedPoint(m, l);
+            Decimal64 y = Decimal64.fromFixedPoint(m / POWERS_OF_TEN[(int)l], 0);
+            Assert.assertFalse(x.isIdentical(y));
+            Assert.assertTrue(x.canonize().isIdentical(y));
+        });
     }
 
     @Test
@@ -265,4 +267,5 @@ public class Decimal64Test {
         Assert.assertEquals("1000000", Decimal64.toString(Decimal64.MILLION));
         Assert.assertEquals("0.01", Decimal64.toString(Decimal64.ONE_HUNDREDTH));
     }
+
 }

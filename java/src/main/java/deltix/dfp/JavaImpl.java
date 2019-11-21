@@ -244,20 +244,20 @@ class JavaImpl {
 
     public static Appendable appendTo(final long value, final Appendable appendable) throws IOException {
         final Context context = contextMap.get();
-        if (toParts(value, context.x) == 0) {
-            // Value is ether Inf, or NaN, or 0.
-            if (isNaN(value))
-                return appendable.append("NaN");
-            if (!isInfinity(value))
-                return appendable.append('0');
-            return context.x.sign ? appendable.append("-Infinity") : appendable.append("Infinity");
+        if (isNonFinite(value)) {
+            // Value is either Inf or NaN
+            // TODO: Do we need SNaN?
+            return appendable.append(isNaN(value) ? "NaN" : value < 0 ? "-Infinity" : "Infinity");
         }
 
-        if (context.x.sign)
+        final long coefficient = toParts(value, context.x);
+        if (0 == coefficient)
+            return appendable.append('0');
+
+        if (value < 0)
             appendable.append('-');
 
         final int exponent = context.x.exponent - EXPONENT_BIAS;
-        final long coefficient = context.x.coefficient;
         final int digits = numberOfDigits(coefficient);
 
         if (exponent >= 0) {
@@ -318,10 +318,21 @@ class JavaImpl {
 
         Decimal64Parts parts = new Decimal64Parts();
         toParts(value, parts);
-        StringBuilder sb = new StringBuilder(64)
-            .append("0x").append(Long.toHexString(value))
-            .append("[").append(parts.sign ? '-' : '+').append(',')
-            .append(parts.exponent).append(',').append(parts.coefficient).append(']');
+
+        StringBuilder sb = new StringBuilder(64).append("0x").append(Long.toHexString(value))
+            .append("=");
+        if (NULL == value) {
+            sb.append("null");
+        } else {
+            sb.append(value < 0 ? '-' : '+');
+            if (!isSpecial(value)) {
+                sb.append(parts.coefficient).append('E').append(parts.exponent);
+
+            } else {
+                sb.append(isNaN(value) ? "NaN" : "Infinity");
+            }
+        }
+
         return sb.toString();
     }
 

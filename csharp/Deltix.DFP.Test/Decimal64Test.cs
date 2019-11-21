@@ -3,6 +3,8 @@ using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using NUnit.Framework;
 
+using static Deltix.DFP.Test.TestUtils;
+
 namespace Deltix.DFP.Test
 {
 	[TestFixture]
@@ -14,6 +16,7 @@ namespace Deltix.DFP.Test
 			Decimal64 a = Decimal64.Null;
 			Assert.AreEqual(true, a.IsNull());
 			Assert.AreEqual(true, a.IsNaN());
+
 			Decimal64 b = Decimal64.NaN;
 			Assert.AreEqual(false, b.IsNull());
 			Assert.AreEqual(true, b.IsNaN());
@@ -28,45 +31,80 @@ namespace Deltix.DFP.Test
 			Decimal64 d = Decimal64.FromFixedPoint(100, 2);
 			Decimal64 e = Decimal64.FromFixedPoint(1000, 3);
 
-			Assert.AreEqual(true, a.Equals(b));
-			Assert.AreEqual(true, b.Equals(c));
-			Assert.AreEqual(true, c.Equals(d));
-			Assert.AreEqual(true, d.Equals(e));
-			Assert.AreEqual(true, e.Equals(a));
-
-			Assert.AreEqual(a.GetHashCode(), b.GetHashCode());
-			Assert.AreEqual(b.GetHashCode(), c.GetHashCode());
-			Assert.AreEqual(c.GetHashCode(), d.GetHashCode());
-			Assert.AreEqual(d.GetHashCode(), e.GetHashCode());
-			Assert.AreEqual(e.GetHashCode(), a.GetHashCode());
+			CheckCanonize(a, b);
+			CheckCanonize(b, c);
+			CheckCanonize(c, d);
+			CheckCanonize(d, e);
+			CheckCanonize(e, a);
 
 			Decimal64 nan1 = Decimal64.NaN;
 			Decimal64 nan2 = Decimal64.FromUnderlying(nan1.Bits + 20);
-
-			Assert.AreEqual(true, nan1.Equals(nan2));
-			Assert.AreEqual(nan1.GetHashCode(), nan2.GetHashCode());
-
+			// CheckCanonize(nan1, nan2);
 
 			Decimal64 posInf1 = Decimal64.PositiveInfinity;
 			Decimal64 posInf2 = Decimal64.FromUnderlying(posInf1.Bits + 10);
-
-			Assert.AreEqual(true, posInf1.Equals(posInf2));
-			Assert.AreEqual(posInf1.GetHashCode(), posInf2.GetHashCode());
+			CheckCanonize(posInf1, posInf2);
 
 			Decimal64 negInf1 = Decimal64.PositiveInfinity;
 			Decimal64 negInf2 = Decimal64.FromUnderlying(negInf1.Bits + 10);
-
-			Assert.AreEqual(true, negInf1.Equals(negInf2));
-			Assert.AreEqual(negInf1.GetHashCode(), negInf2.GetHashCode());
+			CheckCanonize(negInf1, negInf2);
 
 			Decimal64 zero1 = Decimal64.FromFixedPoint(0, 1);
 			Decimal64 zero2 = Decimal64.FromFixedPoint(0, 2);
-
-			Assert.AreEqual(true, zero1.Equals(zero2));
-			Assert.AreEqual(zero1.GetHashCode(), zero2.GetHashCode());
-
+			CheckCanonize(zero1, zero2);
 		}
 
+		private void CheckCanonize(Decimal64 value1, Decimal64 value2)
+		{
+			CheckCanonize(value1.Bits, value2.Bits);
+		}
+
+		private void CheckCanonize(ulong value1l, ulong value2l_)
+		{
+			ulong value2l = value2l_;
+			Decimal64 value1 = Decimal64.FromUnderlying(value1l), value2 = Decimal64.FromUnderlying(value2l);
+			String msg = "checkCanonize() failed";
+			AssertDecimalEqualNotIdentical(value1l, value2l, msg);
+			AssertDecimalEqualHashCode(value1l, value2l, false, msg);
+
+			AssertDecimalEqualNotIdentical(value1, value2, msg);
+			AssertDecimalEqualHashCode(value1, value2, false, msg);
+
+			Decimal64 value1c = value1.Canonize();
+			Decimal64 value2c = value2.Canonize();
+			AssertDecimalIdentical(value1c, value2c, msg);
+
+			AssertDecimalIdentical(value1c.Bits, value2c.Bits, msg);
+			AssertDecimalEqualHashCode(value1c, value2c, true, msg);
+
+			Assert.AreEqual(value1.ToString(), value2.ToString());
+			Assert.IsTrue(value1c.Equals(value2c));
+			Assert.IsTrue(value2c.Equals(value1c));
+		}
+
+		private void CheckCanonize2(Decimal64 a, Decimal64 b)
+		{
+			Assert.AreEqual(a.ToString(), b.ToString());
+			Decimal64 ac = a.Canonize();
+			Decimal64 bc = b.Canonize();
+			Assert.AreEqual(a.Canonize(), b.Canonize());
+			Assert.AreEqual(ac, bc);
+			Assert.AreEqual(a.Canonize().ToString(), b.Canonize().ToString());
+			Assert.AreEqual(a.ToString(), b.Canonize().ToString());
+			Assert.AreEqual(a.Canonize().ToString(), b.ToString());
+			Assert.IsTrue(a.Equals(b));
+			Assert.IsTrue(b.Equals(a));
+		}
+
+		[Test]
+		public void CanonizeZeroTest()
+		{
+			for (int exp = 398 - 0x2FF; exp <= 398; ++exp)
+			{
+				Decimal64 zero = Decimal64.FromFixedPoint(0, exp);
+				CheckCanonize2(zero, zero.Canonize());
+			}
+		}
 
 		[Test]
 		public void Binary64Conversion()
@@ -80,90 +118,79 @@ namespace Deltix.DFP.Test
 		[Test]
 		public void FromFixedPointFastConsts()
 		{
-			TestUtils.AssertDfp(Decimal64.Zero.Bits, DotNetImpl.FromFixedPointFast(0, 0));
-			AssertDfp(Decimal64.One, DotNetImpl.FromFixedPointFast(1, 0));
-			AssertDfp(Decimal64.Two, DotNetImpl.FromFixedPointFast(2, 0));
-			AssertDfp(Decimal64.Ten, DotNetImpl.FromFixedPointFast(10, 0));
-			AssertDfpEq(Decimal64.Ten, DotNetImpl.FromFixedPointFast(1, -1));
-			AssertDfp(Decimal64.Hundred, DotNetImpl.FromFixedPointFast(100, 0));
-			AssertDfpEq(Decimal64.Hundred, DotNetImpl.FromFixedPointFast(1, -2));
-			AssertDfpEq(Decimal64.Thousand, DotNetImpl.FromFixedPointFast(1, -3));
-			AssertDfpEq(Decimal64.Million, DotNetImpl.FromFixedPointFast(1, -6));
-			AssertDfp(Decimal64.OneTenth, DotNetImpl.FromFixedPointFast(1, 1));
-			AssertDfp(Decimal64.OneHundredth, DotNetImpl.FromFixedPointFast(1, 2));
+			AssertDecimalEqual(Decimal64.Zero.Bits, DotNetImpl.FromFixedPointFast(0, 0));
+			AssertDecimalEqual(Decimal64.One, DotNetImpl.FromFixedPointFast(1, 0));
+			AssertDecimalEqual(Decimal64.Two, DotNetImpl.FromFixedPointFast(2, 0));
+			AssertDecimalEqual(Decimal64.Ten, DotNetImpl.FromFixedPointFast(10, 0));
+			AssertDecimalEqual(Decimal64.Ten, DotNetImpl.FromFixedPointFast(1, -1));
+			AssertDecimalEqual(Decimal64.Hundred, DotNetImpl.FromFixedPointFast(100, 0));
+			AssertDecimalEqual(Decimal64.Hundred, DotNetImpl.FromFixedPointFast(1, -2));
+			AssertDecimalEqual(Decimal64.Thousand, DotNetImpl.FromFixedPointFast(1, -3));
+			AssertDecimalEqual(Decimal64.Million, DotNetImpl.FromFixedPointFast(1, -6));
+			AssertDecimalEqual(Decimal64.OneTenth, DotNetImpl.FromFixedPointFast(1, 1));
+			AssertDecimalEqual(Decimal64.OneHundredth, DotNetImpl.FromFixedPointFast(1, 2));
 
-			AssertDfp(Decimal64.Zero, DotNetImpl.FromFixedPointFastUnsigned(0, 0));
-			AssertDfp(Decimal64.One, DotNetImpl.FromFixedPointFastUnsigned(1, 0));
-			AssertDfp(Decimal64.Two, DotNetImpl.FromFixedPointFastUnsigned(2, 0));
-			AssertDfp(Decimal64.Ten, DotNetImpl.FromFixedPointFastUnsigned(10, 0));
-			AssertDfpEq(Decimal64.Ten, DotNetImpl.FromFixedPointFastUnsigned(1, -1));
-			AssertDfp(Decimal64.Hundred, DotNetImpl.FromFixedPointFastUnsigned(100, 0));
-			AssertDfpEq(Decimal64.Hundred, DotNetImpl.FromFixedPointFastUnsigned(1, -2));
-			AssertDfpEq(Decimal64.Thousand, DotNetImpl.FromFixedPointFastUnsigned(1, -3));
-			AssertDfpEq(Decimal64.Million, DotNetImpl.FromFixedPointFastUnsigned(1, -6));
+			AssertDecimalEqual(Decimal64.Zero, DotNetImpl.FromFixedPointFastUnsigned(0, 0));
+			AssertDecimalEqual(Decimal64.One, DotNetImpl.FromFixedPointFastUnsigned(1, 0));
+			AssertDecimalEqual(Decimal64.Two, DotNetImpl.FromFixedPointFastUnsigned(2, 0));
+			AssertDecimalEqual(Decimal64.Ten, DotNetImpl.FromFixedPointFastUnsigned(10, 0));
+			AssertDecimalEqual(Decimal64.Ten, DotNetImpl.FromFixedPointFastUnsigned(1, -1));
+			AssertDecimalEqual(Decimal64.Hundred, DotNetImpl.FromFixedPointFastUnsigned(100, 0));
+			AssertDecimalEqual(Decimal64.Hundred, DotNetImpl.FromFixedPointFastUnsigned(1, -2));
+			AssertDecimalEqual(Decimal64.Thousand, DotNetImpl.FromFixedPointFastUnsigned(1, -3));
+			AssertDecimalEqual(Decimal64.Million, DotNetImpl.FromFixedPointFastUnsigned(1, -6));
 		}
-
-		private void AssertDfp(UInt64 actual, UInt64 expected) => TestUtils.AssertDfp(actual, expected);
-		private void AssertDfp(UInt64 actual, Decimal64 expected) => TestUtils.AssertDfp(actual, expected.Bits);
-		private void AssertDfp(Decimal64 actual, Decimal64 expected) => TestUtils.AssertDfp(actual, expected);
-		private void AssertDfp(Decimal64 actual, UInt64 expected) => TestUtils.AssertDfp(actual.Bits, expected);
-		private void AssertDfpEq(Decimal64 actual, Decimal64 expected) => TestUtils.AssertDfp(actual, expected);
-		private void AssertDfpEq(Decimal64 actual, UInt64 expected) => TestUtils.AssertDfpEq(actual, Decimal64.FromUnderlying(expected));
-		
 
 		[Test]
 		public void FromFixedPointFast()
 		{
-			int N = 10000;
-			Random random = new Random();
+			int N = 1000;
 			for (int exp = 398 - 0x2FF; exp <= 398; ++exp)
 			{
 				for (int j = 0; j < N; ++j)
 				{
-					int mantissa = random.Next();
-					long mantissa64 = ((long)mantissa << 32) + random.Next();
-					if (random.Next() < 0)
-						mantissa64 = -mantissa64;
+					int mantissa = GetRandomInt();
+					long mantissa64 = GetRandomLong();
 
-					UInt64 correct32 = NativeImpl.fromFixedPoint32(mantissa, exp);
-					UInt64 correctU32 = NativeImpl.fromFixedPointU32((UInt32)mantissa, exp);
-					UInt64 correct64 = NativeImpl.fromFixedPoint64(mantissa, exp);
+					ulong correct32 = NativeImpl.fromFixedPoint32(mantissa, exp);
+					ulong correctU32 = NativeImpl.fromFixedPointU32((UInt32)mantissa, exp);
+					ulong correct64 = NativeImpl.fromFixedPoint64(mantissa, exp);
 
-					AssertDfp(correct32, DotNetImpl.FromFixedPointFast(mantissa, exp));
-					AssertDfp(correct64, DotNetImpl.FromFixedPointFast(mantissa, exp));
-					AssertDfp(correct64, DotNetImpl.FromFixedPointFast(mantissa, exp));
+					AssertDecimalEqual(correct32, DotNetImpl.FromFixedPointFast(mantissa, exp));
+					AssertDecimalEqual(correct64, DotNetImpl.FromFixedPointFast(mantissa, exp));
+					AssertDecimalEqual(correct64, DotNetImpl.FromFixedPointFast(mantissa, exp));
 
-					AssertDfp(correctU32, DotNetImpl.FromFixedPointFastUnsigned((UInt32)mantissa, exp));
-					AssertDfp(NativeImpl.fromFixedPoint64((UInt32)mantissa, exp), DotNetImpl.FromFixedPointFastUnsigned((UInt32)mantissa, exp));
+					AssertDecimalEqual(correctU32, DotNetImpl.FromFixedPointFastUnsigned((UInt32)mantissa, exp));
+					AssertDecimalEqual(NativeImpl.fromFixedPoint64((UInt32)mantissa, exp), DotNetImpl.FromFixedPointFastUnsigned((UInt32)mantissa, exp));
 
-					AssertDfp(correct32, Decimal64.FromFixedPoint(mantissa, exp));
-					AssertDfp(correct64, Decimal64.FromFixedPoint(mantissa, exp));
-					AssertDfp(correctU32, Decimal64.FromFixedPoint((UInt32)mantissa, exp));
-					AssertDfp(NativeImpl.fromFixedPoint64((UInt32)mantissa, exp), Decimal64.FromFixedPoint((UInt32)mantissa, exp));
-					AssertDfp(correct32, Decimal64.FromFixedPoint((Int64)mantissa, exp));
-					AssertDfp(correct64, Decimal64.FromFixedPoint((Int64)mantissa, exp));
+					AssertDecimalEqual(correct32, Decimal64.FromFixedPoint(mantissa, exp));
+					AssertDecimalEqual(correct64, Decimal64.FromFixedPoint(mantissa, exp));
+					AssertDecimalEqual(correctU32, Decimal64.FromFixedPoint((UInt32)mantissa, exp));
+					AssertDecimalEqual(NativeImpl.fromFixedPoint64((UInt32)mantissa, exp), Decimal64.FromFixedPoint((UInt32)mantissa, exp));
+					AssertDecimalEqual(correct32, Decimal64.FromFixedPoint((Int64)mantissa, exp));
+					AssertDecimalEqual(correct64, Decimal64.FromFixedPoint((Int64)mantissa, exp));
 
 					if (mantissa >= 0)
 					{
-						AssertDfp(correct32, DotNetImpl.FromFixedPointFastUnsigned((UInt32)mantissa, exp));
-						AssertDfp(correct64, DotNetImpl.FromFixedPointFastUnsigned((UInt32)mantissa, exp));
+						AssertDecimalEqual(correct32, DotNetImpl.FromFixedPointFastUnsigned((UInt32)mantissa, exp));
+						AssertDecimalEqual(correct64, DotNetImpl.FromFixedPointFastUnsigned((UInt32)mantissa, exp));
 					}
 
 					for (int k = 0; k < 32; ++k)
 					{
-						AssertDfp(NativeImpl.fromFixedPoint64(mantissa, exp), Decimal64.FromFixedPoint(mantissa, exp));
-						AssertDfp(NativeImpl.fromFixedPoint64(mantissa64, exp), Decimal64.FromFixedPoint(mantissa64, exp));
+						AssertDecimalEqual(NativeImpl.fromFixedPoint64(mantissa, exp), Decimal64.FromFixedPoint(mantissa, exp));
+						AssertDecimalEqual(NativeImpl.fromFixedPoint64(mantissa64, exp), Decimal64.FromFixedPoint(mantissa64, exp));
 						mantissa >>= 1;
 						mantissa64 >>= 1;
 					}
 				}
 
-				AssertDfp(NativeImpl.fromFixedPoint32(0, exp), DotNetImpl.FromFixedPointFast(0, exp));
-				AssertDfp(NativeImpl.fromFixedPoint32(Int32.MinValue, exp), DotNetImpl.FromFixedPointFast(Int32.MinValue, exp));
-				AssertDfp(NativeImpl.fromFixedPoint32(Int32.MaxValue, exp), DotNetImpl.FromFixedPointFast(Int32.MaxValue, exp));
-				AssertDfp(NativeImpl.fromFixedPoint64(0, exp), DotNetImpl.FromFixedPointFast(0, exp));
-				AssertDfp(NativeImpl.fromFixedPoint64(Int32.MinValue, exp), DotNetImpl.FromFixedPointFast(Int32.MinValue, exp));
-				AssertDfp(NativeImpl.fromFixedPoint64(Int32.MaxValue, exp), DotNetImpl.FromFixedPointFast(Int32.MaxValue, exp));
+				AssertDecimalEqual(NativeImpl.fromFixedPoint32(0, exp), DotNetImpl.FromFixedPointFast(0, exp));
+				AssertDecimalEqual(NativeImpl.fromFixedPoint32(Int32.MinValue, exp), DotNetImpl.FromFixedPointFast(Int32.MinValue, exp));
+				AssertDecimalEqual(NativeImpl.fromFixedPoint32(Int32.MaxValue, exp), DotNetImpl.FromFixedPointFast(Int32.MaxValue, exp));
+				AssertDecimalEqual(NativeImpl.fromFixedPoint64(0, exp), DotNetImpl.FromFixedPointFast(0, exp));
+				AssertDecimalEqual(NativeImpl.fromFixedPoint64(Int32.MinValue, exp), DotNetImpl.FromFixedPointFast(Int32.MinValue, exp));
+				AssertDecimalEqual(NativeImpl.fromFixedPoint64(Int32.MaxValue, exp), DotNetImpl.FromFixedPointFast(Int32.MaxValue, exp));
 			}
 		}
 
@@ -192,11 +219,6 @@ namespace Deltix.DFP.Test
 		}
 
 
-		private String PrintFp(Object a) => a.ToString().Replace(',', '.');
-
-		private void AssertDecimalEqual(Object a, Object b) => Assert.AreEqual(PrintFp(a), PrintFp(b));
-		private void AssertDecimalNotEqual(Object a, Object b) => Assert.AreNotEqual(PrintFp(a), PrintFp(b));
-
 		[Test]
 		public void DecimalInternalRepresentation()
 		{
@@ -211,15 +233,15 @@ namespace Deltix.DFP.Test
 				int lo2, mid2, hi2;
 				byte exp2;
 				bool sign2;
-				UInt64 lo64;
+				ulong lo64;
 				unsafe
 				{
-					int * f = (int *)&x; // Order (Little endian): flags, hi, lo, mid
-					lo64 = ((ulong*) &x)[1];
+					int* f = (int*)&x; // Order (Little endian): flags, hi, lo, mid
+					lo64 = ((ulong*)&x)[1];
 					lo2 = f[2];
 					mid2 = f[3];
 					hi2 = f[1];
-					short flg16 = ((short*) &x)[1];
+					short flg16 = ((short*)&x)[1];
 					sign2 = flg16 < 0;
 					//exp2 = (byte) (f[0] >> 16);
 					exp2 = (byte)flg16;
@@ -243,23 +265,23 @@ namespace Deltix.DFP.Test
 			var bits = Decimal.GetBits(x);
 
 
-			AssertDecimalEqual(x, (Decimal64)x);
-			AssertDecimalEqual(x, (Decimal64)x);
-			AssertDecimalEqual(x, Decimal64.FromDecimal(x));
-			AssertDecimalEqual(0.0006M, (Decimal64)0.0006M);
-			AssertDecimalEqual(0.0000006M, (Decimal64)0.0000006M);
-			AssertDecimalEqual(0.00000000000006M, (Decimal64)0.00000000000006M);
-			AssertDecimalEqual(9.8765432198721M, (Decimal64)9.8765432198721M);
-			AssertDecimalEqual(0.00000098765432198721M, (Decimal64)0.00000098765432198721M);
-			AssertDecimalEqual(0.0000000000000098765432198721M, (Decimal64)0.0000000000000098765432198721M);
-			AssertDecimalEqual(1234567890123456M, (Decimal64)1234567890123456M);
-			AssertDecimalEqual(1234567890123456000M, (Decimal64)1234567890123456000M);
-			AssertDecimalEqual(0.00000000001M, (Decimal64)0.00000000001M);
-			AssertDecimalNotEqual(1234567890123456111111M, (Decimal64)123456789012345111111M);
+			AssertEqualToEmbeddedDecimal(x, (Decimal64)x);
+			AssertEqualToEmbeddedDecimal(x, (Decimal64)x);
+			AssertEqualToEmbeddedDecimal(x, Decimal64.FromDecimal(x));
+			AssertEqualToEmbeddedDecimal(0.0006M, (Decimal64)0.0006M);
+			AssertEqualToEmbeddedDecimal(0.0000006M, (Decimal64)0.0000006M);
+			AssertEqualToEmbeddedDecimal(0.00000000000006M, (Decimal64)0.00000000000006M);
+			AssertEqualToEmbeddedDecimal(9.8765432198721M, (Decimal64)9.8765432198721M);
+			AssertEqualToEmbeddedDecimal(0.00000098765432198721M, (Decimal64)0.00000098765432198721M);
+			AssertEqualToEmbeddedDecimal(0.0000000000000098765432198721M, (Decimal64)0.0000000000000098765432198721M);
+			AssertEqualToEmbeddedDecimal(1234567890123456M, (Decimal64)1234567890123456M);
+			AssertEqualToEmbeddedDecimal(1234567890123456000M, (Decimal64)1234567890123456000M);
+			AssertEqualToEmbeddedDecimal(0.00000000001M, (Decimal64)0.00000000001M);
+			AssertNotEquaTolEmbeddedDecimal(1234567890123456111111M, (Decimal64)123456789012345111111M);
 
-			AssertDecimalNotEqual(0.0006M, (Decimal64)(double)0.0006M);
-			AssertDecimalNotEqual(0.0000000000000098765432198721M, (Decimal64)(double)0.0000000000000098765432198721M);
-			AssertDecimalNotEqual(1234567890123456111111M, (Decimal64)(double)123456789012345111111M);
+			AssertNotEquaTolEmbeddedDecimal(0.0006M, (Decimal64)(double)0.0006M);
+			AssertNotEquaTolEmbeddedDecimal(0.0000000000000098765432198721M, (Decimal64)(double)0.0000000000000098765432198721M);
+			AssertNotEquaTolEmbeddedDecimal(1234567890123456111111M, (Decimal64)(double)123456789012345111111M);
 		}
 
 		[Test]
@@ -267,29 +289,29 @@ namespace Deltix.DFP.Test
 		{
 			Decimal x = new Decimal(6) / new Decimal(10000);
 			Assert.AreEqual(x, (Decimal)Decimal64.FromFixedPoint(6, 4));
-			AssertDecimalEqual(1234567890123456M, (Decimal)Decimal64.FromLong(1234567890123456));
-			AssertDecimalEqual(0.1234567890123456M, (Decimal)Decimal64.FromFixedPoint(1234567890123456, 16));
-			AssertDecimalEqual(0.00000000001234567890123456M, (Decimal)Decimal64.FromFixedPoint(1234567890123456, 26));
+			AssertEqualToEmbeddedDecimal(1234567890123456M, (Decimal)Decimal64.FromLong(1234567890123456));
+			AssertEqualToEmbeddedDecimal(0.1234567890123456M, (Decimal)Decimal64.FromFixedPoint(1234567890123456, 16));
+			AssertEqualToEmbeddedDecimal(0.00000000001234567890123456M, (Decimal)Decimal64.FromFixedPoint(1234567890123456, 26));
 
-			AssertDecimalEqual(123456789012345.6M, (Decimal)Decimal64.FromFixedPoint(1234567890123456, 1));
+			AssertEqualToEmbeddedDecimal(123456789012345.6M, (Decimal)Decimal64.FromFixedPoint(1234567890123456, 1));
 			Assert.AreEqual(123456789012345.600000000M, (Decimal)(Decimal64.FromFixedPoint(1234567890123456, 1)));
 			Assert.AreEqual(123456789012300.000000000M, (Decimal)(Decimal64.FromFixedPoint(1234567890123000, 1)));
 			Assert.AreEqual(123456789012300.000000000M, (Decimal)(Decimal64.FromFixedPoint(1234567890123, -2)));
 
 			// These are not converted precisely(TODO:)
-			AssertDecimalNotEqual(12345678901234560M, (Decimal)Decimal64.FromLong(12345678901234560));
-			AssertDecimalNotEqual(1234567890123456000M, (Decimal)Decimal64.FromLong(1234567890123456000));
-			AssertDecimalNotEqual(123456789012345600000000M, (Decimal)Decimal64.FromFixedPoint(1234567890123456, -8));
-			AssertDecimalNotEqual(7345678901234560001M, (Decimal)Decimal64.FromLong(7345678901234560001));
+			AssertNotEquaTolEmbeddedDecimal(12345678901234560M, (Decimal)Decimal64.FromLong(12345678901234560));
+			AssertNotEquaTolEmbeddedDecimal(1234567890123456000M, (Decimal)Decimal64.FromLong(1234567890123456000));
+			AssertNotEquaTolEmbeddedDecimal(123456789012345600000000M, (Decimal)Decimal64.FromFixedPoint(1234567890123456, -8));
+			AssertNotEquaTolEmbeddedDecimal(7345678901234560001M, (Decimal)Decimal64.FromLong(7345678901234560001));
 		}
 
 		[Test]
 		public void DecimalConversion2()
 		{
 			Decimal x = new Decimal(6) / new Decimal(10000);
-			Assert.AreEqual(x, (Decimal)(Decimal64)x);
+			AssertEqualToEmbeddedDecimal(x, (Decimal)(Decimal64)x);
 		}
-		
+
 
 		[Test]
 		public void NumberConversionTest()
@@ -307,12 +329,12 @@ namespace Deltix.DFP.Test
 
 					if (x >= 0)
 					{
-						Assert.That(x, Is.EqualTo((long)(UInt64)Decimal64.FromDouble(x)));
+						Assert.That(x, Is.EqualTo((long)(ulong)Decimal64.FromDouble(x)));
 					}
 					else
 					{
 						Assert.True(1UL << 31 == (UInt32)Decimal64.FromLong(x));
-						Assert.True(1UL << 63 == (UInt64)Decimal64.FromLong(x));
+						Assert.True(1UL << 63 == (ulong)Decimal64.FromLong(x));
 					}
 
 					if (Math.Abs(x) <= Int32.MaxValue)
@@ -393,12 +415,6 @@ namespace Deltix.DFP.Test
 
 			formatter.Serialize(stream, a1);
 
-			//String l = stream.Length.ToString();
-			//stream.Seek(0, SeekOrigin.Begin);
-			//var fs = new FileStream("d:\\serialized.bin", FileMode.Create, FileAccess.Write);
-			//stream.WriteTo(fs);
-			//fs.Close();
-
 			stream.Seek(0, SeekOrigin.Begin);
 
 			Assert.True(a1.Equals(formatter.Deserialize(stream)));
@@ -421,7 +437,105 @@ namespace Deltix.DFP.Test
 			Assert.AreEqual("0", Decimal64.FromDecimalDouble(0).ToString());
 		}
 
-		static void Main(string[] args)
+		void CheckDoubleConversion(Decimal64 x, Decimal64 x2)
+		{
+			AssertDecimalEqual(x, x2);
+		}
+
+		// [Test]
+		public void TestDecimalFromDoubleConversions1()
+		{
+			for (int i = 0; i < N; i++)
+			{
+				Decimal64 x = GetRandomDecimal();
+				CheckDoubleConversion(x, Decimal64.FromDouble(x.ToDouble()));
+			}
+		}
+
+
+		private void CheckDecimalDoubleConversion(Decimal64 x, String s)
+		{
+			Decimal64 x2;
+			CheckDoubleConversion(x, x2 = Decimal64.FromDecimalDouble(x.ToDouble()));
+			AssertDecimalEqual(x, x2);
+
+			if (null != s)
+			{
+				Assert.AreEqual(s, x2.ToString());
+			}
+		}
+
+		private void CheckDecimalDoubleConversion(Decimal64 x)
+		{
+			CheckDecimalDoubleConversion(x, null);
+		}
+
+
+		private void CheckDecimalDoubleConversion(String s)
+		{
+			CheckDecimalDoubleConversion(Decimal64.Parse(s), s);
+		}
+
+		[Test]
+		public void TestFromDecimalDoubleConversions2()
+		{
+			for (int i = 0; i < N; i++)
+			{
+				Decimal64 x = GetRandomDecimal();
+				CheckDecimalDoubleConversion(x);
+			}
+		}
+
+		[Test]
+		public void MantissaZerosCombinationsTest()
+		{
+			MantissaZerosCombinations((m, l) => CheckDecimalDoubleConversion(Decimal64.FromFixedPoint(m, l)));
+			MantissaZerosCombinations((m, l) => CheckDecimalDoubleConversion(Decimal64.FromFixedPoint(m / PowersOfTen[l], 0)));
+		}
+
+		[Test]
+		public void CanonizeRandomTest()
+		{
+			MantissaZerosCombinations(delegate (long m, int l)
+			{
+				Decimal64 x = Decimal64.FromFixedPoint(m, l);
+				Decimal64 y = Decimal64.FromFixedPoint(m / PowersOfTen[l], 0);
+
+				CheckCanonize(x, y);
+			});
+			PartsCombinationsWithoutEndingZeros(delegate (long m, int e) {
+				Decimal64 x = Decimal64.FromFixedPoint(m, e);
+				CheckCanonize2(x, x.Canonize());
+			});
+		}
+
+
+		[Test]
+		public void ExtremeValuesOfExponentTest()
+		{
+			Decimal64 x = Decimal64.FromFixedPoint(1, 383 + 15);
+			AssertDecimalEqual(x.ToUnderlying(), DotNetImpl.MinPositiveValue);
+			x = Decimal64.FromFixedPoint(100, 400);
+			AssertDecimalEqual(x.ToUnderlying(), DotNetImpl.MinPositiveValue);
+			x = Decimal64.FromFixedPoint(1000000000000000L, 413);
+			AssertDecimalEqual(x.ToUnderlying(), DotNetImpl.MinPositiveValue);
+
+			x = Decimal64.FromFixedPoint(-1, 383 + 15);
+			AssertDecimalEqual(x.ToUnderlying(), DotNetImpl.MaxNegativeValue);
+
+			x = Decimal64.FromFixedPoint(-1, 308);
+			CheckDecimalDoubleConversion(x);
+			x = Decimal64.FromFixedPoint(-1000000000000000L, 322);
+			CheckDecimalDoubleConversion(x);
+			x = Decimal64.FromFixedPoint(1, 0);
+			CheckDecimalDoubleConversion(x);
+			x = Decimal64.FromFixedPoint(1000000000000000L, 0);
+			CheckDecimalDoubleConversion(x);
+		}
+
+		readonly int N = 5000000;
+
+		static void Main()
 		{
 		}
 	}

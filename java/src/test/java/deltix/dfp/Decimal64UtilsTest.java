@@ -6,8 +6,9 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import java.util.Random;
+import java.util.function.Function;
 
-import static deltix.dfp.TestUtils.assertDfp;
+import static deltix.dfp.TestUtils.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -382,200 +383,161 @@ public class Decimal64UtilsTest {
 
     @Test
     public void isEqual() {
+        final String message = "checkEquality()";
         // TODO: better tests
-        assertTrue(Decimal64Utils.isEqual(Decimal64Utils.ONE, Decimal64Utils.ONE));
-        assertTrue(Decimal64Utils.isEqual(Decimal64Utils.POSITIVE_INFINITY, Decimal64Utils.POSITIVE_INFINITY));
-        assertTrue(Decimal64Utils.isEqual(Decimal64Utils.NEGATIVE_INFINITY, Decimal64Utils.NEGATIVE_INFINITY));
+        checkEquality(Decimal64Utils.ONE, Decimal64Utils.ONE);
+        checkEquality(Decimal64Utils.POSITIVE_INFINITY, Decimal64Utils.POSITIVE_INFINITY);
+        checkEquality(Decimal64Utils.NEGATIVE_INFINITY, Decimal64Utils.NEGATIVE_INFINITY);
+    }
+
+    private void checkEquality(long value1, long value2) {
+        assertTrue(Decimal64Utils.isEqual(value1, value2));
     }
 
     @Test
     public void roundTowardsPositiveInfinity() {
-        assertEquals("-1", Decimal64Utils.toString(Decimal64Utils.roundTowardsPositiveInfinity(Decimal64Utils.parse("-1.0"))));
-        assertEquals("0", Decimal64Utils.toString(Decimal64Utils.roundTowardsPositiveInfinity(Decimal64Utils.parse("-0.7"))));
-        assertEquals("0", Decimal64Utils.toString(Decimal64Utils.roundTowardsPositiveInfinity(Decimal64Utils.parse("-0.5"))));
-        assertEquals("0", Decimal64Utils.toString(Decimal64Utils.roundTowardsPositiveInfinity(Decimal64Utils.parse("-0.2"))));
-        assertEquals("0", Decimal64Utils.toString(Decimal64Utils.roundTowardsPositiveInfinity(Decimal64Utils.parse("0.0"))));
-        assertEquals("1", Decimal64Utils.toString(Decimal64Utils.roundTowardsPositiveInfinity(Decimal64Utils.parse("0.2"))));
-        assertEquals("1", Decimal64Utils.toString(Decimal64Utils.roundTowardsPositiveInfinity(Decimal64Utils.parse("0.5"))));
-        assertEquals("1", Decimal64Utils.toString(Decimal64Utils.roundTowardsPositiveInfinity(Decimal64Utils.parse("0.7"))));
-        assertEquals("1", Decimal64Utils.toString(Decimal64Utils.roundTowardsPositiveInfinity(Decimal64Utils.parse("1.0"))));
+        final String message = "checkRoundTowardsPositiveInfinity()";
+
+        applyToPairs(
+            (a, b)->checkFunction(Decimal64Utils::roundTowardsPositiveInfinity, a, b, message),
+            "-1", "-1.0",
+            "0", "-0.7",
+            "0", "-0.5",
+            "0", "-0.2",
+            "0", "0.0",
+            "1", "0.2",
+            "1", "0.5",
+            "1", "0.7",
+            "1", "1.0"
+        );
 
         @Decimal final long multiple = Decimal64Utils.parse("0.1");
 
-        assertEquals("-0.1", Decimal64Utils.toString(Decimal64Utils.roundTowardsPositiveInfinity(Decimal64Utils.parse("-0.10"), multiple)));
-        assertEquals("0", Decimal64Utils.toString(Decimal64Utils.roundTowardsPositiveInfinity(Decimal64Utils.parse("-0.07"), multiple)));
-        assertEquals("0", Decimal64Utils.toString(Decimal64Utils.roundTowardsPositiveInfinity(Decimal64Utils.parse("-0.05"), multiple)));
-        assertEquals("0", Decimal64Utils.toString(Decimal64Utils.roundTowardsPositiveInfinity(Decimal64Utils.parse("-0.02"), multiple)));
-        assertEquals("0", Decimal64Utils.toString(Decimal64Utils.roundTowardsPositiveInfinity(Decimal64Utils.parse("0.0"), multiple)));
-        assertEquals("0.1", Decimal64Utils.toString(Decimal64Utils.roundTowardsPositiveInfinity(Decimal64Utils.parse("0.02"), multiple)));
-        assertEquals("0.1", Decimal64Utils.toString(Decimal64Utils.roundTowardsPositiveInfinity(Decimal64Utils.parse("0.05"), multiple)));
-        assertEquals("0.1", Decimal64Utils.toString(Decimal64Utils.roundTowardsPositiveInfinity(Decimal64Utils.parse("0.07"), multiple)));
-        assertEquals("0.1", Decimal64Utils.toString(Decimal64Utils.roundTowardsPositiveInfinity(Decimal64Utils.parse("0.10"), multiple)));
+        checkRoundTowardsPositiveInfinity("-0.1", "-0.10", multiple);
+        checkRoundTowardsPositiveInfinity("0", "-0.07", multiple);
+        checkRoundTowardsPositiveInfinity("0", "-0.05", multiple);
+        checkRoundTowardsPositiveInfinity("0", "-0.02", multiple);
+        checkRoundTowardsPositiveInfinity("0", "0.0", multiple);
+        checkRoundTowardsPositiveInfinity("0.1", "0.02", multiple);
+        checkRoundTowardsPositiveInfinity("0.1", "0.05", multiple);
+        checkRoundTowardsPositiveInfinity("0.1", "0.07", multiple);
+        checkRoundTowardsPositiveInfinity("0.1", "0.10", multiple);
+    }
+
+    private void checkRoundTowardsPositiveInfinity(String str1, String str2)
+    {
+        checkFunction(Decimal64Utils::roundTowardsPositiveInfinity, str1, str2, "checkRoundTowardsPositiveInfinity()");
+    }
+
+    private void checkRoundTowardsPositiveInfinity(String str1, String str2, long multiple)
+    {
+        assertEquals(str1, Decimal64Utils.toString(Decimal64Utils.roundTowardsPositiveInfinity(Decimal64Utils.parse(str2), multiple)));
     }
 
     @Test
     public void roundTowardsNegativeInfinity() {
-        assertEquals("-1", Decimal64Utils.toString(Decimal64Utils.roundTowardsNegativeInfinity(Decimal64Utils.parse("-1.0"))));
-        assertEquals("-1", Decimal64Utils.toString(Decimal64Utils.roundTowardsNegativeInfinity(Decimal64Utils.parse("-0.7"))));
-        assertEquals("-1", Decimal64Utils.toString(Decimal64Utils.roundTowardsNegativeInfinity(Decimal64Utils.parse("-0.5"))));
-        assertEquals("-1", Decimal64Utils.toString(Decimal64Utils.roundTowardsNegativeInfinity(Decimal64Utils.parse("-0.2"))));
-        assertEquals("0", Decimal64Utils.toString(Decimal64Utils.roundTowardsNegativeInfinity(Decimal64Utils.parse("0.0"))));
-        assertEquals("0", Decimal64Utils.toString(Decimal64Utils.roundTowardsNegativeInfinity(Decimal64Utils.parse("0.2"))));
-        assertEquals("0", Decimal64Utils.toString(Decimal64Utils.roundTowardsNegativeInfinity(Decimal64Utils.parse("0.5"))));
-        assertEquals("0", Decimal64Utils.toString(Decimal64Utils.roundTowardsNegativeInfinity(Decimal64Utils.parse("0.7"))));
-        assertEquals("1", Decimal64Utils.toString(Decimal64Utils.roundTowardsNegativeInfinity(Decimal64Utils.parse("1.0"))));
+        final String message = "checkRoundTowardsNegativeInfinity()";
+
+        applyToPairs(
+            (a, b)->checkFunction(Decimal64Utils::roundTowardsNegativeInfinity, a, b, message),
+            "-1", "-1.0",
+            "-1", "-1.0",
+            "-1", "-0.7",
+            "-1", "-0.5",
+            "-1", "-0.2",
+            "0", "0.0",
+            "0", "0.2",
+            "0", "0.5",
+            "0", "0.7",
+            "1", "1.0"
+        );
 
         @Decimal final long multiple = Decimal64Utils.parse("0.1");
 
-        assertEquals("-0.1", Decimal64Utils.toString(Decimal64Utils.roundTowardsNegativeInfinity(Decimal64Utils.parse("-0.10"), multiple)));
-        assertEquals("-0.1", Decimal64Utils.toString(Decimal64Utils.roundTowardsNegativeInfinity(Decimal64Utils.parse("-0.07"), multiple)));
-        assertEquals("-0.1", Decimal64Utils.toString(Decimal64Utils.roundTowardsNegativeInfinity(Decimal64Utils.parse("-0.05"), multiple)));
-        assertEquals("-0.1", Decimal64Utils.toString(Decimal64Utils.roundTowardsNegativeInfinity(Decimal64Utils.parse("-0.02"), multiple)));
-        assertEquals("0", Decimal64Utils.toString(Decimal64Utils.roundTowardsNegativeInfinity(Decimal64Utils.parse("0.0"), multiple)));
-        assertEquals("0", Decimal64Utils.toString(Decimal64Utils.roundTowardsNegativeInfinity(Decimal64Utils.parse("0.02"), multiple)));
-        assertEquals("0", Decimal64Utils.toString(Decimal64Utils.roundTowardsNegativeInfinity(Decimal64Utils.parse("0.05"), multiple)));
-        assertEquals("0", Decimal64Utils.toString(Decimal64Utils.roundTowardsNegativeInfinity(Decimal64Utils.parse("0.07"), multiple)));
-        assertEquals("0.1", Decimal64Utils.toString(Decimal64Utils.roundTowardsNegativeInfinity(Decimal64Utils.parse("0.10"), multiple)));
+        checkRoundTowardsNegativeInfinity("-0.1", "-0.10", multiple);
+        checkRoundTowardsNegativeInfinity("-0.1", "-0.07", multiple);
+        checkRoundTowardsNegativeInfinity("-0.1", "-0.05", multiple);
+        checkRoundTowardsNegativeInfinity("-0.1", "-0.02", multiple);
+        checkRoundTowardsNegativeInfinity("0", "0.0", multiple);
+        checkRoundTowardsNegativeInfinity("0", "0.02", multiple);
+        checkRoundTowardsNegativeInfinity("0", "0.05", multiple);
+        checkRoundTowardsNegativeInfinity("0", "0.07", multiple);
+        checkRoundTowardsNegativeInfinity("0.1", "0.10", multiple);
+    }
+
+    private void checkRoundTowardsNegativeInfinity(String str1, String str2)
+    {
+        checkFunction(Decimal64Utils::roundTowardsNegativeInfinity, str1, str2, "checkRoundTowardsNegativeInfinity()");
+    }
+
+    private void checkRoundTowardsNegativeInfinity(String str1, String str2, long multiple)
+    {
+        assertEquals(str1, Decimal64Utils.toString(Decimal64Utils.roundTowardsNegativeInfinity(Decimal64Utils.parse(str2), multiple)));
     }
 
     @Test
     public void roundTowardsZero() {
-        assertEquals("-1", Decimal64Utils.toString(Decimal64Utils.roundTowardsZero(Decimal64Utils.parse("-1.0"))));
-        assertEquals("0", Decimal64Utils.toString(Decimal64Utils.roundTowardsZero(Decimal64Utils.parse("-0.7"))));
-        assertEquals("0", Decimal64Utils.toString(Decimal64Utils.roundTowardsZero(Decimal64Utils.parse("-0.5"))));
-        assertEquals("0", Decimal64Utils.toString(Decimal64Utils.roundTowardsZero(Decimal64Utils.parse("-0.2"))));
-        assertEquals("0", Decimal64Utils.toString(Decimal64Utils.roundTowardsZero(Decimal64Utils.parse("0.0"))));
-        assertEquals("0", Decimal64Utils.toString(Decimal64Utils.roundTowardsZero(Decimal64Utils.parse("0.2"))));
-        assertEquals("0", Decimal64Utils.toString(Decimal64Utils.roundTowardsZero(Decimal64Utils.parse("0.5"))));
-        assertEquals("0", Decimal64Utils.toString(Decimal64Utils.roundTowardsZero(Decimal64Utils.parse("0.7"))));
-        assertEquals("1", Decimal64Utils.toString(Decimal64Utils.roundTowardsZero(Decimal64Utils.parse("1.0"))));
+        applyToPairs(
+            this::checkRoundTowardsZero,
+            "-1", "-1.0",
+            "0", "-0.7",
+            "0", "-0.5",
+            "0", "-0.2",
+            "0", "0.0",
+            "0", "0.2",
+            "0", "0.5",
+            "0", "0.7",
+            "1", "1.0"
+        );
+    }
+
+    private void checkRoundTowardsZero(String str1, String str2)
+    {
+        final String message = "roundTowardsZero()";
+        assertEquals(message, str1, Decimal64Utils.toString(Decimal64Utils.roundTowardsZero(Decimal64Utils.parse(str2))));
     }
 
     @Test
     public void roundToNearestTiesAwayFromZero() {
-        assertEquals("-1", Decimal64Utils.toString(Decimal64Utils.roundToNearestTiesAwayFromZero(Decimal64Utils.parse("-1.0"))));
-        assertEquals("-1", Decimal64Utils.toString(Decimal64Utils.roundToNearestTiesAwayFromZero(Decimal64Utils.parse("-0.7"))));
-        assertEquals("-1", Decimal64Utils.toString(Decimal64Utils.roundToNearestTiesAwayFromZero(Decimal64Utils.parse("-0.5"))));
-        assertEquals("0", Decimal64Utils.toString(Decimal64Utils.roundToNearestTiesAwayFromZero(Decimal64Utils.parse("-0.2"))));
-        assertEquals("0", Decimal64Utils.toString(Decimal64Utils.roundToNearestTiesAwayFromZero(Decimal64Utils.parse("0.0"))));
-        assertEquals("0", Decimal64Utils.toString(Decimal64Utils.roundToNearestTiesAwayFromZero(Decimal64Utils.parse("0.2"))));
-        assertEquals("1", Decimal64Utils.toString(Decimal64Utils.roundToNearestTiesAwayFromZero(Decimal64Utils.parse("0.5"))));
-        assertEquals("1", Decimal64Utils.toString(Decimal64Utils.roundToNearestTiesAwayFromZero(Decimal64Utils.parse("0.7"))));
-        assertEquals("1", Decimal64Utils.toString(Decimal64Utils.roundToNearestTiesAwayFromZero(Decimal64Utils.parse("1.0"))));
+        final String message = "checkRoundToNearestTiesAwayFromZero()";
+
+        applyToPairs(
+            (a, b)->checkFunction(Decimal64Utils::roundToNearestTiesAwayFromZero, a, b, message),
+            "-1", "-1.0",
+            "-1", "-0.7",
+            "-1", "-0.5",
+            "0", "-0.2",
+            "0", "0.0",
+            "0", "0.2",
+            "1", "0.5",
+            "1", "0.7",
+            "1", "1.0",
+            "10000", "9999.5",
+            "-10000", "-9999.5"
+        );
 
         @Decimal final long multiple = Decimal64Utils.parse("0.1");
 
-        assertEquals("-0.1", Decimal64Utils.toString(Decimal64Utils.roundToNearestTiesAwayFromZero(Decimal64Utils.parse("-0.10"), multiple)));
-        assertEquals("-0.1", Decimal64Utils.toString(Decimal64Utils.roundToNearestTiesAwayFromZero(Decimal64Utils.parse("-0.07"), multiple)));
-        assertEquals("-0.1", Decimal64Utils.toString(Decimal64Utils.roundToNearestTiesAwayFromZero(Decimal64Utils.parse("-0.05"), multiple)));
-        assertEquals("0", Decimal64Utils.toString(Decimal64Utils.roundToNearestTiesAwayFromZero(Decimal64Utils.parse("-0.02"), multiple)));
-        assertEquals("0", Decimal64Utils.toString(Decimal64Utils.roundToNearestTiesAwayFromZero(Decimal64Utils.parse("0.0"), multiple)));
-        assertEquals("0", Decimal64Utils.toString(Decimal64Utils.roundToNearestTiesAwayFromZero(Decimal64Utils.parse("0.02"), multiple)));
-        assertEquals("0.1", Decimal64Utils.toString(Decimal64Utils.roundToNearestTiesAwayFromZero(Decimal64Utils.parse("0.05"), multiple)));
-        assertEquals("0.1", Decimal64Utils.toString(Decimal64Utils.roundToNearestTiesAwayFromZero(Decimal64Utils.parse("0.07"), multiple)));
-        assertEquals("0.1", Decimal64Utils.toString(Decimal64Utils.roundToNearestTiesAwayFromZero(Decimal64Utils.parse("0.10"), multiple)));
+        checkRoundToNearestTiesAwayFromZero("-0.1", "-0.10", multiple);
+        checkRoundToNearestTiesAwayFromZero("-0.1", "-0.07", multiple);
+        checkRoundToNearestTiesAwayFromZero("-0.1", "-0.05", multiple);
+        checkRoundToNearestTiesAwayFromZero("0", "-0.02", multiple);
+        checkRoundToNearestTiesAwayFromZero("0", "0.0", multiple);
+        checkRoundToNearestTiesAwayFromZero("0", "0.02", multiple);
+        checkRoundToNearestTiesAwayFromZero("0.1", "0.05", multiple);
+        checkRoundToNearestTiesAwayFromZero("0.1", "0.07", multiple);
+        checkRoundToNearestTiesAwayFromZero("0.1", "0.10", multiple);
     }
 
 
-    @Test
-    public void canonizeTest() {
-        long a = Decimal64Utils.fromFixedPoint(10000, 4);
-        long b = Decimal64Utils.fromFixedPoint(1, 0);
-        long c = Decimal64Utils.fromFixedPoint(10, 1);
-        long d = Decimal64Utils.fromFixedPoint(100, 2);
-        long e = Decimal64Utils.fromFixedPoint(1000, 3);
+    private void checkRoundToNearestTiesAwayFromZero(String str1, String str2)
+    {
+        checkFunction(Decimal64Utils::roundToNearestTiesAwayFromZero, str1, str2, "checkRoundToNearestTiesAwayFromZero()");
+    }
 
-        Assert.assertEquals(false, Decimal64Utils.isIdentical(a, b));
-        Assert.assertEquals(false, Decimal64Utils.isIdentical(b, c));
-        Assert.assertEquals(false, Decimal64Utils.isIdentical(c, d));
-        Assert.assertEquals(false, Decimal64Utils.isIdentical(d, e));
-        Assert.assertEquals(false, Decimal64Utils.isIdentical(e, a));
-
-        Assert.assertNotEquals(Decimal64Utils.identityHashCode(a), Decimal64Utils.identityHashCode(b));
-        Assert.assertNotEquals(Decimal64Utils.identityHashCode(b), Decimal64Utils.identityHashCode(c));
-        Assert.assertNotEquals(Decimal64Utils.identityHashCode(c), Decimal64Utils.identityHashCode(d));
-        Assert.assertNotEquals(Decimal64Utils.identityHashCode(d), Decimal64Utils.identityHashCode(e));
-        Assert.assertNotEquals(Decimal64Utils.identityHashCode(e), Decimal64Utils.identityHashCode(a));
-
-        Assert.assertEquals(true, Decimal64Utils.equals(a, b));
-        Assert.assertEquals(true, Decimal64Utils.equals(b, c));
-        Assert.assertEquals(true, Decimal64Utils.equals(c, d));
-        Assert.assertEquals(true, Decimal64Utils.equals(d, e));
-        Assert.assertEquals(true, Decimal64Utils.equals(e, a));
-
-        Assert.assertEquals(Decimal64Utils.hashCode(a), Decimal64Utils.hashCode(b));
-        Assert.assertEquals(Decimal64Utils.hashCode(b), Decimal64Utils.hashCode(c));
-        Assert.assertEquals(Decimal64Utils.hashCode(c), Decimal64Utils.hashCode(d));
-        Assert.assertEquals(Decimal64Utils.hashCode(d), Decimal64Utils.hashCode(e));
-        Assert.assertEquals(Decimal64Utils.hashCode(e), Decimal64Utils.hashCode(a));
-
-
-
-
-        a = Decimal64Utils.canonize(a);
-        b = Decimal64Utils.canonize(b);
-        c = Decimal64Utils.canonize(c);
-        d = Decimal64Utils.canonize(d);
-        e = Decimal64Utils.canonize(e);
-        Assert.assertEquals(a, b);
-        Assert.assertEquals(a, c);
-        Assert.assertEquals(a, d);
-        Assert.assertEquals(a, e);
-        Assert.assertEquals(1.0, Decimal64Utils.toDouble(a), 0.00000001);
-        long nan1 = Decimal64Utils.NaN;
-        long nan2 = nan1 + 20;
-
-        Assert.assertEquals(false, Decimal64Utils.isIdentical(nan1, nan2));
-        Assert.assertNotEquals(Decimal64Utils.identityHashCode(nan1), Decimal64Utils.identityHashCode(nan2));
-        Assert.assertEquals(true, Decimal64Utils.equals(nan1, nan2));
-        Assert.assertEquals(Decimal64Utils.hashCode(nan1), Decimal64Utils.hashCode(nan2));
-
-        nan1 = Decimal64Utils.canonize(nan1);
-        nan2 = Decimal64Utils.canonize(nan2);
-        Assert.assertEquals(nan1, nan2);
-
-        long posInf1 = Decimal64Utils.POSITIVE_INFINITY;
-        long posInf2 = posInf1 + 10;
-
-        Assert.assertEquals(false, Decimal64Utils.isIdentical(posInf1, posInf2));
-        Assert.assertNotEquals(Decimal64Utils.identityHashCode(posInf1), Decimal64Utils.identityHashCode(posInf2));
-        Assert.assertEquals(true, Decimal64Utils.equals(posInf1, posInf2));
-        Assert.assertEquals(Decimal64Utils.hashCode(posInf1), Decimal64Utils.hashCode(posInf2));
-
-
-        posInf1 = Decimal64Utils.canonize(posInf1);
-        posInf2 = Decimal64Utils.canonize(posInf2);
-
-
-        Assert.assertEquals(posInf1, posInf2);
-        long negInf1 = Decimal64Utils.NEGATIVE_INFINITY;
-        long negInf2 = negInf1 + 10;
-
-
-        Assert.assertEquals(false, Decimal64Utils.isIdentical(negInf1, negInf2));
-        Assert.assertNotEquals(Decimal64Utils.identityHashCode(negInf1), Decimal64Utils.identityHashCode(negInf2));
-        Assert.assertEquals(true, Decimal64Utils.equals(negInf1, negInf2));
-        Assert.assertEquals(Decimal64Utils.hashCode(negInf1), Decimal64Utils.hashCode(negInf2));
-
-
-        negInf1 = Decimal64Utils.canonize(negInf1);
-        negInf2 = Decimal64Utils.canonize(negInf2);
-        Assert.assertEquals(negInf1, negInf2);
-        long zero1 = Decimal64Utils.fromFixedPoint(0, 1);
-        long zero2 = Decimal64Utils.fromFixedPoint(0, 2);
-        long zero3 = Decimal64Utils.fromFixedPoint(0, 3);
-
-
-        Assert.assertEquals(false, Decimal64Utils.isIdentical(zero1, zero2));
-        Assert.assertNotEquals(Decimal64Utils.identityHashCode(zero1), Decimal64Utils.identityHashCode(zero2));
-        Assert.assertEquals(true, Decimal64Utils.equals(zero1, zero2));
-        Assert.assertEquals(Decimal64Utils.hashCode(zero1), Decimal64Utils.hashCode(zero2));
-
-        zero1 = Decimal64Utils.canonize(zero1);
-        zero2 = Decimal64Utils.canonize(zero2);
-        zero3 = Decimal64Utils.canonize(zero3);
-        Assert.assertEquals(zero1, zero2);
-        Assert.assertEquals(zero1, zero3);
-        Assert.assertEquals(0.0, Decimal64Utils.toDouble(zero1), 0.00000001);
+    private void checkRoundToNearestTiesAwayFromZero(String str1, String str2, long multiple)
+    {
+        long expected = Decimal64Utils.parse(str1);
+        assertEquals(str1, Decimal64Utils.toString(Decimal64Utils.roundToNearestTiesAwayFromZero(Decimal64Utils.parse(str2), multiple)));
     }
 }
