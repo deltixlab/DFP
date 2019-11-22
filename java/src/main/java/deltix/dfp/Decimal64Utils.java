@@ -536,6 +536,9 @@ public class Decimal64Utils {
         return NativeImpl.roundTowardsZero(value);
     }
 
+    /**
+     * @param precision rounding precision expressed as Decimal number (e.g. 0.001 will round to 3 digits after decimal point)
+     */
     @Decimal
     public static long round(@Decimal final long value, @Decimal final long precision) {
         return roundToNearestTiesAwayFromZero(value, precision);
@@ -551,6 +554,22 @@ public class Decimal64Utils {
         return NativeImpl.roundToNearestTiesAwayFromZero(value);
     }
 
+    /**
+     * Rounds down given value using provided multiplier. Example:
+     * <pre>
+     *  private static @Decimal long roundOrderPrice(final @Decimal long price, @Decimal final long tickSize, final Side side) {
+     *      if (Decimal64Utils.isPositive(tickSize)) {
+     *          return (side == Side.BUY) ?
+     *              Decimal64Utils.roundTowardsNegativeInfinity(price, tickSize):
+     *              Decimal64Utils.roundTowardsPositiveInfinity(price, tickSize);
+     *      } else {
+     *          return price;
+     *      }
+     *  }
+     * </pre>
+     *
+     * @param multiple result will be a multiple of provided Decimal value (e.g. 0.005)
+     */
     @Decimal
     public static long roundTowardsPositiveInfinity(@Decimal final long value, @Decimal final long multiple) {
         if (!isFinite(multiple) || isNonPositive(multiple))
@@ -562,6 +581,22 @@ public class Decimal64Utils {
         return multiply(ratio, multiple);
     }
 
+    /**
+     * Rounds down given value using provided multiplier. Example:
+     * <pre>
+     *  private static @Decimal long roundOrderPrice(final @Decimal long price, @Decimal final long tickSize, final Side side) {
+     *      if (Decimal64Utils.isPositive(tickSize)) {
+     *          return (side == Side.BUY) ?
+     *              Decimal64Utils.roundTowardsNegativeInfinity(price, tickSize):
+     *              Decimal64Utils.roundTowardsPositiveInfinity(price, tickSize);
+     *      } else {
+     *          return price;
+     *      }
+     *  }
+     * </pre>
+     *
+     * @param multiple result will be a multiple of provided Decimal value (e.g. 0.005)
+     */
     @Decimal
     public static long roundTowardsNegativeInfinity(@Decimal final long value, @Decimal final long multiple) {
         if (!isFinite(multiple) || isNonPositive(multiple))
@@ -573,6 +608,9 @@ public class Decimal64Utils {
         return multiply(ratio, multiple);
     }
 
+    /**
+     * @param multiple result will be a multiple of provided Decimal value (e.g. 0.005)
+     */
     @Decimal
     public static long roundToNearestTiesAwayFromZero(@Decimal final long value, @Decimal final long multiple) {
         if (!isFinite(multiple) || isNonPositive(multiple))
@@ -1044,6 +1082,9 @@ public class Decimal64Utils {
         return round(value);
     }
 
+    /**
+     * @param precision rounding precision expressed as Decimal number (e.g. 0.001 will round to 3 digits after decimal point)
+     */
     @Decimal
     public static long roundChecked(@Decimal final long value, final long precision) {
         checkNull(value);
@@ -1086,18 +1127,53 @@ public class Decimal64Utils {
         return roundToNearestTiesAwayFromZero(value);
     }
 
+    /**
+     * Rounds up given value using provided multiplier. Example:
+     * <pre>
+     *  private static @Decimal long roundOrderPrice(final @Decimal long price, @Decimal final long tickSize, final Side side) {
+     *      if (Decimal64Utils.isPositive(tickSize)) {
+     *          return (side == Side.BUY) ?
+     *              Decimal64Utils.roundTowardsNegativeInfinity(price, tickSize):
+     *              Decimal64Utils.roundTowardsPositiveInfinity(price, tickSize);
+     *      } else {
+     *          return price;
+     *      }
+     *  }
+     * </pre>
+     *
+     * @param multiple result will be a multiple of provided Decimal value (e.g. 0.005)
+     */
     @Decimal
     public static long roundTowardsPositiveInfinityChecked(@Decimal final long value, @Decimal final long multiple) {
         checkNull(value);
         return roundTowardsPositiveInfinity(value, multiple);
     }
 
+    /**
+     * Rounds down given value using provided multiplier. Example:
+     * <pre>
+     *  private static @Decimal long roundOrderPrice(final @Decimal long price, @Decimal final long tickSize, final Side side) {
+     *      if (Decimal64Utils.isPositive(tickSize)) {
+     *          return (side == Side.BUY) ?
+     *              Decimal64Utils.roundTowardsNegativeInfinity(price, tickSize):
+     *              Decimal64Utils.roundTowardsPositiveInfinity(price, tickSize);
+     *      } else {
+     *          return price;
+     *      }
+     *  }
+     * </pre>
+     *
+     * @param multiple result will be a multiple of provided Decimal value (e.g. 0.005)
+     */
     @Decimal
     public static long roundTowardsNegativeInfinityChecked(@Decimal final long value, @Decimal final long multiple) {
         checkNull(value);
         return roundTowardsNegativeInfinity(value, multiple);
     }
 
+    /**
+     * @param multiple result will be a multiple of provided Decimal value (e.g. 0.005)
+     */
     @Decimal
     public static long roundToNearestTiesAwayFromZeroChecked(@Decimal final long value, @Decimal final long multiple) {
         checkNull(value);
