@@ -11,27 +11,36 @@ import java.util.concurrent.TimeUnit;
 
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
-@Warmup(time = 3, iterations = 1)
-@Measurement(time = 3, iterations = 3)
+@Warmup(time = 2, iterations = 5)
+@Measurement(time = 2, iterations = 5)
 @State(Scope.Thread)
+@Fork(2)
+// runtime around 14 min on 3770
+
 public class ParsingBenchmark {
-    @Param({"0.072876024093886854"})
+    @Param({"0.072876024093886854", "9.2", "0.00000000000000000000000000092", "1048576", "1200000000000000000000000000"})
     private String stringValue;
 
     @Benchmark
     @Decimal
-    public long javaImpl() throws IOException {
+    public long parseDecimal() throws IOException {
         return Decimal64Utils.parse(stringValue);
     }
 
     @Benchmark
     @Decimal
-    public long viaDouble() throws IOException {
+    public long parseDecimalViaDouble() throws IOException {
         return Decimal64Utils.fromDouble(Double.parseDouble(stringValue));
     }
 
     @Benchmark
-    public double justDouble() throws IOException {
+    @Decimal
+    public long parseDecimalViaDoubleCorrected() throws IOException {
+        return Decimal64Utils.fromDecimalDouble(Double.parseDouble(stringValue));
+    }
+
+    @Benchmark
+    public double parseDouble() throws IOException {
         return Double.parseDouble(stringValue);
     }
 
