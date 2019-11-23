@@ -55,8 +55,8 @@ public class FromDoubleTest {
 
     private static void checkDecimalDoubleConversion(Decimal64 x, String s) {
         Decimal64 x2 = Decimal64.fromDecimalDouble(x.toDouble());
-        TestUtils.assertDecimalEqual(x, x2, "fromDecimalDouble(x.toDouble()) failed:");
-        TestUtils.assertDecimalIdentical(x.canonize(), x2, "fromDecimalDouble(x.toDouble()) failed:");
+        assertDecimalEqual(x, x2, "fromDecimalDouble(x.toDouble()) failed:");
+        assertDecimalIdentical(x.canonize(), x2, "fromDecimalDouble(x.toDouble()) failed:");
 
         if (null != s) {
             Assert.assertEquals(x.toDouble(), Double.parseDouble(s), 0);
@@ -96,6 +96,7 @@ public class FromDoubleTest {
             checkDecimalDoubleConversion(x);
         }
     }
+
     @Test
     public void mantissaZerosCombinationsTest() {
         mantissaZerosCombinations((m, l)
@@ -103,7 +104,6 @@ public class FromDoubleTest {
         mantissaZerosCombinations((m, l)
             ->checkDecimalDoubleConversion(Decimal64.fromFixedPoint(m / POWERS_OF_TEN[l], 0)));
     }
-
 
     @Test
     public void extremeValuesOfExponentTest() {

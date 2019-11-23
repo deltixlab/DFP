@@ -216,11 +216,14 @@ public class TestUtils {
         checkResult(expectedStr,  f.apply(arg), message);
     }
 
-    public static class TestMantissaGenerator {
-        public static void main(String[] args) {
-            mantissaZerosCombinations((a, b) -> System.out.printf("%s %s\n", a, b), 10);
+    public static void main(String[] args) {
+        mantissaZerosCombinations((a, b) -> System.out.printf("%s %s\n", a, b), 4);
+
+        for (int i = 0; i < 100; i++) {
+            System.out.printf("%s\n", getRandomLong(4));
         }
     }
+
 
     public static final long[] POWERS_OF_TEN = {
         /*  0 */ 1L,

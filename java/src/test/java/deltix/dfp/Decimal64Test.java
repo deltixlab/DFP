@@ -107,16 +107,13 @@ public class Decimal64Test {
         long nan2l = nan1l + 20;
         checkCanonize(nan1l, nan2l);
 
-
         long posInf1l = Decimal64Utils.POSITIVE_INFINITY;
         long posInf2l = posInf1l + 10;
         checkCanonize(posInf1l, posInf2l);
 
-
         long negInf1l = Decimal64Utils.NEGATIVE_INFINITY;
         long negInf2l = negInf1l + 10;
         checkCanonize(negInf1l, negInf2l);
-
 
         a = Decimal64Utils.canonize(a);
         Assert.assertEquals(1.0, Decimal64Utils.toDouble(a), 0.00000000000001);
@@ -135,8 +132,7 @@ public class Decimal64Test {
         checkCanonize(a, b);
     }
 
-    void checkCanonize(final long value1l, long value2l_) {
-        final long value2l = value2l_;
+    static void checkCanonize(final long value1l, final long value2l) {
         Decimal64 value1 = Decimal64.fromUnderlying(value1l), value2 = Decimal64.fromUnderlying(value2l);
         String msg = "checkCanonize() failed";
         assertDecimalEqualNotIdentical(value1l, value2l, msg);
@@ -160,7 +156,7 @@ public class Decimal64Test {
         Assert.assertTrue(value2c.equals(value1c));
     }
 
-    void checkCanonize2(long value1, long value2) {
+    static void checkCanonize2(final long value1, final long value2) {
         Decimal64 a = Decimal64.fromUnderlying(value1);
         Decimal64 b = Decimal64.fromUnderlying(value2);
 

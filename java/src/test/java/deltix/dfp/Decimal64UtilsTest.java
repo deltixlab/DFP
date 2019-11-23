@@ -454,6 +454,22 @@ public class Decimal64UtilsTest {
 
         @Decimal final long multiple = Decimal64Utils.parse("0.1");
 
+        applyToPairs(
+            (a, b)->checkFunction((x)->Decimal64Utils.roundToNearestTiesAwayFromZero(x, multiple), a, b, message),
+            "-0.1", "-0.10",
+            "-0.1", "-0.07",
+            "-0.1", "-0.05",
+            "-0.1", "-0.02",
+            "0", "-0.02",
+            "0", "0.0",
+            "0", "0.02",
+            "0", "0.05",
+            "0", "0.07",
+            "0.1", "0.10",
+            "1000", "999.95",
+            "-1000", "-999.95"
+        );
+
         checkRoundTowardsNegativeInfinity("-0.1", "-0.10", multiple);
         checkRoundTowardsNegativeInfinity("-0.1", "-0.07", multiple);
         checkRoundTowardsNegativeInfinity("-0.1", "-0.05", multiple);
@@ -518,15 +534,20 @@ public class Decimal64UtilsTest {
 
         @Decimal final long multiple = Decimal64Utils.parse("0.1");
 
-        checkRoundToNearestTiesAwayFromZero("-0.1", "-0.10", multiple);
-        checkRoundToNearestTiesAwayFromZero("-0.1", "-0.07", multiple);
-        checkRoundToNearestTiesAwayFromZero("-0.1", "-0.05", multiple);
-        checkRoundToNearestTiesAwayFromZero("0", "-0.02", multiple);
-        checkRoundToNearestTiesAwayFromZero("0", "0.0", multiple);
-        checkRoundToNearestTiesAwayFromZero("0", "0.02", multiple);
-        checkRoundToNearestTiesAwayFromZero("0.1", "0.05", multiple);
-        checkRoundToNearestTiesAwayFromZero("0.1", "0.07", multiple);
-        checkRoundToNearestTiesAwayFromZero("0.1", "0.10", multiple);
+        applyToPairs(
+            (a, b)->checkFunction((x)->Decimal64Utils.roundToNearestTiesAwayFromZero(x, multiple), a, b, message),
+            "-0.1", "-0.10",
+            "-0.1", "-0.07",
+            "-0.1", "-0.05",
+            "0", "-0.02",
+            "0", "0.0",
+            "0", "0.02",
+            "0.1", "0.05",
+            "0.1", "0.07",
+            "0.1", "0.10",
+            "1000", "999.95",
+            "-1000", "-999.95"
+        );
     }
 
 
