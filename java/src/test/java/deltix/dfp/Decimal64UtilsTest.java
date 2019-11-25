@@ -413,30 +413,26 @@ public class Decimal64UtilsTest {
 
         @Decimal final long multiple = Decimal64Utils.parse("0.1");
 
-        checkRoundTowardsPositiveInfinity("-0.1", "-0.10", multiple);
-        checkRoundTowardsPositiveInfinity("0", "-0.07", multiple);
-        checkRoundTowardsPositiveInfinity("0", "-0.05", multiple);
-        checkRoundTowardsPositiveInfinity("0", "-0.02", multiple);
-        checkRoundTowardsPositiveInfinity("0", "0.0", multiple);
-        checkRoundTowardsPositiveInfinity("0.1", "0.02", multiple);
-        checkRoundTowardsPositiveInfinity("0.1", "0.05", multiple);
-        checkRoundTowardsPositiveInfinity("0.1", "0.07", multiple);
-        checkRoundTowardsPositiveInfinity("0.1", "0.10", multiple);
-    }
-
-    private void checkRoundTowardsPositiveInfinity(String str1, String str2)
-    {
-        checkFunction(Decimal64Utils::roundTowardsPositiveInfinity, str1, str2, "checkRoundTowardsPositiveInfinity()");
-    }
-
-    private void checkRoundTowardsPositiveInfinity(String str1, String str2, long multiple)
-    {
-        assertEquals(str1, Decimal64Utils.toString(Decimal64Utils.roundTowardsPositiveInfinity(Decimal64Utils.parse(str2), multiple)));
+        applyToPairs(
+            (a, b)->checkFunction((x)->Decimal64Utils.roundTowardsPositiveInfinity(x, multiple), a, b, message),
+            "-0.1", "-0.10",
+            "0", "-0.07",
+            "0", "-0.05",
+            "0", "-0.02",
+            "0", "-0.02",
+            "0", "0.0",
+            "0.1", "0.02",
+            "0.1", "0.05",
+            "0.1", "0.07",
+            "0.1", "0.10",
+            "1000", "999.9001",
+            "-1000", "-1000.0999"
+        );
     }
 
     @Test
     public void roundTowardsNegativeInfinity() {
-        final String message = "checkRoundTowardsNegativeInfinity()";
+        String message = "checkRoundTowardsNegativeInfinity()";
 
         applyToPairs(
             (a, b)->checkFunction(Decimal64Utils::roundTowardsNegativeInfinity, a, b, message),
@@ -455,40 +451,20 @@ public class Decimal64UtilsTest {
         @Decimal final long multiple = Decimal64Utils.parse("0.1");
 
         applyToPairs(
-            (a, b)->checkFunction((x)->Decimal64Utils.roundToNearestTiesAwayFromZero(x, multiple), a, b, message),
+            (a, b)->checkFunction((x)->Decimal64Utils.roundTowardsNegativeInfinity(x, multiple), a, b, message),
             "-0.1", "-0.10",
             "-0.1", "-0.07",
             "-0.1", "-0.05",
             "-0.1", "-0.02",
-            "0", "-0.02",
+            "-0.1", "-0.02",
             "0", "0.0",
             "0", "0.02",
             "0", "0.05",
             "0", "0.07",
             "0.1", "0.10",
-            "1000", "999.95",
+            "1000", "1000.09",
             "-1000", "-999.95"
         );
-
-        checkRoundTowardsNegativeInfinity("-0.1", "-0.10", multiple);
-        checkRoundTowardsNegativeInfinity("-0.1", "-0.07", multiple);
-        checkRoundTowardsNegativeInfinity("-0.1", "-0.05", multiple);
-        checkRoundTowardsNegativeInfinity("-0.1", "-0.02", multiple);
-        checkRoundTowardsNegativeInfinity("0", "0.0", multiple);
-        checkRoundTowardsNegativeInfinity("0", "0.02", multiple);
-        checkRoundTowardsNegativeInfinity("0", "0.05", multiple);
-        checkRoundTowardsNegativeInfinity("0", "0.07", multiple);
-        checkRoundTowardsNegativeInfinity("0.1", "0.10", multiple);
-    }
-
-    private void checkRoundTowardsNegativeInfinity(String str1, String str2)
-    {
-        checkFunction(Decimal64Utils::roundTowardsNegativeInfinity, str1, str2, "checkRoundTowardsNegativeInfinity()");
-    }
-
-    private void checkRoundTowardsNegativeInfinity(String str1, String str2, long multiple)
-    {
-        assertEquals(str1, Decimal64Utils.toString(Decimal64Utils.roundTowardsNegativeInfinity(Decimal64Utils.parse(str2), multiple)));
     }
 
     @Test
@@ -548,17 +524,5 @@ public class Decimal64UtilsTest {
             "1000", "999.95",
             "-1000", "-999.95"
         );
-    }
-
-
-    private void checkRoundToNearestTiesAwayFromZero(String str1, String str2)
-    {
-        checkFunction(Decimal64Utils::roundToNearestTiesAwayFromZero, str1, str2, "checkRoundToNearestTiesAwayFromZero()");
-    }
-
-    private void checkRoundToNearestTiesAwayFromZero(String str1, String str2, long multiple)
-    {
-        long expected = Decimal64Utils.parse(str1);
-        assertEquals(str1, Decimal64Utils.toString(Decimal64Utils.roundToNearestTiesAwayFromZero(Decimal64Utils.parse(str2), multiple)));
     }
 }
