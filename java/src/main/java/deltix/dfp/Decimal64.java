@@ -3,7 +3,7 @@ package deltix.dfp;
 import java.io.IOException;
 
 /**
- * Represents a dfp floating point value.
+ * Represents a decimal floating point value.
  * <p>
  * This class is immutable.
  * Can be instantiated only through static constructors.

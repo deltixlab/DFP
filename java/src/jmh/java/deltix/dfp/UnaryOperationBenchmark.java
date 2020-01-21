@@ -14,6 +14,7 @@ import java.util.concurrent.TimeUnit;
 @Warmup(time = 5, timeUnit = TimeUnit.SECONDS, iterations = 2)
 @Measurement(time = 5, timeUnit = TimeUnit.SECONDS, iterations = 5)
 @State(Scope.Thread)
+@Fork(2)
 public class UnaryOperationBenchmark {
     private long decimalValue;
 
@@ -25,6 +26,11 @@ public class UnaryOperationBenchmark {
     @Benchmark
     public long negate() {
         return Decimal64Utils.negate(decimalValue);
+    }
+
+    @Benchmark
+    public long abs() {
+        return Decimal64Utils.abs(decimalValue);
     }
 
     public static void main(String[] args) throws RunnerException {
