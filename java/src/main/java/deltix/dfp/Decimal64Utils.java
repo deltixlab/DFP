@@ -132,17 +132,11 @@ public class Decimal64Utils {
      * @return HashCode of given decimal.
      */
     public static int hashCode(@Decimal final long value) {
-        if (Decimal64Utils.isNaN(value)) {
-            return NaN_HASH_CODE;
+        if (JavaImpl.isNonFinite(value)) {
+            return JavaImpl.isNaN(value) ? NaN_HASH_CODE : value >= 0 ? POSITIVE_INF_HASH_CODE : NEGATIVE_INF_HASH_CODE;
         }
-        if (Decimal64Utils.isInfinity(value)) {
-            if (Decimal64Utils.isPositiveInfinity(value)) {
-                return POSITIVE_INF_HASH_CODE;
-            } else {
-                return NEGATIVE_INF_HASH_CODE;
-            }
-        }
-        long canonizeValue = JavaImpl.canonize(value);
+
+        long canonizeValue = JavaImpl.canonizeFinite(value);
         return (int) (canonizeValue ^ (canonizeValue >>> 32));
     }
 
@@ -649,17 +643,11 @@ public class Decimal64Utils {
      */
     @Decimal
     public static long canonize(@Decimal final long value) {
-        if (Decimal64Utils.isNaN(value)) {
-            return NaN;
+        if (JavaImpl.isNonFinite(value)) {
+            return JavaImpl.isNaN(value) ? NaN : value & NEGATIVE_INFINITY;
         }
-        if (Decimal64Utils.isInfinity(value)) {
-            if (Decimal64Utils.isPositiveInfinity(value)) {
-                return POSITIVE_INFINITY;
-            } else {
-                return NEGATIVE_INFINITY;
-            }
-        }
-        return JavaImpl.canonize(value);
+
+        return JavaImpl.canonizeFinite(value);
     }
 
     /// endregion

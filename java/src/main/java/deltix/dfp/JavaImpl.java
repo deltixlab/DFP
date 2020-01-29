@@ -82,7 +82,7 @@ class JavaImpl {
         return value == NULL;
     }
 
-    private static boolean isSpecial(long value) {
+    static boolean isSpecial(long value) {
         return (value & MASK_SPECIAL) == MASK_SPECIAL;
     }
 
@@ -124,18 +124,50 @@ class JavaImpl {
         return value & ~MASK_SIGN;
     }
 
-    public static long canonize(final long value) {
-        final Decimal64Parts parts = tlsDecimal64Parts.get();
-        toParts(value, parts);
-        if (parts.coefficient != 0) {
-            while (parts.coefficient % 10 == 0) {
-                parts.coefficient /= 10;
-                parts.exponent++;
+    /**
+     * Canonize a *finite* value. Infinite/NaN values are unexpected here.
+     * @param value value to be "canonized"
+     * @return
+     */
+    public static long canonizeFinite(final long value) {
+        final long signMask = value & MASK_SIGN;
+        long coefficient;
+        int exponent;
+
+        if (isSpecial(value)) {
+            assert (isFinite(value));
+
+            // Check for non-canonical values.
+            final long x = (value & LARGE_COEFFICIENT_MASK) | LARGE_COEFFICIENT_HIGH_BIT;
+            coefficient = UnsignedLong.compare(x, MAX_COEFFICIENT) > 0 ? 0 : x;
+
+            // Extract exponent.
+            final long tmp = value >> EXPONENT_SHIFT_LARGE;
+            exponent = (int) (tmp & EXPONENT_MASK);
+        } else {
+            // Extract coefficient.
+            coefficient = (value & SMALL_COEFFICIENT_MASK);
+
+            // Extract exponent. Maximum biased value for "small exponent" is 0x2FF(*2=0x5FE), signed: []
+            // upper 1/4 of the mask range is "special", as checked in the code above
+            final long tmp = value >> EXPONENT_SHIFT_SMALL;
+            exponent = (int) (tmp & EXPONENT_MASK);
+        }
+
+        if (coefficient != 0) {
+            if (coefficient % 10 == 0) {
+                while (coefficient % 10 == 0) {
+                    coefficient /= 10;
+                    exponent++; // Ok to exceed max, will be checked later
+                }
+
+                return pack(signMask, exponent, coefficient, BID_ROUNDING_TO_NEAREST);
+            } else {
+                return value;
             }
         } else {
             return ZERO;
         }
-        return fromParts(parts);
     }
 
 
