@@ -125,8 +125,7 @@ class JavaImpl {
     }
 
     public static long canonize(final long value) {
-        final Context context = contextMap.get();
-        Decimal64Parts parts = context.x;
+        final Decimal64Parts parts = tlsDecimal64Parts.get();
         toParts(value, parts);
         if (parts.coefficient != 0) {
             while (parts.coefficient % 10 == 0) {
@@ -231,33 +230,29 @@ class JavaImpl {
         }
     }
 
-    public static class Context {
-        public final Decimal64Parts x = new Decimal64Parts();
-    }
-
-    private final static ThreadLocal<Context> contextMap = new ThreadLocal<Context>() {
+    private final static ThreadLocal<Decimal64Parts> tlsDecimal64Parts = new ThreadLocal<Decimal64Parts>() {
         @Override
-        protected Context initialValue() {
-            return new Context();
+        protected Decimal64Parts initialValue() {
+            return new Decimal64Parts();
         }
     };
 
     public static Appendable appendTo(final long value, final Appendable appendable) throws IOException {
-        final Context context = contextMap.get();
+        final Decimal64Parts parts = tlsDecimal64Parts.get();
         if (isNonFinite(value)) {
             // Value is either Inf or NaN
             // TODO: Do we need SNaN?
             return appendable.append(isNaN(value) ? "NaN" : value < 0 ? "-Infinity" : "Infinity");
         }
 
-        final long coefficient = toParts(value, context.x);
+        final long coefficient = toParts(value, parts);
         if (0 == coefficient)
             return appendable.append('0');
 
         if (value < 0)
             appendable.append('-');
 
-        final int exponent = context.x.exponent - EXPONENT_BIAS;
+        final int exponent = parts.exponent - EXPONENT_BIAS;
         final int digits = numberOfDigits(coefficient);
 
         if (exponent >= 0) {
@@ -955,7 +950,6 @@ class JavaImpl {
 
     private static long pack(final boolean isSigned, int exponent, long coefficient, int roundingMode) {
         final long sgn = isSigned ? MASK_SIGN : 0L;
-
         long Q_low_0, Q_low_1;
         long QH, r, mask, _C64, remainder_h;
 
