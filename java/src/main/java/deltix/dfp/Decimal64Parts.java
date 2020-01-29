@@ -7,19 +7,26 @@ package deltix.dfp;
  */
 public class Decimal64Parts {
     long coefficient;
+    long signMask;
     int exponent;
-    boolean sign;
 
     public Decimal64Parts() {
-        this(0L, 0, false);
+        this(0L, 0, 0);
     }
 
-    public Decimal64Parts(final long coefficient, final int biasedExponent, final boolean sign) {
+    public Decimal64Parts(final long coefficient, final int biasedExponent, final long signMask) {
+        assert(0 == (~Long.MIN_VALUE & signMask));
         this.coefficient = coefficient;
         this.exponent = biasedExponent;
-        this.sign = sign;
+        this.signMask = signMask;
     }
 
+    boolean isValid() {
+        return
+            0 == (~Long.MIN_VALUE & signMask)
+            && exponent >= 0 && exponent < JavaImpl.BIASED_EXPONENT_MAX_VALUE + 1
+            && coefficient >= 0 && coefficient < JavaImpl.MAX_COEFFICIENT + 1;
+    }
 
     public long getCoefficient() {
         return coefficient;
@@ -37,12 +44,20 @@ public class Decimal64Parts {
         this.exponent = exponent;
     }
 
+public long getSignMask() {
+        return signMask;
+    }
+
+    public void setSignMask(final long signMask) {
+        assert(0 == (~Long.MIN_VALUE & signMask));
+        this.signMask = signMask;
+    }
 
     public boolean isNegative() {
-        return sign;
+        return signMask < 0;
     }
 
     public void setNegative(final boolean negative) {
-        sign = negative;
+        signMask = negative ? Long.MIN_VALUE : 0;
     }
 }

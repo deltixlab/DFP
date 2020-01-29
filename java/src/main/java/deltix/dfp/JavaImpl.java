@@ -140,7 +140,7 @@ class JavaImpl {
 
 
     public static long toParts(final long value, final Decimal64Parts parts) {
-        parts.sign = signBit(value);
+        parts.signMask = value & MASK_SIGN;
 
         if (isSpecial(value)) {
             if (isNonFinite(value)) {
@@ -175,7 +175,7 @@ class JavaImpl {
     }
 
     public static long fromParts(final Decimal64Parts parts) {
-        return pack(parts.sign, parts.exponent, parts.coefficient, BID_ROUNDING_TO_NEAREST);
+        return pack(parts.signMask, parts.exponent, parts.coefficient, BID_ROUNDING_TO_NEAREST);
     }
 
     public static long fromDecimalDouble(double x) {
@@ -594,7 +594,7 @@ class JavaImpl {
             return packUnderflow(sign, exponent, coefficient, rounded, BID_ROUNDING_TO_NEAREST);
         }
 
-        return pack(sign, exponent, coefficient, BID_ROUNDING_TO_NEAREST);
+        return pack(sign ? MASK_SIGN : 0, exponent, coefficient, BID_ROUNDING_TO_NEAREST);
     }
 
     private static long makeZero(final boolean isNegative, final int exponent) {
@@ -948,13 +948,13 @@ class JavaImpl {
     private static final int BID_ROUNDING_TO_ZERO = 0x00003;
     private static final int BID_ROUNDING_TIES_AWAY = 0x00004;
 
-    private static long pack(final boolean isSigned, int exponent, long coefficient, int roundingMode) {
-        final long sgn = isSigned ? MASK_SIGN : 0L;
+    private static long pack(final long signMask, int exponent, long coefficient, int roundingMode) {
         long Q_low_0, Q_low_1;
         long QH, r, mask, _C64, remainder_h;
 
         int extra_digits, amount, amount2;
 
+        // TODO: optimize: (coefficient always positive! & use more efficient comparison)
         if (UnsignedLong.compare(coefficient, 9999999999999999L) > 0) {
             exponent++;
             coefficient = 1000000000000000L;
@@ -965,14 +965,14 @@ class JavaImpl {
             if (exponent < 0) {
                 // Underflow.
                 if (exponent + MAX_FORMAT_DIGITS < 0) {
-                    if (roundingMode == BID_ROUNDING_DOWN && isSigned)
+                    if (roundingMode == BID_ROUNDING_DOWN && signMask < 0)
                         return 0x8000000000000001L;
-                    if (roundingMode == BID_ROUNDING_UP && !isSigned)
+                    if (roundingMode == BID_ROUNDING_UP && signMask >= 0)
                         return 1L;
-                    return sgn;
+                    return signMask;
                 }
 
-                if (isSigned && (roundingMode == BID_ROUNDING_DOWN || roundingMode == BID_ROUNDING_UP))
+                if (signMask < 0 && (roundingMode == BID_ROUNDING_DOWN || roundingMode == BID_ROUNDING_UP))
                     roundingMode = 3 - roundingMode;
 
                 // Get digits to be shifted out
@@ -1047,7 +1047,7 @@ class JavaImpl {
                             _C64--;
                         }
                     }
-                return sgn | _C64;
+                return signMask | _C64;
             }
             if (coefficient == 0L) {
                 if (exponent > BIASED_EXPONENT_MAX_VALUE)
@@ -1059,48 +1059,45 @@ class JavaImpl {
             }
             if (exponent > BIASED_EXPONENT_MAX_VALUE) {
                 // Overflow
-                r = sgn | MASK_INFINITY_AND_NAN;
+                r = signMask | MASK_INFINITY_AND_NAN;
                 switch (roundingMode) {
                     case BID_ROUNDING_DOWN:
-                        if (!isSigned)
+                        if (signMask >= 0)
                             r = MAX_VALUE;
                         break;
 
                     case BID_ROUNDING_TO_ZERO:
-                        r = sgn | MAX_VALUE;
+                        r = signMask | MAX_VALUE;
                         break;
 
                     case BID_ROUNDING_UP:
-                        if (isSigned)
+                        if (signMask < 0)
                             r = MIN_VALUE;
                 }
                 return r;
             }
         }
 
-        mask = 1;
-        mask <<= EXPONENT_SHIFT_SMALL;
+        mask = 1L << EXPONENT_SHIFT_SMALL;
 
         // Check whether coefficient fits in 10 * 5 + 3 bits.
         if (coefficient < mask) {
             r = exponent;
             r <<= EXPONENT_SHIFT_SMALL;
-            r |= (coefficient | sgn);
-            return r;
+            return r | coefficient | signMask;
         }
         // Special format.
 
         // Eliminate the case coefficient == 10^16 after rounding.
         if (UnsignedLong.compare(coefficient, 10000000000000000L) == 0) {
-            r = exponent + 1L;
+            r = exponent + 1L; // TODO: optimize, including the line above!
             r <<= EXPONENT_SHIFT_SMALL;
-            r |= (1000000000000000L | sgn);
-            return r;
+            return r | 1000000000000000L | signMask;
         }
 
         r = exponent;
         r <<= EXPONENT_SHIFT_LARGE;
-        r |= (sgn | MASK_SPECIAL);
+        r |= (signMask | MASK_SPECIAL);
 
         // Add coefficient, without leading bits.
         mask = (mask >>> 2) - 1;
@@ -1112,18 +1109,19 @@ class JavaImpl {
 
     /**
      * pack value where exponent is within allowable range and coefficient does not require extended format
-     * @param sgn
+     * @param signMask
      * @param exponent
      * @param coefficient
      * @return
      */
-    private static long packBasic(final long sgn, final int exponent, final long coefficient) {
+    private static long packBasic(final long signMask, final int exponent, final long coefficient) {
+        assert(0 == (~Long.MIN_VALUE & signMask));
         assert (exponent >= 0);
         assert (exponent <= BIASED_EXPONENT_MAX_VALUE);
         assert (coefficient <= SMALL_COEFFICIENT_MASK);
         assert (coefficient >= 0);
 
-        return sgn + ((long)exponent << EXPONENT_SHIFT_SMALL) + coefficient;
+        return signMask + ((long)exponent << EXPONENT_SHIFT_SMALL) + coefficient;
     }
 }
 

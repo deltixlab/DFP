@@ -5,6 +5,7 @@ import org.junit.Test;
 import java.io.IOException;
 import java.util.Random;
 
+import static deltix.dfp.JavaImpl.MASK_SIGN;
 import static deltix.dfp.TestUtils.assertDecimalIdentical;
 import static deltix.dfp.TestUtils.assertDecimalEqual;
 import static org.junit.Assert.*;
@@ -58,27 +59,27 @@ public class JavaImplTest {
         assertTrue(JavaImpl.fromUInt32(1) == Decimal64Utils.ONE);
         assertTrue(JavaImpl.fromUInt32(2) == Decimal64Utils.TWO);
 
-        assertTrue(JavaImpl.fromParts(new Decimal64Parts(0, EXPONENT_BIAS, false)) == JavaImpl.ZERO);
-        assertFalse(JavaImpl.fromParts(new Decimal64Parts(0, EXPONENT_BIAS-1, false)) == JavaImpl.ZERO);
-        assertFalse(JavaImpl.fromParts(new Decimal64Parts(0, EXPONENT_BIAS, true)) == JavaImpl.ZERO);
+        assertTrue(JavaImpl.fromParts(new Decimal64Parts(0, EXPONENT_BIAS, 0)) == JavaImpl.ZERO);
+        assertFalse(JavaImpl.fromParts(new Decimal64Parts(0, EXPONENT_BIAS-1, 0)) == JavaImpl.ZERO);
+        assertFalse(JavaImpl.fromParts(new Decimal64Parts(0, EXPONENT_BIAS, MASK_SIGN)) == JavaImpl.ZERO);
 
         // equals
-        assertTrue(Decimal64Utils.equals(JavaImpl.fromParts(new Decimal64Parts(0, EXPONENT_BIAS, true)), JavaImpl.ZERO));
-        assertTrue(Decimal64Utils.equals(JavaImpl.fromParts(new Decimal64Parts(0, EXPONENT_BIAS-1, false)), JavaImpl.ZERO));
+        assertTrue(Decimal64Utils.equals(JavaImpl.fromParts(new Decimal64Parts(0, EXPONENT_BIAS, MASK_SIGN)), JavaImpl.ZERO));
+        assertTrue(Decimal64Utils.equals(JavaImpl.fromParts(new Decimal64Parts(0, EXPONENT_BIAS-1, 0)), JavaImpl.ZERO));
 
-        assertTrue(JavaImpl.fromParts(new Decimal64Parts(0, EXPONENT_BIAS, true)) == JavaImpl.negate(JavaImpl.ZERO));
-        assertTrue(JavaImpl.negate(JavaImpl.fromParts(new Decimal64Parts(0, EXPONENT_BIAS, true))) == JavaImpl.ZERO);
+        assertTrue(JavaImpl.fromParts(new Decimal64Parts(0, EXPONENT_BIAS, MASK_SIGN)) == JavaImpl.negate(JavaImpl.ZERO));
+        assertTrue(JavaImpl.negate(JavaImpl.fromParts(new Decimal64Parts(0, EXPONENT_BIAS, MASK_SIGN))) == JavaImpl.ZERO);
 
-        assertTrue(JavaImpl.fromParts(new Decimal64Parts(2, EXPONENT_BIAS, false)) == Decimal64Utils.TWO);
-        assertFalse(JavaImpl.fromParts(new Decimal64Parts(20, EXPONENT_BIAS-1, false)) == Decimal64Utils.TWO);
-        assertFalse(JavaImpl.fromParts(new Decimal64Parts(2, EXPONENT_BIAS, true)) == Decimal64Utils.TWO);
+        assertTrue(JavaImpl.fromParts(new Decimal64Parts(2, EXPONENT_BIAS, 0)) == Decimal64Utils.TWO);
+        assertFalse(JavaImpl.fromParts(new Decimal64Parts(20, EXPONENT_BIAS-1, 0)) == Decimal64Utils.TWO);
+        assertFalse(JavaImpl.fromParts(new Decimal64Parts(2, EXPONENT_BIAS, MASK_SIGN)) == Decimal64Utils.TWO);
 
         // equals
-        assertFalse(Decimal64Utils.equals(JavaImpl.fromParts(new Decimal64Parts(1000, EXPONENT_BIAS, true)), Decimal64Utils.THOUSAND));
-        assertTrue(Decimal64Utils.equals(JavaImpl.fromParts(new Decimal64Parts(10000, EXPONENT_BIAS-1, false)), Decimal64Utils.THOUSAND));
+        assertFalse(Decimal64Utils.equals(JavaImpl.fromParts(new Decimal64Parts(1000, EXPONENT_BIAS, MASK_SIGN)), Decimal64Utils.THOUSAND));
+        assertTrue(Decimal64Utils.equals(JavaImpl.fromParts(new Decimal64Parts(10000, EXPONENT_BIAS-1, 0)), Decimal64Utils.THOUSAND));
 
-        assertTrue(JavaImpl.fromParts(new Decimal64Parts(1000, EXPONENT_BIAS, true)) == JavaImpl.negate(Decimal64Utils.THOUSAND));
-        assertTrue(JavaImpl.negate(JavaImpl.fromParts(new Decimal64Parts(1000, EXPONENT_BIAS, true))) == Decimal64Utils.THOUSAND);
+        assertTrue(JavaImpl.fromParts(new Decimal64Parts(1000, EXPONENT_BIAS, MASK_SIGN)) == JavaImpl.negate(Decimal64Utils.THOUSAND));
+        assertTrue(JavaImpl.negate(JavaImpl.fromParts(new Decimal64Parts(1000, EXPONENT_BIAS, MASK_SIGN))) == Decimal64Utils.THOUSAND);
     }
 
     @Test
