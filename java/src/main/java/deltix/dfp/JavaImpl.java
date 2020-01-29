@@ -154,20 +154,19 @@ class JavaImpl {
             exponent = (int) (tmp & EXPONENT_MASK);
         }
 
-        if (coefficient != 0) {
-            if (coefficient % 10 == 0) {
-                while (coefficient % 10 == 0) {
-                    coefficient /= 10;
-                    exponent++; // Ok to exceed max, will be checked later
-                }
-
-                return pack(signMask, exponent, coefficient, BID_ROUNDING_TO_NEAREST);
-            } else {
-                return value;
-            }
-        } else {
+        if (coefficient == 0)
             return ZERO;
-        }
+
+        long div10 = coefficient / 10;
+        if (div10 * 10 != coefficient)
+            return value;
+
+        do {
+            coefficient = div10;
+            div10 /= 10;
+            ++exponent;
+        } while (div10 * 10 == coefficient);
+        return pack(signMask, exponent, coefficient, BID_ROUNDING_TO_NEAREST);
     }
 
 
