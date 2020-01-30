@@ -141,6 +141,9 @@ public class JavaImplTest {
 
         string.setLength(0);
         assertTrue("1000.0001".equals(JavaImpl.appendTo(Decimal64Utils.fromDouble(10000001E-04), string).toString()));
+
+        string.setLength(0);
+        assertTrue("9.2".equals(JavaImpl.appendTo(Decimal64Utils.fromDecimalDouble(92E-01), string).toString()));
     }
 
     @Test
