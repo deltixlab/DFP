@@ -3,46 +3,110 @@ package deltix.dfp;
 import java.io.IOException;
 
 /**
- * Represents a decimal floating point value.
+ * Holds(wraps) a scalar 64-bit Decimal Floating Point value.
  * <p>
  * This class is immutable.
- * Can be instantiated only through static constructors.
+ * <p>
+ * Every method that returns a {@code Decimal64}, returns a new instance.
+ * <p>
+ * Constructors are non-public. Can be instantiated only through static constructor methods.
+ * @see Decimal64Utils
  */
 public class Decimal64 extends Number implements Comparable<Decimal64> {
     /// region Constants
 
-    /*
-     Use this constant instead of Java 'null' to initialize or nullify Decimal64 scalar variables, or pass null as a
-     Decimal64 scalar argument.
-     If a variable is assigned with normal java null reference or left uninitialized, ValueType Agent may generate
-     less efficient code, in which case it will print a warning.
-     This limitation may be removed in the future versions of ValueType Agent.
-     Of course, you may use another constant to initialize Decimal64 variables, just don't leave them uninitialized.
-     You don't need to use this constant in equality comparisons. 'if (a == null)' is ok.
-     Also, you are not expected to use Decimal64Utils.NULL constant directly anywhere, if you work with Decimal64 class.
+    /**
+     * Special null constant to be used with {@code Decimal64} instances.
+     * Use this constant instead of Java 'null' to initialize or nullify Decimal64 scalar variables, or pass null as a
+     * Decimal64 scalar argument.
+     * If a variable is assigned with normal java null reference or left uninitialized, ValueType Agent may generate
+     * less efficient code, in which case it will print a warning.
+     * This limitation may be removed in the future versions of ValueType Agent.
+     * Of course, you may use another constant to initialize Decimal64 variables, just don't leave them uninitialized.
+     * You don't need to use this constant in equality comparisons. 'if (a == null)' is ok.
+     * Also, you are not expected to use Decimal64Utils.NULL constant directly anywhere, if you work with Decimal64 class.
+     * @see Decimal64Utils#NULL
      */
     public static final Decimal64 NULL = null;
 
+    /**
+     * A constant holding canonical representation of Not-a-Number DFP value(not signaling NaN)
+     */
     public static final Decimal64 NaN = new Decimal64(Decimal64Utils.NaN);
 
+    /**
+     * A constant holding canonical representation of Positive Infinity value
+     */
     public static final Decimal64 POSITIVE_INFINITY = new Decimal64(Decimal64Utils.POSITIVE_INFINITY);
+
+    /**
+     * A constant holding canonical representation of Negative Infinity value
+     */
     public static final Decimal64 NEGATIVE_INFINITY = new Decimal64(Decimal64Utils.NEGATIVE_INFINITY);
 
+    /**
+     * A constant holding the smallest representable number: {@code -9999999999999999E+369}
+     */
     public static final Decimal64 MIN_VALUE = new Decimal64(Decimal64Utils.MIN_VALUE);
+
+    /**
+     * A constant holding the largest representable number: {@code 9999999999999999E+369}
+     */
     public static final Decimal64 MAX_VALUE = new Decimal64(Decimal64Utils.MAX_VALUE);
 
+    /**
+     * A constant holding the smallest representable positive number: {@code 1E-398}
+     */
     public static final Decimal64 MIN_POSITIVE_VALUE = new Decimal64(Decimal64Utils.MIN_POSITIVE_VALUE);
+
+    /**
+     * A constant holding the largest representable negative number: {@code -1E-398}
+     */
     public static final Decimal64 MAX_NEGATIVE_VALUE = new Decimal64(Decimal64Utils.MAX_NEGATIVE_VALUE);
 
+    /**
+     * Zero: {@code 0}
+     */
     public static final Decimal64 ZERO = new Decimal64(Decimal64Utils.ZERO);
+
+    /**
+     * One: {@code 1}
+     */
     public static final Decimal64 ONE = new Decimal64(Decimal64Utils.ONE);
+
+    /**
+     * Two: {@code 2}
+     */
     public static final Decimal64 TWO = new Decimal64(Decimal64Utils.TWO);
+
+    /**
+     * Ten: {@code 10}
+     */
     public static final Decimal64 TEN = new Decimal64(Decimal64Utils.TEN);
+
+    /**
+     * One Hundred: {@code 100}
+     */
     public static final Decimal64 HUNDRED = new Decimal64(Decimal64Utils.HUNDRED);
+
+    /**
+     * One Thousand: {@code 1000}
+     */
     public static final Decimal64 THOUSAND = new Decimal64(Decimal64Utils.THOUSAND);
+
+    /**
+     * One million: {@code 1000_000}
+     */
     public static final Decimal64 MILLION = new Decimal64(Decimal64Utils.MILLION);
 
+    /**
+     * One tenth: {@code 0.1}
+     */
     public static final Decimal64 ONE_TENTH = new Decimal64(Decimal64Utils.ONE_TENTH);
+
+    /**
+     * One hundredth: {@code 0.01}
+     */
     public static final Decimal64 ONE_HUNDREDTH = new Decimal64(Decimal64Utils.ONE_HUNDREDTH);
 
     /// endregion
@@ -55,18 +119,44 @@ public class Decimal64 extends Number implements Comparable<Decimal64> {
 
     /// region Conversion
 
+    /**
+     * Create {@code Decimal64} instance from underlying binary value (boxing operation).
+     * @param value 64-bit DFP value
+     * @return new {@code Decimal64} instance
+     */
     public static Decimal64 fromUnderlying(long value) {
         return Decimal64Utils.NULL == value ? null : new Decimal64(value);
     }
 
+    /**
+     * Get binary representation as {@code long} (unboxing)
+     * @param obj {@code Decimal64} instance, {@code null} can be passed too
+     * @return underlying binary representation as {@code long}
+     */
     public static long toUnderlying(Decimal64 obj) {
         return null == obj ? Decimal64Utils.NULL : obj.value;
     }
 
+    /**
+     * Create {@code Decimal64} instance from fixed point decimal value: (12345, 2) -&gt; 123.45
+     * @param mantissa source fixed point value represented as {@code long}
+     * @param numberOfDigits number of decimal digits representing fractional part
+     * @return new {@code Decimal64} instance
+     * @see Decimal64Utils#fromFixedPoint(long, int)
+     */
     public static Decimal64 fromFixedPoint(long mantissa, int numberOfDigits) {
         return new Decimal64(Decimal64Utils.fromFixedPoint(mantissa, numberOfDigits));
     }
 
+    /**
+     * Create {@code Decimal64} instance from fixed point decimal value: (12345, 2) -&gt; 123.45
+     * Overload of {@link #fromFixedPoint(long, int)} for mantissa representable by {@code int}.
+     * Faster than the full-range version.
+     * @param mantissa source fixed point value represented as {@code int}
+     * @param numberOfDigits number of decimal digits representing fractional part
+     * @return new {@code Decimal64} instance
+     * @see Decimal64Utils#fromFixedPoint(int, int)
+     */
     public static Decimal64 fromFixedPoint(int mantissa, int numberOfDigits) {
         return new Decimal64(Decimal64Utils.fromFixedPoint(mantissa, numberOfDigits));
     }
@@ -75,30 +165,67 @@ public class Decimal64 extends Number implements Comparable<Decimal64> {
         return new Decimal64(Decimal64Utils.fromDecimalDouble(value));
     }
 
+    /**
+     * Convert to fixed-point representation: (123.4567, 2) -&gt; 12346
+     * @param numberOfDigits number of decimal digits representing fractional part
+     * @return fixed-point decimal value represented as @{code long}
+     */
     public long toFixedPoint(int numberOfDigits) {
         return Decimal64Utils.toFixedPoint(value, numberOfDigits);
     }
 
+    /**
+     * Create {@code Decimal64} instance from {@code long} integer
+     * Faster than the full-range version.
+     * @param value source {@code long} integer value
+     * @return new {@code Decimal64} instance
+     */
     public static Decimal64 fromLong(final long value) {
         return new Decimal64(Decimal64Utils.fromLong(value));
     }
 
+    /**
+     * Convert {@code Decimal64} instance to {@code long} integer value by truncating fractional part towards zero
+     * @return {@code long} integer value
+     */
     public long toLong() {
         return Decimal64Utils.toLong(value);
     }
 
+    /**
+     * Create {@code Decimal64} instance from {@code int}
+     * <p>
+     * Faster than the version that takes {@code long}.
+     * @param value source {@code int} value
+     * @return new {@code Decimal64} instance
+     */
     public static Decimal64 fromInt(final int value) {
         return new Decimal64(Decimal64Utils.fromInt(value));
     }
 
+    /**
+     * Convert {@code Decimal64} instance to {@code int} value by truncating fractional part towards zero
+     * @return {@code int} value
+     */
     public int toInt() {
         return Decimal64Utils.toInt(value);
     }
 
-    public static Decimal64 fromDouble(double d) {
-        return new Decimal64(Decimal64Utils.fromDouble(d));
+    /**
+     * Create {@code Decimal64} instance from 64-bit binary floating point value({@code double})
+     * <p>Note that not all binary FP values can be exactly represented as decimal FP values.
+     * @param value source 64-bit binary floating point value
+     * @return new {@code Decimal64} instance
+     */
+    public static Decimal64 fromDouble(double value) {
+        return new Decimal64(Decimal64Utils.fromDouble(value));
     }
 
+    /**
+     * Convert {@code Decimal64} instance to 64-bit binary floating point ({@code double}) value.
+     * <p>Note that not all decimal FP values can be exactly represented as binary FP values.
+     * @return {@code double} value
+     */
     public double toDouble() {
         return Decimal64Utils.toDouble(value);
     }
@@ -107,26 +234,51 @@ public class Decimal64 extends Number implements Comparable<Decimal64> {
 
     /// region Classification
 
+    /**
+     * Check, if this {@code Decimal64} instance holds a Not-a-Number value.
+
+     * @return {@code true}, if the value is NaN
+     */
     public boolean isNaN() {
         return Decimal64Utils.isNaN(value);
     }
 
+    /**
+     * Check, if this {@code Decimal64} instance holds is a positive or negative infinity.
+     * @return {@code true}, if the value is an infinity
+     */
     public boolean isInfinity() {
         return Decimal64Utils.isInfinity(value);
     }
 
+    /**
+     * Check, if this {@code Decimal64} instance holds a Positive Infinity value.
+     * @return {@code true}, if Positive Infinity
+     */
     public boolean isPositiveInfinity() {
         return Decimal64Utils.isPositiveInfinity(value);
     }
 
+    /**
+     * Check, if this {@code Decimal64} instance holds a Negative Infinity value.
+     * @return {@code true}, if Negative Infinity
+     */
     public boolean isNegativeInfinity() {
         return Decimal64Utils.isNegativeInfinity(value);
     }
 
+    /**
+     * Check, if this {@code Decimal64} instance holds a finite value(Not infinity or NaN).
+     * @return {@code true}, if finite. {@code false} if Infinity or NaN.
+     */
     public boolean isFinite() {
         return Decimal64Utils.isFinite(value);
     }
 
+    /**
+     * Check, if the value held by this {@code Decimal64} instance is normalized.
+     * @return {@code true}, if normalized.
+     */
     public boolean isNormal() {
         return Decimal64Utils.isNormal(value);
     }
@@ -136,108 +288,136 @@ public class Decimal64 extends Number implements Comparable<Decimal64> {
     /// region Comparison
 
     /**
-     * Return true if this decimal and given decimal represents the same arithmetic value.
+     * Check, if this instance and the specified {@code Decimal64} instance represent the same mathematical value.
+     * <p>
+     * We consider that all possible encodings of {@link #POSITIVE_INFINITY} are equal,
+     * all possible encodings of {@link #NEGATIVE_INFINITY} are equal,
+     * all possible encodings of {@code NaN} and {@code SNaN} are equal,
+     * all invalid encodings that aren't NaN or Infinity are equal to {@link #ZERO}.
+     * Negative and Positive(default) {@link #ZERO} are equal.
      *
-     * We consider that all POSITIVE_INFINITYs are equal to another POSITIVE_INFINITY,
-     * all NEGATIVE_INFINITYs are equal to another NEGATIVE_INFINITY,
-     * all NaNs is equal to another NaN.
-     *
-     * @param other value to compare
-     * @return True if two decimals represents the same arithmetic value.
+     * @param other {@code Decimal64} instance being compared to this instance.
+     * @return {@code true} if this instance and the other instance represent the same mathematical value;
+     * {@code false} otherwise.
+     * @see #equals(Decimal64, Decimal64)
+     * @see #equals(Object)
      */
     public boolean equals(Decimal64 other) {
         return this == other || other != null && Decimal64Utils.equals(this.value, other.value);
     }
 
     /**
-     * Compares this instance with another one.
+     * Check, if this instance and the specified {@code Decimal64} instance have exactly the same underlying representation.
      * <p>
-     * This method returns {@code true} if and only if {@param other} is not of type {@see Decimal64} and their
-     * underlying values match. This means that {@code Decimal64.NaN.equals(Decimal64.NaN)} evaluates to
-     * {@code true}, while on the same time two different representation of real values might be not equal according
-     * to this method. E.g. various representation of 0 are not considered the same.
+     * This method returns {@code true} if and only if the other {@code Decimal64} is exactly the same
+     * (underlying values are equal). This means that {@code Decimal64.NaN.isIdentical(Decimal64.NaN)} evaluates to
+     * {@code true}, while at the same time comparing two different representations of equal real values will cause this
+     * method to return {@code false}.
+     * E.g. various representations of 0 are not considered same.
+     * <p>
+     * {@code isIdentical(x, y) => equals(x, y)}
      *
-     * @param other Other instance to compareTo to.
-     * @return {@code true} if this instance equals the {@param other}; otherwise - {@code false}.
+     * @param other {@code Decimal64} instance being compared to this instance.
+     * @return {@code true} if the binary representation held by this instance is the same as the underlying value
+     * held by the other instance;
+     * {@code false} otherwise.
      */
     public boolean isIdentical(Decimal64 other) {
         return this == other || other != null && value == other.value;
     }
 
     /**
-     * Compares this instance with another one.
+     * Check, if the specified object is a {@code Decimal64} instance that holds the same underlying value.
      * <p>
-     * This method returns {@code true} if and only if {@param other} is not of type {@see Decimal64} and their
-     * underlying values match. This means that {@code Decimal64.NaN.equals(Decimal64.NaN)} evaluates to
-     * {@code true}, while on the same time two different representation of real values might be not equal according
-     * to this method. E.g. various representation of 0 are not considered the same.
-     *
-     * @param other Other instance to compareTo to.
-     * @return {@code true} if this instance equals the {@param other}; otherwise - {@code false}.
+     * This method returns {@code true} if and only if the argument is of type {@code Decimal64} and their
+     * underlying binary values are equal. This means that {@code Decimal64.NaN.isIdentical(Decimal64.NaN)} evaluates to
+     * {@code true}, while at the same time comparing two different representations of equal real values will cause this
+     * method to return {@code false}.
+     * E.g. various representations of 0 are not considered same.
+     * <p>
+     * {@code isIdentical(x, y) => equals(x, y)}
+     * @param other Object being compared to this instance.
+     * @return {@code true} if the binary representation of this value is the same as the underlying value of the other;
+     * {@code false} otherwise.
      */
     public boolean isIdentical(Object other) {
         return this == other || other instanceof Decimal64 && value == ((Decimal64) other).value;
     }
 
     /**
-     * Return true if two decimals represents the same arithmetic value.
+     * Check, if two {@code Decimal64} instances represent the same mathematical value.
      * <p>
-     * We consider that all POSITIVE_INFINITYs are equal to another POSITIVE_INFINITY,
-     * all NEGATIVE_INFINITYs are equal to another NEGATIVE_INFINITY,
-     * all NaNs is equal to another NaN.
+     * We consider that all possible encodings of {@link #POSITIVE_INFINITY} are equal,
+     * all possible encodings of {@link #NEGATIVE_INFINITY} are equal,
+     * all possible encodings of {@code NaN} and {@code SNaN} are equal,
+     * all invalid encodings that aren't NaN or Infinity are equal to {@link #ZERO}.
+     * Negative and Positive(default) {@link #ZERO} are equal.
      *
-     * @param a First argument
-     * @param b Second argument
-     * @return True if two decimals represents the same arithmetic value.
+     * @param a the first {@code Decimal64} instance.
+     * @param b the second {@code Decimal64} instance.
+     * @return {@code true} if both {@code Decimal64} instances represent the same arithmetical value;
+     * {@code false} otherwise.
+     * @see #equals(Decimal64)
+     * @see #equals(Object)
      */
     public static boolean equals(Decimal64 a, Decimal64 b) {
         return a == b || a != null && b != null && Decimal64Utils.equals(a.value, b.value);
     }
 
     /**
-     * Compares two instances of {@see Decimal64}
+     * Check, if two {@code Decimal64} instances hold the same underlying value.
      * <p>
-     * This method returns {@code true} if and only if the underlying values of both objects match. This means that
-     * {@code Decimal64.NaN.equals(Decimal64.NaN)} evaluates to {@code true}, while on the same time two different
-     * representation of real values might be not equal according to this method. E.g. various representation of 0 are
-     * not considered the same.
+     * This method returns {@code true} if and only if the underlying values of both {@code Decimal64} instances are the same.
+     * This means that {@code Decimal64.NaN.isIdentical(Decimal64.NaN)} evaluates to {@code true},
+     * while at the same time comparing two different representations of equal real values will cause this
+     * method to return {@code false}.
+     * E.g. various representations of 0 are not considered same.
+     * <p>
+     * {@code isIdentical(x, y) => equals(x, y)}
      *
-     * @param a First value to compareTo.
-     * @param b Second value to compareTo.
-     * @return {@code true} if the value {@param a} equals the value of {@param a}; otherwise - {@code false}.
+     * @param a the first {@code Decimal64} instance.
+     * @param b the second {@code Decimal64} instance.
+     * @return {@code true} if the binary representations of a and b are equal;
+     * {@code false} otherwise.
      */
     public static boolean isIdentical(Decimal64 a, Decimal64 b) {
         return a == b || a != null && b != null && a.value == b.value;
     }
 
     /**
-     * Return true if two decimals represents the same arithmetic value.
+     * Check, if the second argument is an instance of {@code Decimal64} that represents the same mathematical value as the first argument.
      * <p>
-     * We consider that all POSITIVE_INFINITYs are equal to another POSITIVE_INFINITY,
-     * all NEGATIVE_INFINITYs are equal to another NEGATIVE_INFINITY,
-     * all NaNs is equal to another NaN.
+     * We consider that all possible encodings of {@link #POSITIVE_INFINITY} are equal,
+     * all possible encodings of {@link #NEGATIVE_INFINITY} are equal,
+     * all possible encodings of {@code NaN} and {@code SNaN} are equal,
+     * all invalid encodings that aren't NaN or Infinity are equal to {@link #ZERO}.
+     * Negative and Positive(default) {@link #ZERO} are equal.
      *
-     * @param a First argument
-     * @param b Second argument
-     * @return True if two decimals represents the same arithmetic value.
+     * @param a {@code Decimal64} instance.
+     * @param b Object, to which the first argument is compared.
+     * @return {@code true} if the second argument is an instance of {@code Decimal64} instances and both arguments represent the same arithmetical value;
+     * {@code false} otherwise.
      */
     public static boolean equals(Decimal64 a, Object b) {
         return a == b || a != null && b instanceof Decimal64 && Decimal64Utils.equals(a.value, ((Decimal64) b).value);
     }
 
     /**
-     * Compares an instance of {@see Decimal64} with an object.
+     * Check, if the second argument is an instance of {@code Decimal64} that holds the same underlying value as the first argument.
      * <p>
-     * This method returns {@code true} if and only if {@param b} is of type {@see Decimal64} and the underlying values
-     * of both objects match. This means that {@code Decimal64.NaN.equals(Decimal64.NaN)} evaluates to {@code true},
-     * while on the same time two different representation of real values might be not equal according to this method.
-     * E.g. various representation of 0 are not considered the same.
+     * This method returns {@code true} if and only if the 2nd argument is of type {@code Decimal64} and the underlying values
+     * of both objects match.  This means that {@code Decimal64.NaN.isIdentical(Decimal64.NaN)} evaluates to {@code true},
+     * while at the same time comparing two different representations of equal real values will cause this
+     * method to return {@code false}.
+     * E.g. various representations of 0 are not considered same.
+     * <p>
+     * {@code isIdentical(x, y) => equals(x, y)}
      *
-     * @param a First value to compareTo.
-     * @param b Second value to compareTo.
-     * @return {@code true} if this instance equals the {@param b}; otherwise - {@code false}.
+     * @param a {@code Decimal64} instance.
+     * @param b Object, to which the first argument is compared.
+     * @return {@code true} if two instances of {@code Decimal64} hold the same underlying value;
+     * {@code false} otherwise.
      */
-
     public static boolean isIdentical(Decimal64 a, Object b) {
         return a == b || a != null && b instanceof Decimal64 && a.value == ((Decimal64) b).value;
     }
@@ -297,8 +477,8 @@ public class Decimal64 extends Number implements Comparable<Decimal64> {
     /**
      * Returns the smallest of two given values.
      *
-     * @param a first value.
-     * @param b second value.
+     * @param a first argument
+     * @param b second argument
      * @return The smallest of two values.
      */
     public static Decimal64 min(Decimal64 a, Decimal64 b) {
@@ -433,8 +613,8 @@ public class Decimal64 extends Number implements Comparable<Decimal64> {
         return new Decimal64(Decimal64Utils.round(value));
     }
 
-    public Decimal64 round(Decimal64 precision) {
-        return new Decimal64(Decimal64Utils.round(value, precision.value));
+    public Decimal64 round(Decimal64 multiple) {
+        return new Decimal64(Decimal64Utils.round(value, multiple.value));
     }
 
     @Deprecated
@@ -497,8 +677,9 @@ public class Decimal64 extends Number implements Comparable<Decimal64> {
     }
 
     /**
-     * Returns canonical representation of Decimal.
-     * We consider that all binary representations of one arithmetic value have the same canonical binary representation.
+     * Returns canonical representation of s {@code Decimal64} value.
+     * <p>
+     * We consider that all binary representations of one arithmetical value have the same canonical binary representation.
      * Canonical representation of zeros = {@link #ZERO ZERO}
      * Canonical representation of NaNs = {@link #NaN NaN}
      * Canonical representation of POSITIVE_INFINITYs = {@link #POSITIVE_INFINITY POSITIVE_INFINITY}
@@ -646,14 +827,16 @@ public class Decimal64 extends Number implements Comparable<Decimal64> {
 
     /// region Object Interface Implementation
     /**
-     * Return true if this decimal and given decimal represents the same arithmetic value.
+     * Returns {@code true} if the given Object is an instance of Decimal64 and has the same arithmetical value.
      *
      * We consider that all POSITIVE_INFINITYs is equal to another POSITIVE_INFINITY,
      * all NEGATIVE_INFINITYs is equal to another NEGATIVE_INFINITY,
      * all NaNs is equal to another NaN.
      *
      * @param other value to compare
-     * @return True if two decimals represents the same arithmetic value.
+     * @return True if two decimals represents the same arithmetical value.
+     * @see #equals(Decimal64, Decimal64)
+     * @see #equals(Decimal64)
      */
     @Override
     public boolean equals(Object other) {
@@ -670,7 +853,7 @@ public class Decimal64 extends Number implements Comparable<Decimal64> {
     }
 
     /**
-     * Return hash code of arithmetic value of given decimal.
+     * Return hash code of arithmetical value of given decimal.
      *
      * We consider that all POSITIVE_INFINITYs have equal hashCode,
      * all NEGATIVE_INFINITYs have equal hashCode,
