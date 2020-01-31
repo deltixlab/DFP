@@ -1,0 +1,3 @@
+[submodule "NativeUtils"]
+	path = NativeUtils
+	url = https://github.com/deltixlab/NativeUtils.git

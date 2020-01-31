@@ -1,0 +1,125 @@
+plugins {
+    id "me.champeau.gradle.jmh" version "0.5.0" apply false
+    id "com.github.johnrengelman.shadow" version "5.2.0"
+}
+
+apply plugin: 'java-library'
+apply plugin: 'maven-publish'
+apply plugin: 'me.champeau.gradle.jmh'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+sourceSets {
+    main {
+        java {
+            // In this version we include NativeUtils & Zstandard libs via submodules & srcDirs
+            srcDirs += ["$rootDir/NativeUtils/java/main/src/main/java", "$rootDir/NativeUtils/Zstandard/java/src/main/java"]
+            resources {
+                srcDirs = ["$rootDir/native/bin/Release/"]
+                include '**/*_so.zst'
+                include '**/*.so.zst'
+                include '**/*.dylib.zst'
+                include '**/*.dll.zst'
+            }
+        }
+    }
+    integrationTest {
+        java {
+            compileClasspath += main.output + test.output
+            runtimeClasspath += main.output + test.output
+            srcDir file('src/integration-test/java')
+        }
+
+        resources.srcDir file('src/integration-test/resources')
+    }
+}
+
+configurations {
+    integrationTestCompile.extendsFrom testCompile
+    integrationTestRuntime.extendsFrom testRuntime
+}
+
+dependencies {
+    // Temporarily removed in this version
+    //implementation group: 'rtmath', name: 'rtmath-native-utils', version: native_utils_version
+    testImplementation 'junit:junit:4.+'
+    integrationTestCompile 'junit:junit:4.+'
+}
+
+task versionJava {
+    doLast {
+        new File("$projectDir/src/main/java/deltix/dfp/Version.java").text =
+"""
+package deltix.dfp;
+
+class  Version {
+    public static final String version = \"$version\";
+}
+"""
+    }
+}
+
+compileJava.dependsOn versionJava
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+publishing {
+    publications {
+        shadow(MavenPublication) { publication ->
+            artifactId project.name
+            project.shadow.component(publication)
+            artifact javadocJar
+            artifact sourcesJar
+        }
+    }
+}
+
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'Deltix Decimal Floating-Point Arithmetic Library',
+            'Implementation-Version': version
+    }
+    setEntryCompression ZipEntryCompression.STORED
+}
+
+shadowJar {
+    classifier = null
+    relocate('rtmath.utilities', 'deltix.dfp.private') {
+    }
+    relocate('rtmath.zstd', 'deltix.dfp.private') {
+    }
+}
+
+jmh {
+    include = '.*Benchmark.*'
+}
+
+test.outputs.upToDateWhen { false }
+
+task integrationTest(type: Test) {
+    group = 'verification'
+    systemProperty "deltix.dfp.dataFiles.parsingAndFormatting", "$projectDir/data/Decimal64.FormattingAndParsing.txt"
+    testClassesDirs = sourceSets.integrationTest.output.classesDirs
+    classpath = sourceSets.integrationTest.runtimeClasspath
+
+    // Assume that test are never up-to-date.
+    outputs.upToDateWhen { false }
+}
+
+// Ensures that test reports for unit tests and integrations tests are kept separate.
+tasks.withType(Test) {
+    reports.html.destination = file("${reporting.baseDir}/${name}")
+}
+

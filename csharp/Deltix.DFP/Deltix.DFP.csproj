@@ -1,0 +1,64 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFrameworks>netstandard2.0;net40</TargetFrameworks>
+		<LangVersion>6</LangVersion>
+		<RootNamespace>Deltix.DFP</RootNamespace>
+		<AssemblyName>Deltix.DFP</AssemblyName>
+		<Authors>Vitali Haravy &lt;vharavy@deltixlab.com&gt;Barys Chupryn &lt;bchupryn@deltixlab.com&gt;</Authors>
+		<Company>Deltix Inc.</Company>
+		<Description>An implementation of decimal floating-point arithmetic.</Description>
+		<Copyright>Copyright (C) 2017-2019, Deltix Inc.</Copyright>
+		<PackageProjectUrl>https://gitlab.deltixhub.com/Deltix/Common/DFP</PackageProjectUrl>
+		<RepositoryType>git</RepositoryType>
+		<RepositoryUrl>git@gitlab.deltixhub.com:Deltix/Common/DFP.git</RepositoryUrl>
+		<PackageTags>.NET Decimal</PackageTags>
+		<Version>0.0.0</Version>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+	</PropertyGroup>
+	<ItemGroup>
+		<Compile Include="..\..\NativeUtils\Zstandard\csharp\src\BitStream.cs" Link="ZStd\BitStream.cs" />
+		<Compile Include="..\..\NativeUtils\Zstandard\csharp\src\blockType_e.cs" Link="ZStd\blockType_e.cs" />
+		<Compile Include="..\..\NativeUtils\Zstandard\csharp\src\EntropyCommon.cs" Link="ZStd\EntropyCommon.cs" />
+		<Compile Include="..\..\NativeUtils\Zstandard\csharp\src\FrameHeader.cs" Link="ZStd\FrameHeader.cs" />
+		<Compile Include="..\..\NativeUtils\Zstandard\csharp\src\Fse.cs" Link="ZStd\Fse.cs" />
+		<Compile Include="..\..\NativeUtils\Zstandard\csharp\src\FseDecompress.cs" Link="ZStd\FseDecompress.cs" />
+		<Compile Include="..\..\NativeUtils\Zstandard\csharp\src\Huf.cs" Link="ZStd\Huf.cs" />
+		<Compile Include="..\..\NativeUtils\Zstandard\csharp\src\HufDecompress.cs" Link="ZStd\HufDecompress.cs" />
+		<Compile Include="..\..\NativeUtils\Zstandard\csharp\src\Mem.cs" Link="ZStd\Mem.cs" />
+		<Compile Include="..\..\NativeUtils\Zstandard\csharp\src\XXH64_state_s.cs" Link="ZStd\XXH64_state_s.cs" />
+		<Compile Include="..\..\NativeUtils\Zstandard\csharp\src\XxHash.cs" Link="ZStd\XxHash.cs" />
+		<Compile Include="..\..\NativeUtils\Zstandard\csharp\src\ZStd.cs" Link="ZStd\ZStd.cs" />
+		<Compile Include="..\..\NativeUtils\Zstandard\csharp\src\ZStdDecompress.cs" Link="ZStd\ZStdDecompress.cs" />
+		<Compile Include="..\..\NativeUtils\Zstandard\csharp\src\ZStdErrors.cs" Link="ZStd\ZStdErrors.cs" />
+		<Compile Include="..\..\NativeUtils\Zstandard\csharp\src\ZStdInternal.cs" Link="ZStd\ZStdInternal.cs" />
+		<Compile Include="..\..\NativeUtils\Zstandard\csharp\src\ZSTD_format_e.cs" Link="ZStd\ZSTD_format_e.cs" />
+		<Compile Include="..\..\NativeUtils\Zstandard\csharp\src\ZSTD_frameType_e.cs" Link="ZStd\ZSTD_frameType_e.cs" />
+		<Compile Include="..\..\NativeUtils\csharp\NativeUtils\FileStream.cs" Link="NativeUtils\FileStream.cs" />
+		<Compile Include="..\..\NativeUtils\csharp\NativeUtils\FileJanitor.cs" Link="NativeUtils\FileJanitor.cs" />
+		<Compile Include="..\..\NativeUtils\csharp\NativeUtils\ResourceLoader.cs" Link="NativeUtils\ResourceLoader.cs" />
+		<Compile Include="..\..\NativeUtils\csharp\NativeUtils\ResourceLoaderUtils.cs" Link="NativeUtils\ResourceLoaderUtils.cs" />
+	</ItemGroup>
+	<Choose>
+		<When Condition="Exists('..\..\native\bin\Release\Windows\32\DecimalNative.dll.zst')">
+			<ItemGroup>
+				<EmbeddedResource Include="..\..\native\bin\Release\Windows\32\DecimalNative.dll.zst" Link="Windows\32\DecimalNative_dll_zst" />
+				<EmbeddedResource Include="..\..\native\bin\Release\Windows\64\DecimalNative.dll.zst" Link="Windows\64\DecimalNative_dll_zst" />
+			</ItemGroup>
+		</When>
+		</Choose>
+	<Choose>
+		<When Condition="Exists('..\..\native\bin\Release\Linux\32\libDecimalNative_so.zst')">
+			<ItemGroup>
+				<EmbeddedResource Include="..\..\native\bin\Release\Linux\32\libDecimalNative_so.zst" Link="Linux\32\libDecimalNative_so_zst" />
+				<EmbeddedResource Include="..\..\native\bin\Release\Linux\64\libDecimalNative_so.zst" Link="Linux\64\libDecimalNative_so_zst" />
+			</ItemGroup>
+		</When>
+	</Choose>
+	<Choose>
+		<When Condition="Exists('..\..\native\bin\Release\OSX\64\libDecimalNative.dylib.zst')">
+			<ItemGroup>
+				<EmbeddedResource Include="..\..\native\bin\Release\OSX\64\libDecimalNative.dylib.zst" Link="OSX\64\libDecimalNative_dylib_zst" />
+			</ItemGroup>
+		</When>
+	</Choose>
+</Project>

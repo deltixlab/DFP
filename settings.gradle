@@ -1,0 +1,2 @@
+include ':java'
+project(':java').name = 'deltix-dfp'
