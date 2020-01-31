@@ -17,11 +17,11 @@ You may build the Java/.NET libraries on a different platform than the one that 
 
 
 ### Requirements
-+ Intel C compiler for one of the supported platforms at least (Windows, Linux, Mac OS). Needed to build intel-provided DFP library.
-+ zstandard command line compressor, though zstd compression is optional
++ Intel C compiler for one of the supported platforms at least (Windows, Linux, Mac OS). Needed to build intel-provided IEEE754-2008 DFP library.
++ zstandard command line compressor, though zstd compression is optional. Typically: `yum install zstd` 
 + Java version: OpenJDK 8+ or Oracle JDK 8+, uses Gradle V5.6.4
 + .NET Version: .NET Framework 4.0+ or .NET Core or Mono runtime supporting .NET Standard 2.0, uses Cake build tool
-+ Invoking Cake on non-Windows systems may require Mono runtime.
++ Invoking Cake on non-Windows systems may require Mono runtime. This can help: https://www.monodevelop.com/download/#fndtn-download-lin
 
 ### Fetch the source code
 ```
