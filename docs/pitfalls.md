@@ -7,7 +7,7 @@ Make sure you annotate all decimal fields/parameters/variables with ``@Decimal``
 
 ### Mixing constants:
 
-```
+```java
 private boolean isFlat() {
 	return (actualPositionSize == 1);
 }
@@ -28,7 +28,7 @@ Examples that probably won't work as intended (assuming all variables are @Decim
 
 Accidental (or not) usage of Math library function to operate on @Decimal numbers. This will result in error in almost all cases. Example:
 
-```
+```java
 @Decimal long childQuantity = Decimal64Utils.subtract(Math.min(remainingQuantity, displayQuantity), quantityOnTheMarket);
 ```
  
@@ -39,7 +39,7 @@ Getting prices out of "traditional" Deltix market data. Unlike new "universal" m
 Problem is - when you convert double to decimal64 rounding errors are likely. For example, double value 99.085 will be converted as 99.08499999999999. You need to round results. 
  For example, to convert price of some instrument use tick size:
 
-``` 
+```java 
   @Decimal rawPrice = Decimal64Util.fromDouble(99.085); // 99.08499999999999
   @Decimal long tickSize = instrument.getTickSize(); // e.g. 0.005 
   Decimal64Utils.round(rawPrice, tickSize); // produces 99.085
