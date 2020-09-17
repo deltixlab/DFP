@@ -87,5 +87,7 @@ DFP concept of Not-a-Number (NaN) and infinity is somewhat similar to Java doubl
 * One of NaN values is distinguished as decimal NULL.
 
 
-[Common pitfalls](pitfalls.md)
-[Tips and Tricks](TipsNTricks.md)
+# What's next?
+
+* [Tips and Tricks](TipsNTricks.md)
+* [Common pitfalls](pitfalls.md)
