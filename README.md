@@ -25,5 +25,9 @@ DFP uses Java long to represent base-10 floating point numbers. DFP is based on 
 
 [How to build this project](docs/build.md)
 
+## Credits
+
+This project was developed by **Vitali Haravy**. Special thanks to **Boris Chuprin** for helping with native code and testing of this library
+
 ## License
 This library is released under Apache 2.0 license. See ([license](LICENSE))
