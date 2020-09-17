@@ -1,6 +1,6 @@
-### Tips and Tricks
+# Tips and Tricks
 
-# How to view decimal-encoded values in IntelliJ/IDEA debugger
+## How to view decimal-encoded values in IntelliJ/IDEA debugger
 
 IntelliJ/IDEA can define custom renderers for most types, including `long` used to represent decimal numbers.
 
