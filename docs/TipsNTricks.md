@@ -10,9 +10,10 @@ Use the following steps to add special renderer for decimals:
 
 2. Switch "When expanding a node" radio button into "Use list of renderers". Define renderer for decimal. Use `Decimal64Utils.toString(this)` as renderer expression:
 
+![Define renderer image](define-renderer.png)
 
 3. When viewing `long` value that contains decimal number expand your Decimal renderer:
 
-
+![Expand renderer image](expand-renderer.png)
 
 
