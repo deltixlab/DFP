@@ -88,3 +88,4 @@ DFP concept of Not-a-Number (NaN) and infinity is somewhat similar to Java doubl
 
 
 [Common pitfalls](pitfalls.md)
+[Tips and Tricks](TipsNTricks.md)
