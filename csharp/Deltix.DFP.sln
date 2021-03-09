@@ -2,13 +2,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27130.2036
 MinimumVisualStudioVersion = 15.0.26124.0
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deltix.DFP", "Deltix.DFP\Deltix.DFP.csproj", "{3094BAAA-20C5-4615-B8C6-3EC3817BDEA5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EPAM.Deltix.DFP", "EPAM.Deltix.DFP\EPAM.Deltix.DFP.csproj", "{3094BAAA-20C5-4615-B8C6-3EC3817BDEA5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deltix.DFP.Test", "Deltix.DFP.Test\Deltix.DFP.Test.csproj", "{6C2AFDF5-A6F9-4AC8-814D-F1A8EE513B4E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EPAM.Deltix.DFP.Test", "EPAM.Deltix.DFP.Test\EPAM.Deltix.DFP.Test.csproj", "{6C2AFDF5-A6F9-4AC8-814D-F1A8EE513B4E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deltix.DFP.Demo", "Deltix.DFP.Demo\Deltix.DFP.Demo.csproj", "{4CDC6E3B-EDE9-4AC0-A144-37071C608ACD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EPAM.Deltix.DFP.Demo", "EPAM.Deltix.DFP.Demo\EPAM.Deltix.DFP.Demo.csproj", "{4CDC6E3B-EDE9-4AC0-A144-37071C608ACD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deltix.DFP.Benchmark", "Deltix.DFP.Benchmark\Deltix.DFP.Benchmark.csproj", "{3DC6860F-084B-4B68-BCF0-A2F57C7E478F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EPAM.Deltix.DFP.Benchmark", "EPAM.Deltix.DFP.Benchmark\EPAM.Deltix.DFP.Benchmark.csproj", "{3DC6860F-084B-4B68-BCF0-A2F57C7E478F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

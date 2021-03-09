@@ -19,7 +19,7 @@ var csDir = ".";
 var gradleRootDir = "..";
 var nativeProjectDir = "../native";
 
-var baseProjectName = "Deltix.DFP";
+var baseProjectName = "EPAM.Deltix.DFP";
 var mainProjectName = baseProjectName;
 var testProjectName = $"{baseProjectName}.Test";
 
@@ -29,7 +29,7 @@ var nativeLibName = nativeProjectName;
 var nativeLibLinuxFakeName = nativeLibName + "@@@@";
 
 var nativeBinDir = $"{nativeProjectDir}/bin";
-var slnPath = $"{csDir}/Deltix.DFP.sln";
+var slnPath = $"{csDir}/EPAM.Deltix.DFP.sln";
 
 // Parse version from gradle.properties
 var gradleProperties = new Dictionary<String, String>();
@@ -147,15 +147,25 @@ Task("BuildAndCompressNativeLinuxLibs")
     .IsDependentOn("CompressNativeLibs")
     .Does(() => { });
 
+//Task("MakeVersionFiles")
+//    .Does(() =>
+//{
+//    FileWriteText(new FilePath("./main/Version.targets"), "<?xml version=\"1.0\" encoding=\"utf-8\"?><Project><PropertyGroup><VersionDashed>" + versionDashed + "</VersionDashed></PropertyGroup></Project>");
+//    FileWriteText(new FilePath("./main/Version.cs"), "namespace EPAM.Deltix.DFP { internal class Version { internal const string versionDashed = \"" + versionDashed + "\"; } }");
+//});
+
+
 DotNetCoreMSBuildSettings getMSBuildSettings()
  {
     return new DotNetCoreMSBuildSettings()
             .WithProperty("Version", version)
             .WithProperty("FileVersion", dotNetVersion)
             .WithProperty("AssemblyVersion", dotNetVersion);
+            //            .WithProperty("VersionDashed", versionDashed)
  }
 
 Task("Build")
+//    .IsDependentOn("MakeVersionFiles")
     .IsDependentOn("Restore-NuGet-Packages")
     .Does(() =>
 {
@@ -219,18 +229,17 @@ Task("Pack")
     DotNetCorePack(".", settings);
 });
 
-Task("Push")
-    .IsDependentOn("Pack")
-    .Does(() =>
-{
-    // Task disabled
-    var url = "";
-    var apiKey = "";
-    foreach (var file in GetFiles($"{csDir}/artifacts/*.nupkg"))
-    {
-        DotNetCoreTool(".", "nuget", "push " + file.FullPath + " --source " + url + " --api-key " + apiKey);
-    }
-});
+// Task("Push")
+//     .IsDependentOn("Pack")
+//     .Does(() =>
+// {
+//     var url = "https://packages.deltixhub.com/nuget/" + (EnvironmentVariable("FEED_BASE_NAME") ?? "Test") + ".NET";
+//     var apiKey = (EnvironmentVariable("PUBLISHER_USERNAME") ?? "") + ":" + (EnvironmentVariable("PUBLISHER_PASSWORD") ?? "");
+//     foreach (var file in GetFiles($"{csDir}/artifacts/*.nupkg"))
+//     {
+//         DotNetCoreTool(".", "nuget", "push " + file.FullPath + " --source " + url + " --api-key " + apiKey);
+//     }
+// });
 
 //////////////////////////////////////////////////////////////////////
 // TASK TARGETS

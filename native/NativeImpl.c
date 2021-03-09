@@ -3,7 +3,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#define JAVA_NAMESPACE deltix_dfp_NativeImpl
+#define JAVA_NAMESPACE com_epam_deltix_dfp_NativeImpl
 #define MULTIAPI_HEADER "NativeImpl.h"
 
 /**

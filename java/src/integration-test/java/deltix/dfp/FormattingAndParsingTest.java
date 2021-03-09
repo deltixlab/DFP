@@ -1,4 +1,4 @@
-package deltix.dfp;
+package com.epam.deltix.dfp;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -34,7 +34,7 @@ public class FormattingAndParsingTest {
 
     @Test
     public void parse() throws IOException {
-        final File file = new File(System.getProperty("deltix.dfp.dataFiles.parsingAndFormatting"));
+        final File file = new File(System.getProperty("com.epam.deltix.dfp.dataFiles.parsingAndFormatting"));
         final FileReader fileReader = new FileReader(file);
         final BufferedReader bufferedReader = new BufferedReader(fileReader);
 

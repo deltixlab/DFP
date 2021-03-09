@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.27130.2026
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DecimalNative", "DecimalNative.vcxproj", "{601B08C7-6202-49F6-8880-19E7E4147737}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DecimalNative.Test", "test\DecimalNative.Test.vcxproj", "{360D0709-BDD3-4CD5-90D1-9FFD88C4936E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -21,6 +23,14 @@ Global
 		{601B08C7-6202-49F6-8880-19E7E4147737}.Release|x64.Build.0 = Release|x64
 		{601B08C7-6202-49F6-8880-19E7E4147737}.Release|x86.ActiveCfg = Release|Win32
 		{601B08C7-6202-49F6-8880-19E7E4147737}.Release|x86.Build.0 = Release|Win32
+		{360D0709-BDD3-4CD5-90D1-9FFD88C4936E}.Debug|x64.ActiveCfg = Debug|x64
+		{360D0709-BDD3-4CD5-90D1-9FFD88C4936E}.Debug|x64.Build.0 = Debug|x64
+		{360D0709-BDD3-4CD5-90D1-9FFD88C4936E}.Debug|x86.ActiveCfg = Debug|Win32
+		{360D0709-BDD3-4CD5-90D1-9FFD88C4936E}.Debug|x86.Build.0 = Debug|Win32
+		{360D0709-BDD3-4CD5-90D1-9FFD88C4936E}.Release|x64.ActiveCfg = Release|x64
+		{360D0709-BDD3-4CD5-90D1-9FFD88C4936E}.Release|x64.Build.0 = Release|x64
+		{360D0709-BDD3-4CD5-90D1-9FFD88C4936E}.Release|x86.ActiveCfg = Release|Win32
+		{360D0709-BDD3-4CD5-90D1-9FFD88C4936E}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

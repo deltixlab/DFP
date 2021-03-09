@@ -1,2 +1,4 @@
-include ':java'
-project(':java').name = 'deltix-dfp'
+include(':nativeWrappers')
+include(':native-gcc')
+include(':java')
+project(':java').name = 'epam-deltix-dfp'

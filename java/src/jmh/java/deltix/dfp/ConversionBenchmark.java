@@ -1,4 +1,4 @@
-package deltix.dfp;
+package com.epam.deltix.dfp;
 
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
