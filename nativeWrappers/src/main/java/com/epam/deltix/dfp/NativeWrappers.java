@@ -267,7 +267,7 @@ public class NativeWrappers {
                  Files.newBufferedWriter(Paths.get(
                      "java", "src", "main", "java", "com", "epam", "deltix", "dfp", "NativeImpl.java"),
                      StandardCharsets.UTF_8)) {
-            writer.write("package com.pam.deltix.dfp;\n" +
+            writer.write("package com.epam.deltix.dfp;\n" +
                 "\n" +
                 "final class NativeImpl {\n" +
                 "    static {\n" +

@@ -14,12 +14,11 @@ public class NativeImplLoader {
             final boolean isSnapshot = version.endsWith("-SNAPSHOT");
             if (isSnapshot)
                 version = version.substring(0, version.length() - "-SNAPSHOT".length());
-
             ResourceLoader
                 .from(NativeImpl.class, "$(OS)/$(ARCH)/*") // This version now also works, but is probably less efficient
                 //.from(NativeImplLoader.class, "$(OS)/$(ARCH)/DecimalNative.$(DLLEXT).zst")
-                .to(Paths.get(System.getProperty("java.io.tmpdir"), "EPAM.Deltix", "DFP", version, archName).toString())
-                .lowercasePathOnLinux(false)
+                .to(Paths.get(System.getProperty("java.io.tmpdir"), "com", "EPAM", "Deltix", "DFP", version, archName).toString())
+                // .lowercasePathOnLinux(false)
                 .alwaysOverwrite(isSnapshot)
                 .tryRandomFallbackSubDirectory(true)
                 .load();

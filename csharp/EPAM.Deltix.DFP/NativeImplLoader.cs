@@ -20,7 +20,7 @@ namespace EPAM.Deltix.DFP
 				var loader = ResourceLoader
 					.From($"EPAM.Deltix.DFP.{ResourceLoader.OS.Name}.{archName}.*")
 					.To(Path.Combine(Path.GetTempPath(), "EPAM.Deltix", "DFP", ResourceLoader.OS.AssemblyVersion, archName))
-					.LowercasePathOnLinux(false)
+					// .LowercasePathOnLinux(false)
 					.TryRandomFallbackSubDirectory(true)
 					.Load();
 
