@@ -1,6 +1,6 @@
 #tool nuget:?package=NUnit.ConsoleRunner&version=3.7.0
+#addin "Cake.Powershell"
 #addin "Cake.FileHelpers"
-#addin "Cake.Incubator"
 
 //////////////////////////////////////////////////////////////////////
 // ARGUMENTS
@@ -9,184 +9,59 @@
 var target = Argument("target", "Default");
 var configuration = Argument("configuration", "Release");
 
-
-//////////////////////////////////////////////////////////////////////
-// PREPARATION
-//////////////////////////////////////////////////////////////////////
-
-// Define directories.
-var csDir = ".";
-var gradleRootDir = "..";
-var nativeProjectDir = "../native";
-
-var baseProjectName = "EPAM.Deltix.DFP";
-var mainProjectName = baseProjectName;
-var testProjectName = $"{baseProjectName}.Test";
-
-var nativeProjectName = "DecimalNative";
-var nativeLibName = nativeProjectName;
-// Reserve a few characters to later replace with actual native lib internal version number
-var nativeLibLinuxFakeName = nativeLibName + "@@@@";
-
-var nativeBinDir = $"{nativeProjectDir}/bin";
-var slnPath = $"{csDir}/EPAM.Deltix.DFP.sln";
-
-// Parse version from gradle.properties
-var gradleProperties = new Dictionary<String, String>();
-foreach (var row in System.IO.File.ReadAllLines($"{gradleRootDir}/gradle.properties"))
-    gradleProperties.Add(row.Split('=')[0], String.Join("=",row.Split('=').Skip(1).ToArray()));
-
-var version = gradleProperties["version"];
-var index = version.IndexOf("-");
-var dotNetVersion = (index > 0 ? version.Substring(0, index) : version) + ".0";
-
-//////////////////////////////////////////////////////////////////////
-// Helpers
-//////////////////////////////////////////////////////////////////////
-
-String prjDir(String name) { return $"{csDir}/{name}"; }
-String prjPath(String name) { return $"{prjDir(name)}/{name}.csproj"; }
-String binDir(String name) { return $"{prjDir(name)}/bin/{configuration}"; }
-String objDir(String name) { return $"{prjDir(name)}/obj/{configuration}"; }
-
-void echo(string s) { Console.WriteLine(s); }
-
-// rm -rf <dir>
-void DeleteDir(string dir)
-{
-	if (DirectoryExists(dir))
-		DeleteDirectory(new DirectoryPath(dir), new DeleteDirectorySettings { Recursive = true, Force = true });
-}
-
-// Reserve some code in case we want later to use version from .properties for the native artifacts
-//var versionDashed = dotNetVersion.Replace(".", "-");
-
 //////////////////////////////////////////////////////////////////////
 // TASKS
 //////////////////////////////////////////////////////////////////////
 
-Task("CleanNativeLibs")
+Task("Native-Rename")
     .Does(() =>
 {
-	//DeleteDir($"{nativeBinDir}");
-	DeleteDir($"{nativeProjectDir}/obj");
+	var files = GetFiles("../native-gcc/bin/Release/**/*.zst");
+	foreach(var file in files)
+	{
+		MoveFile(file, file.ToString().Replace('.', '_'));
+	}
 });
 
 Task("Clean")
     .Does(() =>
 {
-    DotNetCoreClean(slnPath,
-        new DotNetCoreCleanSettings { Configuration = configuration }
-    );
+    DotNetCoreClean("./EPAM.Deltix.DFP.sln");
 });
-
 
 Task("Restore-NuGet-Packages")
     .IsDependentOn("Clean")
     .Does(() =>
 {
-    DotNetCoreRestore(slnPath);
+    DotNetCoreRestore("./EPAM.Deltix.DFP.sln");
 });
-
-
-void BuildNativeTarget(int arch, bool isWindows)
-{
-    arch = 32 == arch && isWindows ? 86 : arch;
-    StartProcess(isWindows ? "MSBuild" : "sh",
-        new ProcessSettings { Arguments =
-            isWindows ? $"/p:TargetName={nativeLibName} /p:Platform=x{arch} /p:Configuration={configuration} /t:Rebuild /m:4 {nativeProjectName}.vcxproj"
-                : $"build-linux.sh {nativeLibLinuxFakeName} {configuration} {arch} {(32 == arch ? "ia32" : "intel64")}",
-            WorkingDirectory= nativeProjectDir
-		});
-    // Possible other MSBuild options
-    //  "/t:Rebuild"
-    // + "/property:TargetName=" + nativeLibName + // For MSBuild
-}
-
-void BuildNativeLibs(bool isWindows)
-{
-    foreach (var arch in new int[] {32, 64})
-        BuildNativeTarget(arch, isWindows);
-}
-
-Task("BuildNativeLinuxLibs")
-    .IsDependentOn("CleanNativeLibs")
-    .Does(() =>
-{
-	BuildNativeLibs(false);
-});
-
-Task("BuildNativeWindowsLibs")
-    .IsDependentOn("CleanNativeLibs")
-    .Does(() =>
-{
-    BuildNativeLibs(true);
-});
-
-Task("CompressNativeLibs")
-    .Does(() =>
-{
-    var path = $"{nativeBinDir}/Release";
-    StartProcess("zstd", $"-19 --rm -r {path}");
-    // dotnet resources compilation workaround & versioning for linux
-    foreach (var arch in new int[]{32, 64})
-    {
-        var fname = $"{path}/Linux/{arch}/lib{nativeLibLinuxFakeName}.so.zst";
-        if (FileExists(fname))
-            MoveFile(fname, fname.Replace($"{nativeLibLinuxFakeName}.so.zst", $"{nativeLibName}_so.zst"));
-    }
-});
-
-Task("BuildAndCompressNativeWindowsLibs")
-    .IsDependentOn("BuildNativeWindowsLibs")
-    .IsDependentOn("CompressNativeLibs")
-    .Does(() => {});
-
-Task("BuildAndCompressNativeLinuxLibs")
-    .IsDependentOn("BuildNativeLinuxLibs")
-    .IsDependentOn("CompressNativeLibs")
-    .Does(() => { });
-
-//Task("MakeVersionFiles")
-//    .Does(() =>
-//{
-//    FileWriteText(new FilePath("./main/Version.targets"), "<?xml version=\"1.0\" encoding=\"utf-8\"?><Project><PropertyGroup><VersionDashed>" + versionDashed + "</VersionDashed></PropertyGroup></Project>");
-//    FileWriteText(new FilePath("./main/Version.cs"), "namespace EPAM.Deltix.DFP { internal class Version { internal const string versionDashed = \"" + versionDashed + "\"; } }");
-//});
-
-
-DotNetCoreMSBuildSettings getMSBuildSettings()
- {
-    return new DotNetCoreMSBuildSettings()
-            .WithProperty("Version", version)
-            .WithProperty("FileVersion", dotNetVersion)
-            .WithProperty("AssemblyVersion", dotNetVersion);
-            //            .WithProperty("VersionDashed", versionDashed)
- }
 
 Task("Build")
-//    .IsDependentOn("MakeVersionFiles")
     .IsDependentOn("Restore-NuGet-Packages")
+    .IsDependentOn("Native-Rename")
     .Does(() =>
 {
+    DotNetCoreBuild("./EPAM.Deltix.DFP.sln", new DotNetCoreBuildSettings {
+        Configuration = configuration
+    });
+
     var buildSettings = new DotNetCoreBuildSettings {
         Configuration = configuration,
         NoRestore = true,
         NoDependencies = true,
-        MSBuildSettings = getMSBuildSettings()
     };
 
     if (!IsRunningOnWindows())
         buildSettings.Framework = "netstandard2.0";
 
-    DotNetCoreBuild(prjPath(baseProjectName), buildSettings);
+    DotNetCoreBuild("./EPAM.Deltix.DFP/EPAM.Deltix.DFP.csproj", buildSettings);
 
     if (!IsRunningOnWindows())
         buildSettings.Framework = "netcoreapp2.0";
 
-    DotNetCoreBuild(prjPath($"{baseProjectName}.Benchmark"), buildSettings);
-    DotNetCoreBuild(prjPath($"{baseProjectName}.Demo"), buildSettings);
-    DotNetCoreBuild(prjPath(testProjectName), buildSettings);
+    DotNetCoreBuild("./EPAM.Deltix.DFP.Benchmark/EPAM.Deltix.DFP.Benchmark.csproj", buildSettings);
+    DotNetCoreBuild("./EPAM.Deltix.DFP.Demo/EPAM.Deltix.DFP.Demo.csproj", buildSettings);
+    DotNetCoreBuild("./EPAM.Deltix.DFP.Test/EPAM.Deltix.DFP.Test.csproj", buildSettings);
 });
 
 Task("Run-Unit-Tests")
@@ -205,10 +80,10 @@ Task("Run-Unit-Tests")
          buildSettings.Framework = "netcoreapp2.0";
 
 	Information("Running tests with .NET Core 2.0");
-	DotNetCoreTest(prjPath(testProjectName), buildSettings);
+	DotNetCoreTest("./EPAM.Deltix.DFP.Test/EPAM.Deltix.DFP.Test.csproj", buildSettings);
 
     // Prevent NUnit tests from running on platforms without .NET 4.0
-    var glob = $"{binDir(testProjectName)}/net40/{testProjectName}.exe";
+    var glob = $"./EPAM.Deltix.DFP.Test/bin/{configuration}/net40/EPAM.Deltix.DFP.Test.exe";
     if (IsRunningOnWindows() && GetFiles(glob).Count > 0)
     {
 		Information("Running tests with NUnit & .NET Framework 4.0");
@@ -223,23 +98,22 @@ Task("Pack")
     var settings = new DotNetCorePackSettings
     {
         Configuration = configuration,
-        OutputDirectory = $"{csDir}/artifacts/",
-        MSBuildSettings = getMSBuildSettings()
+        OutputDirectory = "./artifacts/"
     };
     DotNetCorePack(".", settings);
 });
 
-// Task("Push")
-//     .IsDependentOn("Pack")
-//     .Does(() =>
-// {
-//     var url = "https://packages.deltixhub.com/nuget/" + (EnvironmentVariable("FEED_BASE_NAME") ?? "Test") + ".NET";
-//     var apiKey = (EnvironmentVariable("PUBLISHER_USERNAME") ?? "") + ":" + (EnvironmentVariable("PUBLISHER_PASSWORD") ?? "");
-//     foreach (var file in GetFiles($"{csDir}/artifacts/*.nupkg"))
-//     {
-//         DotNetCoreTool(".", "nuget", "push " + file.FullPath + " --source " + url + " --api-key " + apiKey);
-//     }
-// });
+Task("Push")
+    .IsDependentOn("Pack")
+    .Does(() =>
+{
+    var url = (EnvironmentVariable("ARTIFACTORY_URL") ?? "https://artifactory.epam.com/artifactory") + "/api/nuget/" + (EnvironmentVariable("FEED_BASE_NAME") ?? "EPM-RTC-test") + "-net";
+    var apiKey = (EnvironmentVariable("ARTIFACTORY_USER") ?? "") + ":" + (EnvironmentVariable("ARTIFACTORY_PASS") ?? "");
+    foreach (var file in GetFiles("./artifacts/*.nupkg"))
+    {
+        DotNetCoreTool(".", "nuget", "push " + file.FullPath + " --source " + url + " --api-key " + apiKey);
+    }
+});
 
 //////////////////////////////////////////////////////////////////////
 // TASK TARGETS

@@ -12,14 +12,9 @@ env:
   GRADLE_OPTS: "-Dorg.gradle.daemon=false"
 
 jobs:
-  build-native:
-    name: Build native libraries with java ${{ matrix.java }} (${{ matrix.os }})
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        java: [ '8' ]
-        os: ['ubuntu-latest', 'windows-latest']
+  build-native-linux:
+    name: Build native Linux libraries
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -40,17 +35,59 @@ jobs:
       - name: Setup java
         uses: actions/setup-java@v1
         with:
-          java-version: ${{ matrix.java }}
+          java-version: 8
+      - name: Build native libraries with gradle
+        run: ./gradlew makeNative64
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          path: |
+            native-gcc/bin/Release/Linux/32/*.so
+            native-gcc/bin/Release/Linux/64/*.so
+          name: LinuxNativeLibs
+  build-native-windows:
+    name: Build native Windows libraries
+    runs-on: windows-latest
+    needs: build-native-linux
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'        
+      - name: Cache gradle dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-caches-${{ hashFiles('**/*.gradle') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-caches-
+      - name: Cache gradle wrapper
+        uses: actions/cache@v2
+        with:
+          path: ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
+      - name: Download Linux native artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: LinuxNativeLibs
+          path: native-gcc/bin/Release/Linux/
+      - run: tree
+      - name: Setup java
+        uses: actions/setup-java@v1
+        with:
+          java-version: 8
       - name: Build native libraries with gradle
         run: ./gradlew makeNative64 makeNativeWrappers
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
           path: |
-            native/bin/Release/Linux/32/*.so
-            native/bin/Release/Linux/64/*.so
+            native-gcc/bin/Release/Linux/32/*.so
+            native-gcc/bin/Release/Linux/64/*.so
+            native-gcc/bin/Release/Windows/32/*.dll
+            native-gcc/bin/Release/Windows/64/*.dll
             csharp/EPAM.Deltix.DFP/NativeImpl.cs
             csharp/EPAM.Deltix.DFP/Version.targets
             java/src/main/java/com/epam/deltix/dfp/NativeImpl.java
             java/src/main/java/com/epam/deltix/dfp/Version.java
-          name: ${{ runner.os }}-nativeLibs
+          name: NativeLibs

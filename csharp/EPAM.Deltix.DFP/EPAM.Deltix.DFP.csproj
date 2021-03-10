@@ -6,12 +6,12 @@
 		<RootNamespace>EPAM.Deltix.DFP</RootNamespace>
 		<AssemblyName>EPAM.Deltix.DFP</AssemblyName>
 		<Authors>Vitali Haravy &lt;vharavy@deltixlab.com&gt;Barys Chupryn &lt;bchupryn@deltixlab.com&gt;</Authors>
-		<Company>EPAM Systems Inc.</Company>
+		<Company>EPAM.Deltix Inc.</Company>
 		<Description>An implementation of decimal floating-point arithmetic.</Description>
 		<Copyright>Copyright (C) 2017-2021, EPAM Systems Inc.</Copyright>
-		<PackageProjectUrl>https://github.com/epam/DFP</PackageProjectUrl>
+		<PackageProjectUrl>https://github.com/DeltixInc/DFP</PackageProjectUrl>
 		<RepositoryType>git</RepositoryType>
-		<RepositoryUrl>git@github.com:epam/DFP.git $(VersionSha)</RepositoryUrl>
+		<RepositoryUrl>git@github.com:DeltixInc/DFP.git $(VersionSha)</RepositoryUrl>
 		<PackageTags>.NET Decimal</PackageTags>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	</PropertyGroup>
@@ -38,29 +38,13 @@
 		<Compile Include="..\..\NativeUtils\csharp\NativeUtils\ResourceLoader.cs" Link="NativeUtils\ResourceLoader.cs" />
 		<Compile Include="..\..\NativeUtils\csharp\NativeUtils\ResourceLoaderUtils.cs" Link="NativeUtils\ResourceLoaderUtils.cs" />
 	</ItemGroup>
-	<Choose>
-		<When Condition="Exists('..\..\native-gcc\bin\Release\Windows\32\ddfp$(VersionSuffix).dll.zst')">
-			<ItemGroup>
-				<EmbeddedResource Include="..\..\native-gcc\bin\Release\Windows\32\ddfp$(VersionSuffix).dll.zst" Link="Windows\x32\ddfp$(VersionSuffix)_dll_zst" />
-				<EmbeddedResource Include="..\..\native-gcc\bin\Release\Windows\64\ddfp$(VersionSuffix).dll.zst" Link="Windows\x64\ddfp$(VersionSuffix)_dll_zst" />
-			</ItemGroup>
-		</When>
-	</Choose>
-	<Choose>
-		<When Condition="Exists('..\..\native-gcc\bin\Release\Linux\32\libddfp$(VersionSuffix)_so.zst')">
-			<ItemGroup>
-				<EmbeddedResource Include="..\..\native-gcc\bin\Release\Linux\32\libddfp$(VersionSuffix)_so.zst" Link="Linux\32\libddfp$(VersionSuffix)_so_zst" />
-				<EmbeddedResource Include="..\..\native-gcc\bin\Release\Linux\64\libddfp$(VersionSuffix)_so.zst" Link="Linux\64\libddfp$(VersionSuffix)_so_zst" />
-			</ItemGroup>
-		</When>
-	</Choose>
-	<Choose>
-		<When Condition="Exists('..\..\native-gcc\bin\Release\OSX\64\libddfp$(VersionSuffix).dylib.zst')">
-			<ItemGroup>
-				<EmbeddedResource Include="..\..\native-gcc\bin\Release\OSX\64\libddfp$(VersionSuffix).dylib.zst" Link="OSX\64\libddfp$(VersionSuffix)_dylib_zst" />
-			</ItemGroup>
-		</When>
-	</Choose>
+	<ItemGroup>
+		<EmbeddedResource Include="..\..\native-gcc\bin\Release\Windows\32\ddfp$(VersionSuffix)_dll_zst" Link="Windows\x32\ddfp$(VersionSuffix)_dll_zst" />
+		<EmbeddedResource Include="..\..\native-gcc\bin\Release\Windows\64\ddfp$(VersionSuffix)_dll_zst" Link="Windows\x64\ddfp$(VersionSuffix)_dll_zst" />
+		<EmbeddedResource Include="..\..\native-gcc\bin\Release\Linux\32\libddfp$(VersionSuffix)_so_zst" Link="Linux\32\libddfp$(VersionSuffix)_so_zst" />
+		<EmbeddedResource Include="..\..\native-gcc\bin\Release\Linux\64\libddfp$(VersionSuffix)_so_zst" Link="Linux\64\libddfp$(VersionSuffix)_so_zst" />
+		<EmbeddedResource Include="..\..\native-gcc\bin\Release\OSX\64\libddfp$(VersionSuffix)_dylib_zst" Link="OSX\64\libddfp$(VersionSuffix)_dylib_zst" />
+	</ItemGroup>
 	<!--Target Name="PreBuild" BeforeTargets="PreBuildEvent">
 		<Exec WorkingDirectory="..\.." Command="gradlew :nativeWrappers:makeNativeWrappers" />
 	</Target-->

@@ -64,12 +64,10 @@ task sourcesJar(type: Jar, dependsOn: classes) {
 publishing {
     repositories {
         maven {
-            url "${System.getenv('ARTIFACTORY_URL')}/${System.getenv('FEED_BASE_NAME') ?: 'EPM-RTC-test-java'}"
+            url "${System.getenv('ARTIFACTORY_URL')}/${System.getenv('FEED_BASE_NAME') ?: 'EPM-RTC-test'}-java"
             credentials {
                 username System.getenv('ARTIFACTORY_USER') ?: ''
-
                 password System.getenv('ARTIFACTORY_PASS') ?: ''
-
             }
         }
     }
