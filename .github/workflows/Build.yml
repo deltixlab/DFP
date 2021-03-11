@@ -152,4 +152,51 @@ jobs:
           path: |
             java/build/libs/*
           name: JavaBuild
-    
+  test-java:
+    name: Run Java ${{ matrix.java }} Tests (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    needs: build-jar
+    strategy:
+      fail-fast: false
+      matrix:
+        java: [ '8' ]
+        os: [ 'ubuntu-latest', 'windows-latest']
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2    
+        with:
+          submodules: 'recursive'    
+      - name: Cache gradle dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-caches-${{ hashFiles('**/*.gradle') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-caches-
+      - name: Cache gradle wrapper
+        uses: actions/cache@v2
+        with:
+          path: ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
+      - name: Download JAR
+        uses: actions/download-artifact@v2
+        with:
+          name: JavaBuild
+          path: java/build/libs/
+      - name: Download compressed libs
+        uses: actions/download-artifact@v2
+        with:
+          name: CompressedNativeLibs
+      - name: Setup java
+        uses: actions/setup-java@v1
+        with:
+          java-version: ${{ matrix.java }}
+      - name: Run tests with gradle
+        run: ./gradlew check
+      - name: Upload test results on failure
+        uses: actions/upload-artifact@v2
+        if: ${{ failure() }}
+        with:
+          path: |
+            java/build/reports/*
+          name: Java${{ matrix.java }}-${{ runner.os }}-TestReports
