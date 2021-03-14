@@ -1368,74 +1368,78 @@ class JavaImpl {
         return signMask + ((long) exponent << EXPONENT_SHIFT_SMALL) + coefficient;
     }
 
-    public static long round(final long d64, final int n, final RoundType roundType) {
-        if (isSpecial(d64))
-            return d64;
+    public static long round(final long value, final int n, final RoundType roundType) {
+        if (isSpecial(value))
+            return value;
         if (n > JavaImpl.MAX_EXPONENT)
-            return d64;
+            return value;
         if (n < JavaImpl.MIN_EXPONENT)
             return JavaImpl.ZERO;
 
-        final Decimal64Parts parts = new Decimal64Parts();
-        JavaImpl.toParts(d64, parts);
+        final Decimal64Parts parts = tlsDecimal64Parts.get();
+        JavaImpl.toParts(value, parts);
         parts.exponent += n - JavaImpl.EXPONENT_BIAS;
 
         if (parts.exponent >= 0) // value is already rounded
-            return d64;
+            return value;
         // All next - negative exponent case
 
+        int expShift = 0;
+        long divFactor = 1;
         { // Truncate all digits except last one
             long tenPower = 10;
             int expPower = 1;
-            int absPower = -parts.exponent - 1;
+
+            long coefficient = parts.coefficient;
+
+            int absPower = -parts.exponent;
             if (absPower >= 16)
                 return JavaImpl.ZERO;
 
-            while (absPower != 0 && parts.coefficient != 0) {
+            while (absPower != 0 && coefficient != 0) {
                 if ((absPower & 1) != 0) {
-                    parts.coefficient /= tenPower;
-                    parts.exponent += expPower;
+                    divFactor *= tenPower;
+                    coefficient /= tenPower;
+                    expShift += expPower;
                 }
                 tenPower *= tenPower;
                 expPower *= 2;
                 absPower >>= 1;
             }
-            if (parts.coefficient == 0)
-                return JavaImpl.ZERO;
         }
 
         // Process last digit
         switch (roundType) {
             case ROUND:
-                parts.coefficient = (parts.coefficient + 5) / 10;
+                parts.coefficient = ((parts.coefficient + divFactor / 2) / divFactor) * divFactor;
                 break;
 
             case TRUNC:
-                parts.coefficient = parts.coefficient / 10;
+                parts.coefficient = (parts.coefficient / divFactor) * divFactor;
                 break;
 
             case FLOOR:
                 if (parts.isNegative())
-                    parts.coefficient = (parts.coefficient + 9) / 10;
+                    parts.coefficient = ((parts.coefficient + divFactor - 1) / divFactor) * divFactor;
                 else
-                    parts.coefficient = parts.coefficient / 10;
+                    parts.coefficient = (parts.coefficient / divFactor) * divFactor;
                 break;
 
             case CEIL:
                 if (parts.isNegative())
-                    parts.coefficient = parts.coefficient / 10;
+                    parts.coefficient = (parts.coefficient / divFactor) * divFactor;
                 else
-                    parts.coefficient = (parts.coefficient + 9) / 10;
+                    parts.coefficient = ((parts.coefficient + divFactor - 1) / divFactor) * divFactor;
                 break;
 
             default:
                 throw new IllegalArgumentException("Unsupported roundType(=" + roundType + ") value.");
         }
-        parts.exponent++;
+        if (parts.coefficient == 0)
+            return JavaImpl.ZERO;
+
 
         parts.exponent -= n - JavaImpl.EXPONENT_BIAS;
         return JavaImpl.fromParts(parts);
     }
-
 }
-
