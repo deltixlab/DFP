@@ -144,12 +144,6 @@ OPN(fromFixedPointU32, scalbnd64((_Decimal64)mantissa, -tenPowerFactor), uint32 
 OPNR(toFixedPoint, int64, (int64)scalbnd64(value, numberOfDigits), _Decimal64 value, int32 numberOfDigits)
 OPN_FROM_TO(Int64)
 OPN_FROM_TO(UInt64)
-OPN_FROM_TO(Int32)
-OPN_FROM_TO(UInt32)
-OPN_FROM_TO(Int16)
-OPN_FROM_TO(UInt16)
-OPN_FROM_TO(Int8)
-OPN_FROM_TO(UInt8)
 
 //endregion
 

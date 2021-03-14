@@ -432,7 +432,7 @@ public class Decimal64Utils {
      * @return {@code int} value
      */
     public static int toInt(@Decimal final long value) {
-        return NativeImpl.toInt32(value);
+        return (int) NativeImpl.toInt64(value);
     }
 
     /// endregion

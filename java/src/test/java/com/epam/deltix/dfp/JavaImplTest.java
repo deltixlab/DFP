@@ -99,7 +99,6 @@ public class JavaImplTest {
         for (int i = 0; i < N; ++i) {
             final long dfp = (i & 1) > 0 ? JavaImpl.fromInt32(m) : JavaImpl.fromInt32V2(m);
             assertEquals(Decimal64Utils.toInt(dfp), m);
-            assertDecimalIdentical(NativeImpl.fromInt32(m), dfp);
             assertDecimalIdentical(NativeImpl.fromInt64(m), dfp);
             assertDecimalIdentical(NativeImpl.fromFloat64(m), dfp);
             m = random.nextInt();
@@ -335,7 +334,7 @@ public class JavaImplTest {
         final long inValue = Decimal64Utils.fromLong(9_999_999_999_999_999L);
 
 
-        final long testValue = JavaImpl.round(inValue, -1, RoundType.CEIL);
+        final long testValue = JavaImpl.round(inValue, 0, RoundType.TRUNC);
         final String inStr = Decimal64Utils.toString(inValue);
         final int dotIndex = inStr.indexOf('.');
         final String roundStd = dotIndex != -1 ? inStr.substring(0, dotIndex) : inStr;
