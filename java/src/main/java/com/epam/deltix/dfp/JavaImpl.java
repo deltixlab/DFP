@@ -1437,11 +1437,5 @@ class JavaImpl {
         return JavaImpl.fromParts(parts);
     }
 
-    public enum RoundType {
-        ROUND,
-        TRUNC,
-        FLOOR,
-        CEIL,
-    }
 }
 

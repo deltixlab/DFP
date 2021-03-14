@@ -11,6 +11,7 @@ import java.math.BigDecimal;
  * Every method that returns a {@code Decimal64}, returns a new instance.
  * <p>
  * Constructors are non-public. Can be instantiated only through static constructor methods.
+ *
  * @see Decimal64Utils
  */
 public class Decimal64 extends Number implements Comparable<Decimal64> {
@@ -26,6 +27,7 @@ public class Decimal64 extends Number implements Comparable<Decimal64> {
      * Of course, you may use another constant to initialize Decimal64 variables, just don't leave them uninitialized.
      * You don't need to use this constant in equality comparisons. 'if (a == null)' is ok.
      * Also, you are not expected to use Decimal64Utils.NULL constant directly anywhere, if you work with Decimal64 class.
+     *
      * @see Decimal64Utils#NULL
      */
     public static final Decimal64 NULL = null;
@@ -114,7 +116,7 @@ public class Decimal64 extends Number implements Comparable<Decimal64> {
 
     final long value;
 
-    private Decimal64(long value) {
+    private Decimal64(final long value) {
         this.value = value;
     }
 
@@ -122,30 +124,33 @@ public class Decimal64 extends Number implements Comparable<Decimal64> {
 
     /**
      * Create {@code Decimal64} instance from underlying binary value (boxing operation).
+     *
      * @param value 64-bit DFP value
      * @return new {@code Decimal64} instance
      */
-    public static Decimal64 fromUnderlying(long value) {
+    public static Decimal64 fromUnderlying(final long value) {
         return Decimal64Utils.NULL == value ? null : new Decimal64(value);
     }
 
     /**
      * Get binary representation as {@code long} (unboxing)
+     *
      * @param obj {@code Decimal64} instance, {@code null} can be passed too
      * @return underlying binary representation as {@code long}
      */
-    public static long toUnderlying(Decimal64 obj) {
+    public static long toUnderlying(final Decimal64 obj) {
         return null == obj ? Decimal64Utils.NULL : obj.value;
     }
 
     /**
      * Create {@code Decimal64} instance from fixed point decimal value: (12345, 2) -&gt; 123.45
-     * @param mantissa source fixed point value represented as {@code long}
+     *
+     * @param mantissa       source fixed point value represented as {@code long}
      * @param numberOfDigits number of decimal digits representing fractional part
      * @return new {@code Decimal64} instance
      * @see Decimal64Utils#fromFixedPoint(long, int)
      */
-    public static Decimal64 fromFixedPoint(long mantissa, int numberOfDigits) {
+    public static Decimal64 fromFixedPoint(final long mantissa, final int numberOfDigits) {
         return new Decimal64(Decimal64Utils.fromFixedPoint(mantissa, numberOfDigits));
     }
 
@@ -153,31 +158,34 @@ public class Decimal64 extends Number implements Comparable<Decimal64> {
      * Create {@code Decimal64} instance from fixed point decimal value: (12345, 2) -&gt; 123.45
      * Overload of {@link #fromFixedPoint(long, int)} for mantissa representable by {@code int}.
      * Faster than the full-range version.
-     * @param mantissa source fixed point value represented as {@code int}
+     *
+     * @param mantissa       source fixed point value represented as {@code int}
      * @param numberOfDigits number of decimal digits representing fractional part
      * @return new {@code Decimal64} instance
      * @see Decimal64Utils#fromFixedPoint(int, int)
      */
-    public static Decimal64 fromFixedPoint(int mantissa, int numberOfDigits) {
+    public static Decimal64 fromFixedPoint(final int mantissa, final int numberOfDigits) {
         return new Decimal64(Decimal64Utils.fromFixedPoint(mantissa, numberOfDigits));
     }
 
-    public static Decimal64 fromDecimalDouble(double value) {
+    public static Decimal64 fromDecimalDouble(final double value) {
         return new Decimal64(Decimal64Utils.fromDecimalDouble(value));
     }
 
     /**
      * Convert to fixed-point representation: (123.4567, 2) -&gt; 12346
+     *
      * @param numberOfDigits number of decimal digits representing fractional part
      * @return fixed-point decimal value represented as @{code long}
      */
-    public long toFixedPoint(int numberOfDigits) {
+    public long toFixedPoint(final int numberOfDigits) {
         return Decimal64Utils.toFixedPoint(value, numberOfDigits);
     }
 
     /**
      * Create {@code Decimal64} instance from {@code long} integer
      * Faster than the full-range version.
+     *
      * @param value source {@code long} integer value
      * @return new {@code Decimal64} instance
      */
@@ -187,6 +195,7 @@ public class Decimal64 extends Number implements Comparable<Decimal64> {
 
     /**
      * Convert {@code Decimal64} instance to {@code long} integer value by truncating fractional part towards zero
+     *
      * @return {@code long} integer value
      */
     public long toLong() {
@@ -197,6 +206,7 @@ public class Decimal64 extends Number implements Comparable<Decimal64> {
      * Create {@code Decimal64} instance from {@code int}
      * <p>
      * Faster than the version that takes {@code long}.
+     *
      * @param value source {@code int} value
      * @return new {@code Decimal64} instance
      */
@@ -206,6 +216,7 @@ public class Decimal64 extends Number implements Comparable<Decimal64> {
 
     /**
      * Convert {@code Decimal64} instance to {@code int} value by truncating fractional part towards zero
+     *
      * @return {@code int} value
      */
     public int toInt() {
@@ -215,16 +226,18 @@ public class Decimal64 extends Number implements Comparable<Decimal64> {
     /**
      * Create {@code Decimal64} instance from 64-bit binary floating point value({@code double})
      * <p>Note that not all binary FP values can be exactly represented as decimal FP values.
+     *
      * @param value source 64-bit binary floating point value
      * @return new {@code Decimal64} instance
      */
-    public static Decimal64 fromDouble(double value) {
+    public static Decimal64 fromDouble(final double value) {
         return new Decimal64(Decimal64Utils.fromDouble(value));
     }
 
     /**
      * Convert {@code Decimal64} instance to 64-bit binary floating point ({@code double}) value.
      * <p>Note that not all decimal FP values can be exactly represented as binary FP values.
+     *
      * @return {@code double} value
      */
     public double toDouble() {
@@ -234,6 +247,7 @@ public class Decimal64 extends Number implements Comparable<Decimal64> {
     /**
      * Create {@code Decimal64} instance from {@code BigDecimal} binary floating point value.
      * <p>Note that not all binary FP values can be exactly represented as decimal FP values.
+     *
      * @param value source {@code BigDecimal} binary floating point value
      * @return new {@code Decimal64} instance
      */
@@ -243,6 +257,7 @@ public class Decimal64 extends Number implements Comparable<Decimal64> {
 
     /**
      * Create {@code Decimal64} instance from {@code BigDecimal} binary floating point value.
+     *
      * @param value source {@code BigDecimal} binary floating point value
      * @return new {@code Decimal64} instance
      * @throws IllegalArgumentException if the value can't be converted to {@code Decimal64} without precision loss
@@ -254,6 +269,7 @@ public class Decimal64 extends Number implements Comparable<Decimal64> {
     /**
      * Convert {@code Decimal64} instance to {@code BigDecimal} binary floating point value.
      * <p>Note that not all decimal FP values can be exactly represented as binary FP values.
+     *
      * @return {@code BigDecimal} value
      */
     public BigDecimal toBigDecimal() {
@@ -266,7 +282,7 @@ public class Decimal64 extends Number implements Comparable<Decimal64> {
 
     /**
      * Check, if this {@code Decimal64} instance holds a Not-a-Number value.
-
+     *
      * @return {@code true}, if the value is NaN
      */
     public boolean isNaN() {
@@ -275,6 +291,7 @@ public class Decimal64 extends Number implements Comparable<Decimal64> {
 
     /**
      * Check, if this {@code Decimal64} instance holds is a positive or negative infinity.
+     *
      * @return {@code true}, if the value is an infinity
      */
     public boolean isInfinity() {
@@ -283,6 +300,7 @@ public class Decimal64 extends Number implements Comparable<Decimal64> {
 
     /**
      * Check, if this {@code Decimal64} instance holds a Positive Infinity value.
+     *
      * @return {@code true}, if Positive Infinity
      */
     public boolean isPositiveInfinity() {
@@ -291,6 +309,7 @@ public class Decimal64 extends Number implements Comparable<Decimal64> {
 
     /**
      * Check, if this {@code Decimal64} instance holds a Negative Infinity value.
+     *
      * @return {@code true}, if Negative Infinity
      */
     public boolean isNegativeInfinity() {
@@ -299,6 +318,7 @@ public class Decimal64 extends Number implements Comparable<Decimal64> {
 
     /**
      * Check, if this {@code Decimal64} instance holds a finite value(Not infinity or NaN).
+     *
      * @return {@code true}, if finite. {@code false} if Infinity or NaN.
      */
     public boolean isFinite() {
@@ -307,6 +327,7 @@ public class Decimal64 extends Number implements Comparable<Decimal64> {
 
     /**
      * Check, if the value held by this {@code Decimal64} instance is normalized.
+     *
      * @return {@code true}, if normalized.
      */
     public boolean isNormal() {
@@ -332,7 +353,7 @@ public class Decimal64 extends Number implements Comparable<Decimal64> {
      * @see #equals(Decimal64, Decimal64)
      * @see #equals(Object)
      */
-    public boolean equals(Decimal64 other) {
+    public boolean equals(final Decimal64 other) {
         return this == other || other != null && Decimal64Utils.equals(this.value, other.value);
     }
 
@@ -352,7 +373,7 @@ public class Decimal64 extends Number implements Comparable<Decimal64> {
      * held by the other instance;
      * {@code false} otherwise.
      */
-    public boolean isIdentical(Decimal64 other) {
+    public boolean isIdentical(final Decimal64 other) {
         return this == other || other != null && value == other.value;
     }
 
@@ -366,11 +387,12 @@ public class Decimal64 extends Number implements Comparable<Decimal64> {
      * E.g. various representations of 0 are not considered same.
      * <p>
      * {@code isIdentical(x, y) => equals(x, y)}
+     *
      * @param other Object being compared to this instance.
      * @return {@code true} if the binary representation of this value is the same as the underlying value of the other;
      * {@code false} otherwise.
      */
-    public boolean isIdentical(Object other) {
+    public boolean isIdentical(final Object other) {
         return this == other || other instanceof Decimal64 && value == ((Decimal64) other).value;
     }
 
@@ -390,7 +412,7 @@ public class Decimal64 extends Number implements Comparable<Decimal64> {
      * @see #equals(Decimal64)
      * @see #equals(Object)
      */
-    public static boolean equals(Decimal64 a, Decimal64 b) {
+    public static boolean equals(final Decimal64 a, final Decimal64 b) {
         return a == b || a != null && b != null && Decimal64Utils.equals(a.value, b.value);
     }
 
@@ -410,7 +432,7 @@ public class Decimal64 extends Number implements Comparable<Decimal64> {
      * @return {@code true} if the binary representations of a and b are equal;
      * {@code false} otherwise.
      */
-    public static boolean isIdentical(Decimal64 a, Decimal64 b) {
+    public static boolean isIdentical(final Decimal64 a, final Decimal64 b) {
         return a == b || a != null && b != null && a.value == b.value;
     }
 
@@ -428,7 +450,7 @@ public class Decimal64 extends Number implements Comparable<Decimal64> {
      * @return {@code true} if the second argument is an instance of {@code Decimal64} instances and both arguments represent the same arithmetical value;
      * {@code false} otherwise.
      */
-    public static boolean equals(Decimal64 a, Object b) {
+    public static boolean equals(final Decimal64 a, final Object b) {
         return a == b || a != null && b instanceof Decimal64 && Decimal64Utils.equals(a.value, ((Decimal64) b).value);
     }
 
@@ -448,31 +470,31 @@ public class Decimal64 extends Number implements Comparable<Decimal64> {
      * @return {@code true} if two instances of {@code Decimal64} hold the same underlying value;
      * {@code false} otherwise.
      */
-    public static boolean isIdentical(Decimal64 a, Object b) {
+    public static boolean isIdentical(final Decimal64 a, final Object b) {
         return a == b || a != null && b instanceof Decimal64 && a.value == ((Decimal64) b).value;
     }
 
-    public boolean isEqual(Decimal64 other) {
+    public boolean isEqual(final Decimal64 other) {
         return Decimal64Utils.isEqual(value, other.value);
     }
 
-    public boolean isNotEqual(Decimal64 other) {
+    public boolean isNotEqual(final Decimal64 other) {
         return Decimal64Utils.isNotEqual(value, other.value);
     }
 
-    public boolean isLess(Decimal64 other) {
+    public boolean isLess(final Decimal64 other) {
         return Decimal64Utils.isLess(value, other.value);
     }
 
-    public boolean isLessOrEqual(Decimal64 other) {
+    public boolean isLessOrEqual(final Decimal64 other) {
         return Decimal64Utils.isLessOrEqual(value, other.value);
     }
 
-    public boolean isGreater(Decimal64 other) {
+    public boolean isGreater(final Decimal64 other) {
         return Decimal64Utils.isGreater(value, other.value);
     }
 
-    public boolean isGreaterOrEqual(Decimal64 other) {
+    public boolean isGreaterOrEqual(final Decimal64 other) {
         return Decimal64Utils.isGreaterOrEqual(value, other.value);
     }
 
@@ -511,15 +533,15 @@ public class Decimal64 extends Number implements Comparable<Decimal64> {
      * @param b second argument
      * @return The smallest of two values.
      */
-    public static Decimal64 min(Decimal64 a, Decimal64 b) {
+    public static Decimal64 min(final Decimal64 a, final Decimal64 b) {
         return new Decimal64(Decimal64Utils.min(a.value, b.value));
     }
 
-    public static Decimal64 min(Decimal64 a, Decimal64 b, Decimal64 c) {
+    public static Decimal64 min(final Decimal64 a, final Decimal64 b, final Decimal64 c) {
         return new Decimal64(Decimal64Utils.min(a.value, b.value, c.value));
     }
 
-    public static Decimal64 min(Decimal64 a, Decimal64 b, Decimal64 c, Decimal64 d) {
+    public static Decimal64 min(final Decimal64 a, final Decimal64 b, final Decimal64 c, final Decimal64 d) {
         return new Decimal64(Decimal64Utils.min(a.value, b.value, c.value, d.value));
     }
 
@@ -530,15 +552,15 @@ public class Decimal64 extends Number implements Comparable<Decimal64> {
      * @param b second value.
      * @return The greatest of two values.
      */
-    public static Decimal64 max(Decimal64 a, Decimal64 b) {
+    public static Decimal64 max(final Decimal64 a, final Decimal64 b) {
         return new Decimal64(Decimal64Utils.max(a.value, b.value));
     }
 
-    public static Decimal64 max(Decimal64 a, Decimal64 b, Decimal64 c) {
+    public static Decimal64 max(final Decimal64 a, final Decimal64 b, final Decimal64 c) {
         return new Decimal64(Decimal64Utils.max(a.value, b.value, c.value));
     }
 
-    public static Decimal64 max(Decimal64 a, Decimal64 b, Decimal64 c, Decimal64 d) {
+    public static Decimal64 max(final Decimal64 a, final Decimal64 b, final Decimal64 c, final Decimal64 d) {
         return new Decimal64(Decimal64Utils.max(a.value, b.value, c.value, d.value));
     }
 
@@ -548,7 +570,7 @@ public class Decimal64 extends Number implements Comparable<Decimal64> {
      * @param other another value.
      * @return The smallest of two values.
      */
-    public Decimal64 min(Decimal64 other) {
+    public Decimal64 min(final Decimal64 other) {
         return new Decimal64(Decimal64Utils.min(value, other.value));
     }
 
@@ -558,7 +580,7 @@ public class Decimal64 extends Number implements Comparable<Decimal64> {
      * @param other another value.
      * @return The greatest of two values.
      */
-    public Decimal64 max(Decimal64 other) {
+    public Decimal64 max(final Decimal64 other) {
         return new Decimal64(Decimal64Utils.max(value, other.value));
     }
 
@@ -574,59 +596,59 @@ public class Decimal64 extends Number implements Comparable<Decimal64> {
         return new Decimal64(Decimal64Utils.abs(value));
     }
 
-    public Decimal64 add(Decimal64 other) {
+    public Decimal64 add(final Decimal64 other) {
         return new Decimal64(Decimal64Utils.add(value, other.value));
     }
 
-    public Decimal64 add(Decimal64 a, Decimal64 b) {
+    public Decimal64 add(final Decimal64 a, final Decimal64 b) {
         return new Decimal64(Decimal64Utils.add(value, a.value, b.value));
     }
 
-    public Decimal64 add(Decimal64 a, Decimal64 b, Decimal64 c) {
+    public Decimal64 add(final Decimal64 a, final Decimal64 b, final Decimal64 c) {
         return new Decimal64(Decimal64Utils.add(value, a.value, b.value, c.value));
     }
 
-    public Decimal64 subtract(Decimal64 other) {
+    public Decimal64 subtract(final Decimal64 other) {
         return new Decimal64(Decimal64Utils.subtract(value, other.value));
     }
 
-    public Decimal64 multiply(Decimal64 other) {
+    public Decimal64 multiply(final Decimal64 other) {
         return new Decimal64(Decimal64Utils.multiply(value, other.value));
     }
 
-    public Decimal64 multiply(Decimal64 a, Decimal64 b) {
+    public Decimal64 multiply(final Decimal64 a, final Decimal64 b) {
         return new Decimal64(Decimal64Utils.multiply(value, a.value, b.value));
     }
 
-    public Decimal64 multiply(Decimal64 a, Decimal64 b, Decimal64 c) {
+    public Decimal64 multiply(final Decimal64 a, final Decimal64 b, final Decimal64 c) {
         return new Decimal64(Decimal64Utils.multiply(value, a.value, b.value, c.value));
     }
 
-    public Decimal64 multiplyByInteger(int value) {
+    public Decimal64 multiplyByInteger(final int value) {
         return new Decimal64(Decimal64Utils.multiplyByInteger(this.value, value));
     }
 
-    public Decimal64 multiplyByInteger(long value) {
+    public Decimal64 multiplyByInteger(final long value) {
         return new Decimal64(Decimal64Utils.multiplyByInteger(this.value, value));
     }
 
-    public Decimal64 divide(Decimal64 other) {
+    public Decimal64 divide(final Decimal64 other) {
         return new Decimal64(Decimal64Utils.divide(value, other.value));
     }
 
-    public Decimal64 divideByInteger(int value) {
+    public Decimal64 divideByInteger(final int value) {
         return new Decimal64(Decimal64Utils.divideByInteger(this.value, value));
     }
 
-    public Decimal64 divideByInteger(long value) {
+    public Decimal64 divideByInteger(final long value) {
         return new Decimal64(Decimal64Utils.divideByInteger(this.value, value));
     }
 
-    public Decimal64 multiplyAndAdd(Decimal64 m, Decimal64 a) {
+    public Decimal64 multiplyAndAdd(final Decimal64 m, final Decimal64 a) {
         return new Decimal64(Decimal64Utils.multiplyAndAdd(value, m.value, a.value));
     }
 
-    public Decimal64 average(Decimal64 other) {
+    public Decimal64 average(final Decimal64 other) {
         return new Decimal64(Decimal64Utils.average(value, other.value));
     }
 
@@ -639,11 +661,15 @@ public class Decimal64 extends Number implements Comparable<Decimal64> {
 
     /// region Rounding
 
+    public Decimal64 round(final int n, final RoundType roundType) {
+        return new Decimal64(Decimal64Utils.round(value, n, roundType));
+    }
+
     public Decimal64 round() {
         return new Decimal64(Decimal64Utils.round(value));
     }
 
-    public Decimal64 round(Decimal64 multiple) {
+    public Decimal64 round(final Decimal64 multiple) {
         return new Decimal64(Decimal64Utils.round(value, multiple.value));
     }
 
@@ -680,15 +706,15 @@ public class Decimal64 extends Number implements Comparable<Decimal64> {
         return new Decimal64(Decimal64Utils.roundToNearestTiesAwayFromZero(value));
     }
 
-    public Decimal64 roundTowardsPositiveInfinity(Decimal64 multiple) {
+    public Decimal64 roundTowardsPositiveInfinity(final Decimal64 multiple) {
         return new Decimal64(Decimal64Utils.roundTowardsPositiveInfinity(value, multiple.value));
     }
 
-    public Decimal64 roundTowardsNegativeInfinity(Decimal64 multiple) {
+    public Decimal64 roundTowardsNegativeInfinity(final Decimal64 multiple) {
         return new Decimal64(Decimal64Utils.roundTowardsNegativeInfinity(value, multiple.value));
     }
 
-    public Decimal64 roundToNearestTiesAwayFromZero(Decimal64 multiple) {
+    public Decimal64 roundToNearestTiesAwayFromZero(final Decimal64 multiple) {
         return new Decimal64(Decimal64Utils.roundToNearestTiesAwayFromZero(value, multiple.value));
     }
 
@@ -864,9 +890,10 @@ public class Decimal64 extends Number implements Comparable<Decimal64> {
     /// endregion
 
     /// region Object Interface Implementation
+
     /**
      * Returns {@code true} if the given Object is an instance of Decimal64 and has the same arithmetical value.
-     *
+     * <p>
      * We consider that all POSITIVE_INFINITYs is equal to another POSITIVE_INFINITY,
      * all NEGATIVE_INFINITYs is equal to another NEGATIVE_INFINITY,
      * all NaNs is equal to another NaN.
@@ -877,7 +904,7 @@ public class Decimal64 extends Number implements Comparable<Decimal64> {
      * @see #equals(Decimal64)
      */
     @Override
-    public boolean equals(Object other) {
+    public boolean equals(final Object other) {
         return this == other || other instanceof Decimal64 && Decimal64Utils.equals(value, ((Decimal64) other).value);
     }
 
@@ -892,7 +919,7 @@ public class Decimal64 extends Number implements Comparable<Decimal64> {
 
     /**
      * Return hash code of arithmetical value of given decimal.
-     *
+     * <p>
      * We consider that all POSITIVE_INFINITYs have equal hashCode,
      * all NEGATIVE_INFINITYs have equal hashCode,
      * all NaNs have equal hashCode.
