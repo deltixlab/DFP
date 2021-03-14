@@ -330,12 +330,12 @@ public class JavaImplTest {
 
     @Test
     public void TestRound() {
-        final long inValue = Decimal64Utils.fromDouble(Math.PI * 1000);
+        //final long inValue = Decimal64Utils.fromDouble(Math.PI * 1000);
         //final long inValue = 0x77F7_FFFF_FFFF_FFFFL;
-        //final long inValue = Decimal64Utils.divideByInteger(Decimal64Utils.fromLong(9_999_999_999_999_999L), 10_000_000_000_000_000L);
+        final long inValue = Decimal64Utils.fromLong(9_999_999_999_999_999L);
 
 
-        final long testValue = JavaImpl.round(inValue, 0, RoundType.TRUNC);
+        final long testValue = JavaImpl.round(inValue, -1, RoundType.CEIL);
         final String inStr = Decimal64Utils.toString(inValue);
         final int dotIndex = inStr.indexOf('.');
         final String roundStd = dotIndex != -1 ? inStr.substring(0, dotIndex) : inStr;

@@ -1369,7 +1369,7 @@ class JavaImpl {
     }
 
     public static long round(final long value, final int n, final RoundType roundType) {
-        if (isSpecial(value))
+        if (isNonFinite(value))
             return value;
         if (n > JavaImpl.MAX_EXPONENT)
             return value;
@@ -1378,9 +1378,9 @@ class JavaImpl {
 
         final Decimal64Parts parts = tlsDecimal64Parts.get();
         JavaImpl.toParts(value, parts);
-        parts.exponent += n - JavaImpl.EXPONENT_BIAS;
+        final int exponent = parts.exponent - JavaImpl.EXPONENT_BIAS + n;
 
-        if (parts.exponent >= 0) // value is already rounded
+        if (exponent >= 0) // value is already rounded
             return value;
         // All next - negative exponent case
 
@@ -1392,19 +1392,22 @@ class JavaImpl {
 
             long coefficient = parts.coefficient;
 
-            int absPower = -parts.exponent;
-            if (absPower >= 16)
-                return JavaImpl.ZERO;
+            int absPower = -exponent;
+            if (absPower >= 16) {
+                divFactor = MAX_COEFFICIENT + 1;
+                expShift = 16;
 
-            while (absPower != 0 && coefficient != 0) {
-                if ((absPower & 1) != 0) {
-                    divFactor *= tenPower;
-                    coefficient /= tenPower;
-                    expShift += expPower;
+            } else {
+                while (absPower != 0 && coefficient != 0) {
+                    if ((absPower & 1) != 0) {
+                        divFactor *= tenPower;
+                        coefficient /= tenPower;
+                        expShift += expPower;
+                    }
+                    tenPower *= tenPower;
+                    expPower *= 2;
+                    absPower >>= 1;
                 }
-                tenPower *= tenPower;
-                expPower *= 2;
-                absPower >>= 1;
             }
         }
 
@@ -1439,7 +1442,6 @@ class JavaImpl {
             return JavaImpl.ZERO;
 
 
-        parts.exponent -= n - JavaImpl.EXPONENT_BIAS;
         return JavaImpl.fromParts(parts);
     }
 }
