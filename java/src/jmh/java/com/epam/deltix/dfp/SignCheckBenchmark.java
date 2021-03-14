@@ -13,16 +13,17 @@ import java.util.concurrent.TimeUnit;
 public class SignCheckBenchmark {
     @State(Scope.Thread)
     public static class BenchmarkState {
-        public @Decimal final long value = Decimal64Utils.fromDouble(Math.PI);
+        public @Decimal
+        final long value = Decimal64Utils.fromDouble(Math.PI);
     }
 
     @Benchmark
-    public void javaIsPositive(BenchmarkState state, Blackhole blackhole) {
+    public static void javaIsPositive(final BenchmarkState state, final Blackhole blackhole) {
         blackhole.consume(Decimal64Utils.isPositive(state.value));
     }
 
     @Benchmark
-    public void nativeIsPositive(BenchmarkState state, Blackhole blackhole) {
+    public static void nativeIsPositive(final BenchmarkState state, final Blackhole blackhole) {
         blackhole.consume(NativeImpl.isPositive(state.value));
     }
 }

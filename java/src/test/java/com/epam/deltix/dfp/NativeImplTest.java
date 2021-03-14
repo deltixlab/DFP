@@ -2,11 +2,8 @@ package com.epam.deltix.dfp;
 
 import org.junit.Test;
 
-import static com.epam.deltix.dfp.TestUtils.assertDecimalIdentical;
 import static com.epam.deltix.dfp.TestUtils.assertDecimalEqual;
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertFalse;
-import static junit.framework.TestCase.assertTrue;
+import static com.epam.deltix.dfp.TestUtils.assertDecimalIdentical;
 
 public class NativeImplTest {
 

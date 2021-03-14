@@ -33,10 +33,24 @@ public class DivisionByLongBenchmark {
     @Benchmark
     public void divisionViaMultiplication(final Blackhole blackhole) {
         final int extra_digits = 3;
-        long QH, Q_low_0, Q_low_1;
-        long ALBL_0, ALBL_1, ALBH_0, ALBH_1, QM2_0, QM2_1;
+        final long QH;
+        final long Q_low_0;
+        final long Q_low_1;
+        final long ALBL_0;
+        final long ALBL_1;
+        final long ALBH_0;
+        final long ALBH_1;
+        final long QM2_0;
+        final long QM2_1;
         {
-            long CXH, CXL, CYH, CYL, PL, PH, PM, PM2;
+            final long CXH;
+            final long CXL;
+            final long CYH;
+            final long CYL;
+            final long PL;
+            long PH;
+            long PM;
+            final long PM2;
             CXH = value >>> 32;
             CXL = (int) ((value));
             CYH = bid_reciprocals10_128[extra_digits][1] >>> 32;
@@ -46,12 +60,19 @@ public class DivisionByLongBenchmark {
             PL = CXL * CYL;
             PM2 = CXL * CYH;
             PH += (PM >>> 32);
-            PM = ((int)PM) + PM2 + (PL >> 32);
+            PM = ((int) PM) + PM2 + (PL >> 32);
             ALBH_1 = PH + (PM >> 32);
             ALBH_0 = (PM << 32) + (int) PL;
         }
         {
-            long CXH, CXL, CYH, CYL, PL, PH, PM, PM2;
+            final long CXH;
+            final long CXL;
+            final long CYH;
+            final long CYL;
+            final long PL;
+            long PH;
+            long PM;
+            final long PM2;
             CXH = value >>> 32;
             CXL = (int) value;
             CYH = bid_reciprocals10_128[extra_digits][0] >>> 32;
@@ -61,9 +82,9 @@ public class DivisionByLongBenchmark {
             PL = CXL * CYL;
             PM2 = CXL * CYH;
             PH += (PM >>> 32);
-            PM = ((int)PM) + PM2 + (PL >>> 32);
+            PM = ((int) PM) + PM2 + (PL >>> 32);
             ALBL_1 = PH + (PM >>> 32);
-            ALBL_0 = (PM << 32) + (int)PL;
+            ALBL_0 = (PM << 32) + (int) PL;
         }
         Q_low_0 = ALBL_0;
         {
@@ -96,7 +117,7 @@ public class DivisionByLongBenchmark {
         blackhole.consume(Q_low_1);
     }
 
-    private static int bid_recip_scale[] = {
+    private static final int[] bid_recip_scale = {
         129 - 128,    // 1
         129 - 128,    // 1/10
         129 - 128,    // 1/10^2

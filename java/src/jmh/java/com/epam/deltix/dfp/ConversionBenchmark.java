@@ -35,12 +35,13 @@ public class ConversionBenchmark {
         infValue = Decimal64Utils.NEGATIVE_INFINITY;
         nanValue = Decimal64Utils.NaN;
         decimalValue = Decimal64Utils.fromDecimalDouble(doubleValue);
-        longIntegerValue = (long)(10000.0 * doubleValue);
-        integerValue = (int)(10000.0 * doubleValue);
-        hugeLongValue = 100000000000000000L +  (long)(10000.0 * doubleValue) * 10000;
+        longIntegerValue = (long) (10000.0 * doubleValue);
+        integerValue = (int) (10000.0 * doubleValue);
+        hugeLongValue = 100000000000000000L + (long) (10000.0 * doubleValue) * 10000;
         decimalRoundableValue = Decimal64Utils.fromLong(920000000000000L);
         decimalRoundableValue2 = Decimal64Utils.fromFixedPoint(9200000000000000L, 8);
     }
+
     public long fromDouble() {
         return Decimal64Utils.fromDouble(doubleValue);
     }
@@ -51,32 +52,32 @@ public class ConversionBenchmark {
     }
 
     @Benchmark
-    public void fromFixedPointLong(Blackhole blackhole) {
+    public void fromFixedPointLong(final Blackhole blackhole) {
         blackhole.consume(Decimal64Utils.fromFixedPoint(longIntegerValue, 4));
     }
 
     @Benchmark
-    public void fromFixedPointHugeLong(Blackhole blackhole) {
+    public void fromFixedPointHugeLong(final Blackhole blackhole) {
         blackhole.consume(Decimal64Utils.fromFixedPoint(hugeLongValue, 4));
     }
 
     @Benchmark
-    public void fromFixedPointInt(Blackhole blackhole) {
+    public void fromFixedPointInt(final Blackhole blackhole) {
         blackhole.consume(Decimal64Utils.fromFixedPoint(integerValue, 4));
     }
 
     @Benchmark
     @BenchmarkMode(Mode.SampleTime)
     @OutputTimeUnit(TimeUnit.NANOSECONDS)
-    public void toFixedPoint(Blackhole blackhole) {
+    public void toFixedPoint(final Blackhole blackhole) {
         blackhole.consume(Decimal64Utils.toFixedPoint(decimalValue, 4));
     }
 
-    public static void main(String[] args) throws RunnerException {
-        Options opt = new OptionsBuilder()
-                .include(".*" + ConversionBenchmark.class.getSimpleName() + ".*")
-                .forks(1)
-                .build();
+    public static void main(final String[] args) throws RunnerException {
+        final Options opt = new OptionsBuilder()
+            .include(".*" + ConversionBenchmark.class.getSimpleName() + ".*")
+            .forks(1)
+            .build();
         new Runner(opt).run();
     }
 }
