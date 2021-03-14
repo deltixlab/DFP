@@ -327,4 +327,19 @@ public class JavaImplTest {
         if (refCond != testCond)
             throw new RuntimeException("TestValue(=" + Decimal64Utils.toString(value) + ") check error: refCond(=" + refCond + ") != testCond(" + testCond + ").");
     }
+
+    @Test
+    public void TestRound() {
+        final long inValue = Decimal64Utils.fromDouble(Math.PI * 1000);
+        //final long inValue = 0x77F7_FFFF_FFFF_FFFFL;
+        //final long inValue = Decimal64Utils.divideByInteger(Decimal64Utils.fromLong(9_999_999_999_999_999L), 10_000_000_000_000_000L);
+
+
+        final long testValue = JavaImpl.round(inValue, 0, JavaImpl.RoundType.TRUNC);
+        final String inStr = Decimal64Utils.toString(inValue);
+        final int dotIndex = inStr.indexOf('.');
+        final String roundStd = dotIndex != -1 ? inStr.substring(0, dotIndex) : inStr;
+        final long refValue = Decimal64Utils.parse(roundStd);
+        assertDecimalEqual(refValue, testValue);
+    }
 }

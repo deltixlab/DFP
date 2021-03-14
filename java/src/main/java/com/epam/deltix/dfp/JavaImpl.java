@@ -31,7 +31,7 @@ class JavaImpl {
     }
 
     static long fromInt32V2(final int value) {
-        long sign = value >> 31;
+        final long sign = value >> 31;
         final long longValue = value;
         return longValue & MASK_SIGN | (longValue + sign ^ sign) | ZERO;
     }
@@ -41,30 +41,30 @@ class JavaImpl {
     }
 
     public static long fromFixedPointFastUnchecked(final int intMantissa, final int numDigits) {
-        long sign = intMantissa >> 31;
+        final long sign = intMantissa >> 31;
         final long mantissa = intMantissa; // Just to help the compiler
-        return mantissa & MASK_SIGN | (mantissa + sign ^ sign) | ((long)(EXPONENT_BIAS - numDigits) << 53);
+        return mantissa & MASK_SIGN | (mantissa + sign ^ sign) | ((long) (EXPONENT_BIAS - numDigits) << 53);
     }
 
-    public static long fromFixedPointFastUnchecked(long mantissa, final int numDigits) {
+    public static long fromFixedPointFastUnchecked(final long mantissa, final int numDigits) {
         final long sign = mantissa >> 63;
-        return mantissa & MASK_SIGN | (mantissa + sign ^ sign) | ((long)(EXPONENT_BIAS - numDigits) << 53);
+        return mantissa & MASK_SIGN | (mantissa + sign ^ sign) | ((long) (EXPONENT_BIAS - numDigits) << 53);
     }
 
-    public static long fromFixedPointFastUnsignedUnchecked(int mantissaUint, int numDigits) {
-        return mantissaUint + ((long)(EXPONENT_BIAS - numDigits) << 53);
+    public static long fromFixedPointFastUnsignedUnchecked(final int mantissaUint, final int numDigits) {
+        return mantissaUint + ((long) (EXPONENT_BIAS - numDigits) << 53);
     }
 
-    public static long fromFixedPointFast(int mantissa, int numDigits) {
-        long rv = fromFixedPointFastUnchecked(mantissa, numDigits);
+    public static long fromFixedPointFast(final int mantissa, final int numDigits) {
+        final long rv = fromFixedPointFastUnchecked(mantissa, numDigits);
         if (numDigits + (Integer.MIN_VALUE + BIASED_EXPONENT_MAX_VALUE - EXPONENT_BIAS)
             > (Integer.MIN_VALUE + BIASED_EXPONENT_MAX_VALUE))
             throw new IllegalArgumentException();
         return rv;
     }
 
-    public static long fromFixedPointFastUnsigned(int mantissaUint, int numDigits) {
-        long rv = fromFixedPointFastUnsignedUnchecked(mantissaUint, numDigits);
+    public static long fromFixedPointFastUnsigned(final int mantissaUint, final int numDigits) {
+        final long rv = fromFixedPointFastUnsignedUnchecked(mantissaUint, numDigits);
         if (numDigits + (Integer.MIN_VALUE + BIASED_EXPONENT_MAX_VALUE - EXPONENT_BIAS)
             > (Integer.MIN_VALUE + BIASED_EXPONENT_MAX_VALUE))
             throw new IllegalArgumentException();
@@ -72,7 +72,7 @@ class JavaImpl {
     }
 
 
-    public static long fromFixedPoint32(int mantissa, int numDigits) {
+    public static long fromFixedPoint32(final int mantissa, final int numDigits) {
         return numDigits + (Integer.MIN_VALUE + BIASED_EXPONENT_MAX_VALUE - EXPONENT_BIAS)
             > (Integer.MIN_VALUE + BIASED_EXPONENT_MAX_VALUE) ?
             NativeImpl.fromFixedPoint32(mantissa, numDigits) : fromFixedPointFastUnchecked(mantissa, numDigits);
@@ -87,7 +87,7 @@ class JavaImpl {
         return value == NULL;
     }
 
-    static boolean isSpecial(long value) {
+    static boolean isSpecial(final long value) {
         return (value & MASK_SPECIAL) == MASK_SPECIAL;
     }
 
@@ -165,6 +165,7 @@ class JavaImpl {
 
     /**
      * Canonize a *finite* value. Infinite/NaN values are unexpected here.
+     *
      * @param value value to be "canonized"
      * @return
      */
@@ -212,7 +213,7 @@ class JavaImpl {
         // final Decimal64Parts parts = JavaImpl.toParts(value);
         // return BigDecimal.valueOf(parts.signMask == 0 ? parts.coefficient : -parts.coefficient, -(parts.exponent - EXPONENT_BIAS));
 
-        long partsSignMask = value & MASK_SIGN;
+        final long partsSignMask = value & MASK_SIGN;
         int partsExponent = 0;
         long partsCoefficient = 0;
 
@@ -249,17 +250,17 @@ class JavaImpl {
 
         static {
             try {
-                Field theUnsafe = Unsafe.class.getDeclaredField("theUnsafe");
+                final Field theUnsafe = Unsafe.class.getDeclaredField("theUnsafe");
                 theUnsafe.setAccessible(true);
                 unsafe = (Unsafe) theUnsafe.get(null);
                 intCompactOffset = unsafe.objectFieldOffset(BigDecimal.class.getDeclaredField("intCompact"));
-            } catch (Exception ex) {
+            } catch (final Exception ex) {
                 unsafe = null;
                 intCompactOffset = Long.MIN_VALUE;
             }
         }
 
-        static long getIntCompact(BigDecimal bd) {
+        static long getIntCompact(final BigDecimal bd) {
             return unsafe.getLong(bd, intCompactOffset);
         }
     }
@@ -277,7 +278,7 @@ class JavaImpl {
 
         if (intCompact == Long.MIN_VALUE) {
             BigInteger unscaledValue = value.unscaledValue();
-            int unscaledBits = unscaledValue.bitLength();
+            final int unscaledBits = unscaledValue.bitLength();
             if (unscaledBits > 62) {
                 if (roundingMode == BID_ROUNDING_EXCEPTION)
                     throw new IllegalArgumentException("The BigDecimal(=" + value + ") can't be converted to Decimal64 without precision loss.");
@@ -352,8 +353,8 @@ class JavaImpl {
         return pack(parts.signMask, parts.exponent, parts.coefficient, BID_ROUNDING_TO_NEAREST);
     }
 
-    public static long fromDecimalDouble(double x) {
-        long y = Decimal64Utils.fromDouble(x);
+    public static long fromDecimalDouble(final double x) {
+        final long y = Decimal64Utils.fromDouble(x);
         long m, signAndExp;
 
         NeedCanonize:
@@ -361,7 +362,7 @@ class JavaImpl {
             NeedAdjustment:
             do {
                 // Odd + special encoding(16 digits)
-                long notY = ~y;
+                final long notY = ~y;
                 if ((MASK_SPECIAL & notY) == 0) {
                     if ((MASK_INFINITY_AND_NAN & notY) == 0)
                         return y;
@@ -382,10 +383,10 @@ class JavaImpl {
                 }
 
                 break NeedCanonize;
-            } while(false);
+            } while (false);
             // NeedAdjustment
             // Check the last digit
-            long m1 = m + 1;
+            final long m1 = m + 1;
             m = m1 / 10;
             if (m1 - m * 10 > 2)
                 return y;
@@ -393,10 +394,10 @@ class JavaImpl {
             signAndExp += 1L << EXPONENT_SHIFT_SMALL;
             if (Decimal64Utils.toDouble(signAndExp + m) != x)
                 return y;
-        } while(false);
+        } while (false);
         // NeedCanonize
-        for (long n = m;;) {
-            long m1 = n / 10;
+        for (long n = m; ; ) {
+            final long m1 = n / 10;
             if (m1 * 10 != n)
                 return signAndExp + n;
             n = m1;
@@ -468,7 +469,7 @@ class JavaImpl {
         return value;
     }
 
-    private static Appendable appendLongTo(long value, final Appendable appendable) throws IOException {
+    private static Appendable appendLongTo(final long value, final Appendable appendable) throws IOException {
         return appendLongTo(value, appendable, numberOfDigits(value));
     }
 
@@ -488,10 +489,10 @@ class JavaImpl {
 
     static String toDebugString(final long value) {
 
-        Decimal64Parts parts = new Decimal64Parts();
+        final Decimal64Parts parts = new Decimal64Parts();
         toParts(value, parts);
 
-        StringBuilder sb = new StringBuilder(64).append("0x").append(Long.toHexString(value))
+        final StringBuilder sb = new StringBuilder(64).append("0x").append(Long.toHexString(value))
             .append("=");
         if (NULL == value) {
             sb.append("null");
@@ -565,8 +566,8 @@ class JavaImpl {
     static final int EXPONENT_MASK = 0x03FF;
     static final int EXPONENT_SHIFT_LARGE = 51;
     static final int EXPONENT_SHIFT_SMALL = 53;
-    static final long EXPONENT_MASK_SMALL = (long)EXPONENT_MASK << EXPONENT_SHIFT_SMALL;
-    static final long EXPONENT_MASK_LARGE = (long)EXPONENT_MASK << EXPONENT_SHIFT_LARGE;
+    static final long EXPONENT_MASK_SMALL = (long) EXPONENT_MASK << EXPONENT_SHIFT_SMALL;
+    static final long EXPONENT_MASK_LARGE = (long) EXPONENT_MASK << EXPONENT_SHIFT_LARGE;
 
     private static final int MAX_FORMAT_DIGITS = 16;
 
@@ -590,7 +591,7 @@ class JavaImpl {
         return new NumberFormatException(s.subSequence(si, ei).toString());
     }
 
-    public static long parse(final CharSequence s, final int si, final int ei, int roundingMode) {
+    public static long parse(final CharSequence s, final int si, final int ei, final int roundingMode) {
         char c;
         int p = si;
         boolean sign = false;
@@ -834,17 +835,23 @@ class JavaImpl {
 
     private final static long UINT32_MAX = 0xFFFF_FFFFL;
 
-    private static long packUnderflow(final boolean isSigned, int exponent, long coefficient,
+    private static long packUnderflow(final boolean isSigned, final int exponent, long coefficient,
                                       final boolean rounded, int roundingMode) {
         final long sgn = isSigned ? MASK_SIGN : 0L;
-        long C128_0, Q_low_0, Q_low_1;
-        long _C64, remainder_h, QH;
-        int extra_digits, amount, amount2;
+        final long C128_0;
+        final long Q_low_0;
+        final long Q_low_1;
+        long _C64;
+        long remainder_h;
+        final long QH;
+        final int extra_digits;
+        final int amount;
+        final int amount2;
 
         // Underflow
         if (exponent + MAX_FORMAT_DIGITS < 0) {
             if (roundingMode == BID_ROUNDING_EXCEPTION)
-                throw new IllegalArgumentException("The exponent(=" + exponent + ") of the value (=" + coefficient + ") with sign(=" + (isSigned ? '-' : '+' ) + ") can't be saved to Decimal64 without precision loss.");
+                throw new IllegalArgumentException("The exponent(=" + exponent + ") of the value (=" + coefficient + ") with sign(=" + (isSigned ? '-' : '+') + ") can't be saved to Decimal64 without precision loss.");
             if (roundingMode == BID_ROUNDING_DOWN && isSigned)
                 return 0x8000000000000001L;
             if (roundingMode == BID_ROUNDING_UP && !isSigned)
@@ -865,9 +872,21 @@ class JavaImpl {
 
         // get coefficient*(2^M[extra_digits])/10^extra_digits
         {
-            long ALBL_0, ALBL_1, ALBH_0, ALBH_1, QM2_0, QM2_1;
+            final long ALBL_0;
+            final long ALBL_1;
+            final long ALBH_0;
+            final long ALBH_1;
+            final long QM2_0;
+            final long QM2_1;
             {
-                long CXH, CXL, CYH, CYL, PL, PH, PM, PM2;
+                final long CXH;
+                final long CXL;
+                final long CYH;
+                final long CYL;
+                final long PL;
+                long PH;
+                long PM;
+                final long PM2;
                 CXH = (C128_0) >>> 32;
                 CXL = C128_0 & UINT32_MAX;
                 CYH = (bid_reciprocals10_128[extra_digits][1]) >>> 32;
@@ -882,7 +901,14 @@ class JavaImpl {
                 ALBH_0 = (PM << 32) + (PL & UINT32_MAX);
             }
             {
-                long CXH, CXL, CYH, CYL, PL, PH, PM, PM2;
+                final long CXH;
+                final long CXL;
+                final long CYH;
+                final long CYL;
+                final long PL;
+                long PH;
+                long PM;
+                final long PM2;
                 CXH = ((C128_0)) >>> 32;
                 CXL = C128_0 & UINT32_MAX;
                 CYH = (bid_reciprocals10_128[extra_digits][0]) >>> 32;
@@ -936,7 +962,7 @@ class JavaImpl {
         return sgn | _C64;
     }
 
-    private static int bid_recip_scale[] = {
+    private static final int[] bid_recip_scale = {
         129 - 128,    // 1
         129 - 128,    // 1/10
         129 - 128,    // 1/10^2
@@ -1132,13 +1158,20 @@ class JavaImpl {
     static final int BID_ROUNDING_EXCEPTION = 0x00005;
 
     private static long pack(final long signMask, final int exponentIn, final long coefficientIn, int roundingMode) {
-        long Q_low_0, Q_low_1;
-        long QH, r, mask, _C64, remainder_h;
+        final long Q_low_0;
+        final long Q_low_1;
+        final long QH;
+        long r;
+        long mask;
+        long _C64;
+        long remainder_h;
 
         int exponent = exponentIn;
         long coefficient = coefficientIn;
 
-        int extra_digits, amount, amount2;
+        final int extra_digits;
+        final int amount;
+        final int amount2;
 
         // TODO: optimize: (coefficient always positive! & use more efficient comparison)
         if (UnsignedLong.compare(coefficient, 9999999999999999L) > 0) {
@@ -1152,7 +1185,7 @@ class JavaImpl {
                 // Underflow.
                 if (exponent + MAX_FORMAT_DIGITS < 0) {
                     if (roundingMode == BID_ROUNDING_EXCEPTION)
-                        throw new IllegalArgumentException("The exponent(=" + exponentIn + ") of the value (=" + coefficientIn + ") with sign(=" + (signMask != 0 ? '-' : '+' ) + ") can't be saved to Decimal64 without precision loss.");
+                        throw new IllegalArgumentException("The exponent(=" + exponentIn + ") of the value (=" + coefficientIn + ") with sign(=" + (signMask != 0 ? '-' : '+') + ") can't be saved to Decimal64 without precision loss.");
                     if (roundingMode == BID_ROUNDING_DOWN && signMask < 0)
                         return 0x8000000000000001L;
                     if (roundingMode == BID_ROUNDING_UP && signMask >= 0)
@@ -1169,9 +1202,21 @@ class JavaImpl {
 
                 // Get coefficient * (2^M[extra_digits])/10^extra_digits
                 {
-                    long ALBL_0, ALBL_1, ALBH_0, ALBH_1, QM2_0, QM2_1;
+                    final long ALBL_0;
+                    final long ALBL_1;
+                    final long ALBH_0;
+                    final long ALBH_1;
+                    final long QM2_0;
+                    final long QM2_1;
                     {
-                        long CXH, CXL, CYH, CYL, PL, PH, PM, PM2;
+                        final long CXH;
+                        final long CXL;
+                        final long CYH;
+                        final long CYL;
+                        final long PL;
+                        long PH;
+                        long PM;
+                        final long PM2;
                         CXH = coefficient >>> 32;
                         CXL = (int) ((coefficient));
                         CYH = bid_reciprocals10_128[extra_digits][1] >>> 32;
@@ -1186,7 +1231,14 @@ class JavaImpl {
                         ALBH_0 = (PM << 32) + (int) PL;
                     }
                     {
-                        long CXH, CXL, CYH, CYL, PL, PH, PM, PM2;
+                        final long CXH;
+                        final long CXL;
+                        final long CYH;
+                        final long CYL;
+                        final long PL;
+                        long PH;
+                        long PM;
+                        final long PM2;
                         CXH = ((coefficient)) >>> 32;
                         CXL = (int) ((coefficient));
                         CYH = bid_reciprocals10_128[extra_digits][0] >>> 32;
@@ -1250,7 +1302,7 @@ class JavaImpl {
                 r = signMask | MASK_INFINITY_AND_NAN;
                 switch (roundingMode) {
                     case BID_ROUNDING_EXCEPTION:
-                        throw new IllegalArgumentException("The exponent(=" + exponentIn + ") of the value (=" + coefficientIn + ") with sign(=" + (signMask != 0 ? '-' : '+' ) + ") can't be saved to Decimal64 without precision loss.");
+                        throw new IllegalArgumentException("The exponent(=" + exponentIn + ") of the value (=" + coefficientIn + ") with sign(=" + (signMask != 0 ? '-' : '+') + ") can't be saved to Decimal64 without precision loss.");
 
                     case BID_ROUNDING_DOWN:
                         if (signMask >= 0)
@@ -1300,19 +1352,96 @@ class JavaImpl {
 
     /**
      * pack value where exponent is within allowable range and coefficient does not require extended format
+     *
      * @param signMask
      * @param exponent
      * @param coefficient
      * @return
      */
     private static long packBasic(final long signMask, final int exponent, final long coefficient) {
-        assert(0 == (~Long.MIN_VALUE & signMask));
+        assert (0 == (~Long.MIN_VALUE & signMask));
         assert (exponent >= 0);
         assert (exponent <= BIASED_EXPONENT_MAX_VALUE);
         assert (coefficient <= SMALL_COEFFICIENT_MASK);
         assert (coefficient >= 0);
 
-        return signMask + ((long)exponent << EXPONENT_SHIFT_SMALL) + coefficient;
+        return signMask + ((long) exponent << EXPONENT_SHIFT_SMALL) + coefficient;
+    }
+
+    public static long round(final long d64, final int n, final RoundType roundType) {
+        if (isSpecial(d64))
+            return d64;
+        if (n > JavaImpl.MAX_EXPONENT)
+            return d64;
+        if (n < JavaImpl.MIN_EXPONENT)
+            return JavaImpl.ZERO;
+
+        final Decimal64Parts parts = new Decimal64Parts();
+        JavaImpl.toParts(d64, parts);
+        parts.exponent += n - JavaImpl.EXPONENT_BIAS;
+
+        if (parts.exponent >= 0) // value is already rounded
+            return d64;
+        // All next - negative exponent case
+
+        { // Truncate all digits except last one
+            long tenPower = 10;
+            int expPower = 1;
+            int absPower = -parts.exponent - 1;
+            if (absPower >= 16)
+                return JavaImpl.ZERO;
+
+            while (absPower != 0 && parts.coefficient != 0) {
+                if ((absPower & 1) != 0) {
+                    parts.coefficient /= tenPower;
+                    parts.exponent += expPower;
+                }
+                tenPower *= tenPower;
+                expPower *= 2;
+                absPower >>= 1;
+            }
+            if (parts.coefficient == 0)
+                return JavaImpl.ZERO;
+        }
+
+        // Process last digit
+        switch (roundType) {
+            case ROUND:
+                parts.coefficient = (parts.coefficient + 5) / 10;
+                break;
+
+            case TRUNC:
+                parts.coefficient = parts.coefficient / 10;
+                break;
+
+            case FLOOR:
+                if (parts.isNegative())
+                    parts.coefficient = (parts.coefficient + 9) / 10;
+                else
+                    parts.coefficient = parts.coefficient / 10;
+                break;
+
+            case CEIL:
+                if (parts.isNegative())
+                    parts.coefficient = parts.coefficient / 10;
+                else
+                    parts.coefficient = (parts.coefficient + 9) / 10;
+                break;
+
+            default:
+                throw new IllegalArgumentException("Unsupported roundType(=" + roundType + ") value.");
+        }
+        parts.exponent++;
+
+        parts.exponent -= n - JavaImpl.EXPONENT_BIAS;
+        return JavaImpl.fromParts(parts);
+    }
+
+    public enum RoundType {
+        ROUND,
+        TRUNC,
+        FLOOR,
+        CEIL,
     }
 }
 

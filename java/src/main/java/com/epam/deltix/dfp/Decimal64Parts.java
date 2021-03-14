@@ -15,17 +15,16 @@ public class Decimal64Parts {
     }
 
     public Decimal64Parts(final long coefficient, final int biasedExponent, final long signMask) {
-        assert(0 == (~Long.MIN_VALUE & signMask));
+        assert (0 == (~Long.MIN_VALUE & signMask));
         this.coefficient = coefficient;
         this.exponent = biasedExponent;
         this.signMask = signMask;
     }
 
     boolean isValid() {
-        return
-            0 == (~Long.MIN_VALUE & signMask)
-            && exponent >= 0 && exponent < JavaImpl.BIASED_EXPONENT_MAX_VALUE + 1
-            && coefficient >= 0 && coefficient < JavaImpl.MAX_COEFFICIENT + 1;
+        return 0 == (~Long.MIN_VALUE & signMask) &&
+            exponent >= 0 && exponent < JavaImpl.BIASED_EXPONENT_MAX_VALUE + 1 &&
+            coefficient >= 0 && coefficient < JavaImpl.MAX_COEFFICIENT + 1;
     }
 
     public long getCoefficient() {
@@ -44,12 +43,12 @@ public class Decimal64Parts {
         this.exponent = exponent;
     }
 
-public long getSignMask() {
+    public long getSignMask() {
         return signMask;
     }
 
     public void setSignMask(final long signMask) {
-        assert(0 == (~Long.MIN_VALUE & signMask));
+        assert (0 == (~Long.MIN_VALUE & signMask));
         this.signMask = signMask;
     }
 
