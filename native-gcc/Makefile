@@ -74,13 +74,15 @@ rebuild: clean build
 build: $(ProjectTargetFile) $(AfterBuild)
 
 clean:
-ifeq ($(OsName),Windows)
-	@-rmdir /s /q "$(ObjectDirectory)"
-	@-rmdir /s /q "$(BinaryDirectory)"
-else
-	@-rm -rf $(ObjectDirectory)
-	@-rm -rf $(BinaryDirectory)
-endif
+	rm -rf $(ObjectDirectory)
+	rm -rf $(BinaryDirectory)
+# ifeq ($(OsName),Windows)
+# 	@-rmdir /s /q "$(ObjectDirectory)"
+# 	@-rmdir /s /q "$(BinaryDirectory)"
+# else
+# 	@-rm -rf $(ObjectDirectory)
+# 	@-rm -rf $(BinaryDirectory)
+# endif
 
 $(ProjectTargetFile): $(ProjectObjectFiles) | $(BinaryDirectory)
 	$(CC) $(LFLAGS) -o $@ $(ProjectObjectFiles) $(LIBS)
@@ -89,15 +91,17 @@ $(ObjectDirectory)/%.o : $(SourceDirectory)/%.c | $(ObjectDirectory)
 	$(CC) $(CFLAGS) -o $@ $<
 
 $(BinaryDirectory):
-ifeq ($(OsName),Windows)
-	@mkdir "$(BinaryDirectory)"
-else
-	@mkdir -p $(BinaryDirectory)
-endif
+	mkdir -p $(BinaryDirectory)
+# ifeq ($(OsName),Windows)
+# 	@mkdir "$(BinaryDirectory)"
+# else
+# 	@mkdir -p $(BinaryDirectory)
+# endif
 
 $(ObjectDirectory):
-ifeq ($(OsName),Windows)
-	@mkdir "$(ObjectDirectory)"
-else
-	@mkdir -p $(ObjectDirectory)
-endif
+	mkdir -p $(ObjectDirectory)
+# ifeq ($(OsName),Windows)
+# 	@mkdir "$(ObjectDirectory)"
+# else
+# 	@mkdir -p $(ObjectDirectory)
+# endif
