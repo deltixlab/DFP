@@ -116,7 +116,7 @@ namespace EPAM.Deltix.DFP
 
 		public int ToInt()
 		{
-			return NativeImpl.toInt32(Bits);
+			return (int)NativeImpl.toInt64(Bits);
 		}
 
 		public static Decimal64 FromUInt(uint value)
@@ -126,27 +126,27 @@ namespace EPAM.Deltix.DFP
 
 		public uint ToUInt()
 		{
-			return NativeImpl.toUInt32(Bits);
+			return (uint)NativeImpl.toUInt64(Bits);
 		}
 
 		public short ToShort()
 		{
-			return NativeImpl.toInt16(Bits);
+			return (short)NativeImpl.toInt64(Bits);
 		}
 
 		public ushort ToUShort()
 		{
-			return NativeImpl.toUInt16(Bits);
+			return (ushort)NativeImpl.toUInt64(Bits);
 		}
 
 		public sbyte ToSByte()
 		{
-			return NativeImpl.toInt8(Bits);
+			return (sbyte)NativeImpl.toInt64(Bits);
 		}
 
 		public byte ToByte()
 		{
-			return NativeImpl.toUInt8(Bits);
+			return (byte)NativeImpl.toUInt64(Bits);
 		}
 
 		public static Decimal64 FromUnderlying(UInt64 bits)
