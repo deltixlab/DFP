@@ -176,21 +176,16 @@ public class JavaImplTest {
         for (int exp = 398 - 0x2FF; exp <= 398; ++exp) {
             for (int j = 0; j < N; ++j) {
                 final int mantissa = random.nextInt();
-                assertDecimalIdentical(NativeImpl.fromFixedPoint32(mantissa, exp), JavaImpl.fromFixedPointFast(mantissa, exp));
-                assertDecimalIdentical(NativeImpl.fromFixedPoint64(mantissa, exp), JavaImpl.fromFixedPointFast(mantissa, exp));
+                assertDecimalEqual(NativeImpl.fromFixedPoint64(mantissa, exp), JavaImpl.fromFixedPointFast(mantissa, exp));
 
                 if (mantissa >= 0) {
-                    assertDecimalIdentical(NativeImpl.fromFixedPoint32(mantissa, exp), JavaImpl.fromFixedPointFastUnsigned(mantissa, exp));
-                    assertDecimalIdentical(NativeImpl.fromFixedPoint64(mantissa, exp), JavaImpl.fromFixedPointFastUnsigned(mantissa, exp));
+                    assertDecimalEqual(NativeImpl.fromFixedPoint64(mantissa, exp), JavaImpl.fromFixedPointFastUnsigned(mantissa, exp));
                 }
             }
 
-            assertDecimalIdentical(NativeImpl.fromFixedPoint32(0, exp), JavaImpl.fromFixedPointFast(0, exp));
-            assertDecimalIdentical(NativeImpl.fromFixedPoint32(Integer.MIN_VALUE, exp), JavaImpl.fromFixedPointFast(Integer.MIN_VALUE, exp));
-            assertDecimalIdentical(NativeImpl.fromFixedPoint32(Integer.MAX_VALUE, exp), JavaImpl.fromFixedPointFast(Integer.MAX_VALUE, exp));
-            assertDecimalIdentical(NativeImpl.fromFixedPoint64(0, exp), JavaImpl.fromFixedPointFast(0, exp));
-            assertDecimalIdentical(NativeImpl.fromFixedPoint64(Integer.MIN_VALUE, exp), JavaImpl.fromFixedPointFast(Integer.MIN_VALUE, exp));
-            assertDecimalIdentical(NativeImpl.fromFixedPoint64(Integer.MAX_VALUE, exp), JavaImpl.fromFixedPointFast(Integer.MAX_VALUE, exp));
+            assertDecimalEqual(NativeImpl.fromFixedPoint64(0, exp), JavaImpl.fromFixedPointFast(0, exp));
+            assertDecimalEqual(NativeImpl.fromFixedPoint64(Integer.MIN_VALUE, exp), JavaImpl.fromFixedPointFast(Integer.MIN_VALUE, exp));
+            assertDecimalEqual(NativeImpl.fromFixedPoint64(Integer.MAX_VALUE, exp), JavaImpl.fromFixedPointFast(Integer.MAX_VALUE, exp));
         }
     }
 

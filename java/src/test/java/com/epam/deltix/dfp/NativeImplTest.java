@@ -33,8 +33,8 @@ public class NativeImplTest {
         assertDecimalIdentical(NativeImpl.fromInt64(100), Decimal64Utils.HUNDRED);
         assertDecimalIdentical(NativeImpl.fromInt64(1000), Decimal64Utils.THOUSAND);
         assertDecimalIdentical(NativeImpl.fromInt64(1000_000), Decimal64Utils.MILLION);
-        assertDecimalIdentical(NativeImpl.fromFixedPoint32(1, 1), Decimal64Utils.ONE_TENTH);
-        assertDecimalIdentical(NativeImpl.fromFixedPoint32(1, 2), Decimal64Utils.ONE_HUNDREDTH);
+        assertDecimalIdentical(NativeImpl.fromFixedPoint64(1, 1), Decimal64Utils.ONE_TENTH);
+        assertDecimalIdentical(NativeImpl.fromFixedPoint64(1, 2), Decimal64Utils.ONE_HUNDREDTH);
 
         assertDecimalEqual(NativeImpl.fromFloat64(0), Decimal64Utils.ZERO);
         assertDecimalEqual(NativeImpl.fromFloat64(1), Decimal64Utils.ONE);
