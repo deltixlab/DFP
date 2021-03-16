@@ -74,7 +74,7 @@ rebuild: clean build
 build: $(ProjectTargetFile) $(AfterBuild)
 
 clean:
-ifdef COMSPEC
+ifneq (sh, $(findstring sh, $(SHELL)))
 	@-rmdir /s /q "$(ObjectDirectory)"
 	@-rmdir /s /q "$(BinaryDirectory)"
 else
@@ -89,14 +89,14 @@ $(ObjectDirectory)/%.o : $(SourceDirectory)/%.c | $(ObjectDirectory)
 	$(CC) $(CFLAGS) -o $@ $<
 
 $(BinaryDirectory):
-ifdef COMSPEC
+ifneq (sh, $(findstring sh, $(SHELL)))
 	@mkdir "$(BinaryDirectory)"
 else
 	@mkdir -p $(BinaryDirectory)
 endif
 
 $(ObjectDirectory):
-ifdef COMSPEC
+ifneq (sh, $(findstring sh, $(SHELL)))
 	@mkdir "$(ObjectDirectory)"
 else
 	@mkdir -p $(ObjectDirectory)
