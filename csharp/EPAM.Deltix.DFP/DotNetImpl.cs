@@ -138,7 +138,7 @@ namespace EPAM.Deltix.DFP
 		{
 			// TODO: Unsigned comparison could be slightly faster, maybe
 			return numDigits + (Int32.MinValue + BiasedExponentMaxValue - BaseExponent) > (Int32.MinValue + BiasedExponentMaxValue)
-				? NativeImpl.fromFixedPoint32(mantissa, numDigits)
+				? NativeImpl.fromFixedPoint64(mantissa, numDigits)
 				: FromFixedPointFastUnchecked(mantissa, numDigits);
 		}
 
@@ -154,7 +154,7 @@ namespace EPAM.Deltix.DFP
 		{
 			// TODO: Unsigned comparison could be slightly faster, maybe
 			return numDigits + (Int32.MinValue + BiasedExponentMaxValue - BaseExponent) > (Int32.MinValue + BiasedExponentMaxValue)
-				? NativeImpl.fromFixedPointU32(mantissa, numDigits)
+				? NativeImpl.fromFixedPoint64(mantissa, numDigits)
 				: FromFixedPointFastUnsignedUnchecked(mantissa, numDigits);
 		}
 

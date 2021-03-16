@@ -6,7 +6,6 @@ import org.openjdk.jmh.runner.RunnerException;
 import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
 
-import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 @BenchmarkMode(Mode.AverageTime)
@@ -25,8 +24,8 @@ public class CanonizeBenchmark {
         return Decimal64Utils.canonize(decimalValue);
     }
 
-    public static void main(String[] args) throws RunnerException {
-        Options opt = new OptionsBuilder()
+    public static void main(final String[] args) throws RunnerException {
+        final Options opt = new OptionsBuilder()
             .include(".*" + UnaryOperationBenchmark.class.getSimpleName() + ".*")
             .forks(1)
             .build();

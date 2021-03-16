@@ -2,23 +2,20 @@ package com.epam.deltix.dfp;
 
 import org.junit.Test;
 
-import static com.epam.deltix.dfp.TestUtils.assertDecimalIdentical;
 import static com.epam.deltix.dfp.TestUtils.assertDecimalEqual;
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertFalse;
-import static junit.framework.TestCase.assertTrue;
+import static com.epam.deltix.dfp.TestUtils.assertDecimalIdentical;
 
 public class NativeImplTest {
 
     @Test
-    public void fromInt32() {
+    public void fromInt64() {
 
-        assertDecimalEqual(JavaImpl.ZERO, NativeImpl.fromInt32(0));
-        assertDecimalIdentical(JavaImpl.ZERO, NativeImpl.fromInt32(0));
+        assertDecimalEqual(JavaImpl.ZERO, NativeImpl.fromInt64(0));
+        assertDecimalIdentical(JavaImpl.ZERO, NativeImpl.fromInt64(0));
 
-        assertDecimalIdentical(Decimal64Utils.ONE, NativeImpl.fromInt32(1));
-        assertDecimalIdentical(Decimal64Utils.MILLION, NativeImpl.fromInt32(1000000));
-        assertDecimalIdentical(Decimal64Utils.fromDouble(-1000000.0), NativeImpl.fromInt32(-1000000));
+        assertDecimalIdentical(Decimal64Utils.ONE, NativeImpl.fromInt64(1));
+        assertDecimalIdentical(Decimal64Utils.MILLION, NativeImpl.fromInt64(1000000));
+        assertDecimalIdentical(Decimal64Utils.fromDouble(-1000000.0), NativeImpl.fromInt64(-1000000));
     }
 
     /**
@@ -29,15 +26,15 @@ public class NativeImplTest {
     @Test
     public void testConstants() {
 
-        assertDecimalIdentical(NativeImpl.fromInt32(0), Decimal64Utils.ZERO);
-        assertDecimalIdentical(NativeImpl.fromInt32(1), Decimal64Utils.ONE);
-        assertDecimalIdentical(NativeImpl.fromInt32(2), Decimal64Utils.TWO);
-        assertDecimalIdentical(NativeImpl.fromInt32(10), Decimal64Utils.TEN);
-        assertDecimalIdentical(NativeImpl.fromInt32(100), Decimal64Utils.HUNDRED);
-        assertDecimalIdentical(NativeImpl.fromInt32(1000), Decimal64Utils.THOUSAND);
-        assertDecimalIdentical(NativeImpl.fromInt32(1000_000), Decimal64Utils.MILLION);
-        assertDecimalIdentical(NativeImpl.fromFixedPoint32(1, 1), Decimal64Utils.ONE_TENTH);
-        assertDecimalIdentical(NativeImpl.fromFixedPoint32(1, 2), Decimal64Utils.ONE_HUNDREDTH);
+        assertDecimalIdentical(NativeImpl.fromInt64(0), Decimal64Utils.ZERO);
+        assertDecimalIdentical(NativeImpl.fromInt64(1), Decimal64Utils.ONE);
+        assertDecimalIdentical(NativeImpl.fromInt64(2), Decimal64Utils.TWO);
+        assertDecimalIdentical(NativeImpl.fromInt64(10), Decimal64Utils.TEN);
+        assertDecimalIdentical(NativeImpl.fromInt64(100), Decimal64Utils.HUNDRED);
+        assertDecimalIdentical(NativeImpl.fromInt64(1000), Decimal64Utils.THOUSAND);
+        assertDecimalIdentical(NativeImpl.fromInt64(1000_000), Decimal64Utils.MILLION);
+        assertDecimalIdentical(NativeImpl.fromFixedPoint64(1, 1), Decimal64Utils.ONE_TENTH);
+        assertDecimalIdentical(NativeImpl.fromFixedPoint64(1, 2), Decimal64Utils.ONE_HUNDREDTH);
 
         assertDecimalEqual(NativeImpl.fromFloat64(0), Decimal64Utils.ZERO);
         assertDecimalEqual(NativeImpl.fromFloat64(1), Decimal64Utils.ONE);

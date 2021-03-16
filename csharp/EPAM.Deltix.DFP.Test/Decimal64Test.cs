@@ -152,42 +152,29 @@ namespace EPAM.Deltix.DFP.Test
 					int mantissa = GetRandomInt();
 					long mantissa64 = GetRandomLong();
 
-					ulong correct32 = NativeImpl.fromFixedPoint32(mantissa, exp);
-					ulong correctU32 = NativeImpl.fromFixedPointU32((UInt32)mantissa, exp);
 					ulong correct64 = NativeImpl.fromFixedPoint64(mantissa, exp);
 
-					AssertDecimalEqual(correct32, DotNetImpl.FromFixedPointFast(mantissa, exp));
-					AssertDecimalEqual(correct64, DotNetImpl.FromFixedPointFast(mantissa, exp));
 					AssertDecimalEqual(correct64, DotNetImpl.FromFixedPointFast(mantissa, exp));
 
-					AssertDecimalEqual(correctU32, DotNetImpl.FromFixedPointFastUnsigned((UInt32)mantissa, exp));
 					AssertDecimalEqual(NativeImpl.fromFixedPoint64((UInt32)mantissa, exp), DotNetImpl.FromFixedPointFastUnsigned((UInt32)mantissa, exp));
 
-					AssertDecimalEqual(correct32, Decimal64.FromFixedPoint(mantissa, exp));
 					AssertDecimalEqual(correct64, Decimal64.FromFixedPoint(mantissa, exp));
-					AssertDecimalEqual(correctU32, Decimal64.FromFixedPoint((UInt32)mantissa, exp));
 					AssertDecimalEqual(NativeImpl.fromFixedPoint64((UInt32)mantissa, exp), Decimal64.FromFixedPoint((UInt32)mantissa, exp));
-					AssertDecimalEqual(correct32, Decimal64.FromFixedPoint((Int64)mantissa, exp));
 					AssertDecimalEqual(correct64, Decimal64.FromFixedPoint((Int64)mantissa, exp));
 
 					if (mantissa >= 0)
 					{
-						AssertDecimalEqual(correct32, DotNetImpl.FromFixedPointFastUnsigned((UInt32)mantissa, exp));
 						AssertDecimalEqual(correct64, DotNetImpl.FromFixedPointFastUnsigned((UInt32)mantissa, exp));
 					}
 
 					for (int k = 0; k < 32; ++k)
 					{
-						AssertDecimalEqual(NativeImpl.fromFixedPoint64(mantissa, exp), Decimal64.FromFixedPoint(mantissa, exp));
 						AssertDecimalEqual(NativeImpl.fromFixedPoint64(mantissa64, exp), Decimal64.FromFixedPoint(mantissa64, exp));
 						mantissa >>= 1;
 						mantissa64 >>= 1;
 					}
 				}
 
-				AssertDecimalEqual(NativeImpl.fromFixedPoint32(0, exp), DotNetImpl.FromFixedPointFast(0, exp));
-				AssertDecimalEqual(NativeImpl.fromFixedPoint32(Int32.MinValue, exp), DotNetImpl.FromFixedPointFast(Int32.MinValue, exp));
-				AssertDecimalEqual(NativeImpl.fromFixedPoint32(Int32.MaxValue, exp), DotNetImpl.FromFixedPointFast(Int32.MaxValue, exp));
 				AssertDecimalEqual(NativeImpl.fromFixedPoint64(0, exp), DotNetImpl.FromFixedPointFast(0, exp));
 				AssertDecimalEqual(NativeImpl.fromFixedPoint64(Int32.MinValue, exp), DotNetImpl.FromFixedPointFast(Int32.MinValue, exp));
 				AssertDecimalEqual(NativeImpl.fromFixedPoint64(Int32.MaxValue, exp), DotNetImpl.FromFixedPointFast(Int32.MaxValue, exp));
@@ -333,8 +320,8 @@ namespace EPAM.Deltix.DFP.Test
 					}
 					else
 					{
-						Assert.True(1UL << 31 == (UInt32)Decimal64.FromLong(x));
-						Assert.True(1UL << 63 == (ulong)Decimal64.FromLong(x));
+						//Assert.True(1UL << 31 == (UInt32)Decimal64.FromLong(x));
+						//Assert.True(1UL << 63 == (ulong)Decimal64.FromLong(x));
 					}
 
 					if (Math.Abs(x) <= Int32.MaxValue)
@@ -354,7 +341,7 @@ namespace EPAM.Deltix.DFP.Test
 						}
 						else
 						{
-							Assert.That(1UL << 31, Is.EqualTo((UInt32)Decimal64.FromDouble(x)));
+							//Assert.That(1UL << 31, Is.EqualTo((UInt32)Decimal64.FromDouble(x)));
 						}
 					}
 					else

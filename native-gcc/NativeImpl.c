@@ -115,19 +115,20 @@ _Decimal64 scalbnd64(_Decimal64 x, int32 tenPowerFactor) {
     D64Bits un64;
     un64.d64 = x;
     if ((un64.i64 & MASK_INFINITY_AND_NAN) == MASK_INFINITY_AND_NAN)
-        return nanConst;
+        return x;
 
-    _Decimal64 factor = 1;
     _Decimal64 tenPower = 10;
-    int absFactor = tenPowerFactor > 0 ? tenPowerFactor : -tenPowerFactor;
+    if (tenPowerFactor < 0)
+        tenPower = 1 / tenPower;
+    int absFactor = tenPowerFactor >= 0 ? tenPowerFactor : -tenPowerFactor;
     while(absFactor) {
         if (absFactor & 1)
-            factor *= tenPower;
+            x *= tenPower;
         tenPower *= tenPower;
         absFactor >>= 1;
     }
 
-    return tenPowerFactor >= 0 ? x * factor : x / factor;
+    return x;
 }
 
 int isnand64(_Decimal64 x) {
@@ -139,17 +140,9 @@ int isnand64(_Decimal64 x) {
 OPN_FROM_TO(Float64)
 OPN_FROM_TO(Float32)
 OPN(fromFixedPoint64, scalbnd64((_Decimal64)mantissa, -tenPowerFactor), int64 mantissa, int32 tenPowerFactor)
-OPN(fromFixedPoint32, scalbnd64((_Decimal64)mantissa, -tenPowerFactor), int32 mantissa, int32 tenPowerFactor)
-OPN(fromFixedPointU32, scalbnd64((_Decimal64)mantissa, -tenPowerFactor), uint32 mantissa, int32 tenPowerFactor)
 OPNR(toFixedPoint, int64, (int64)scalbnd64(value, numberOfDigits), _Decimal64 value, int32 numberOfDigits)
 OPN_FROM_TO(Int64)
 OPN_FROM_TO(UInt64)
-OPN_FROM_TO(Int32)
-OPN_FROM_TO(UInt32)
-OPN_FROM_TO(Int16)
-OPN_FROM_TO(UInt16)
-OPN_FROM_TO(Int8)
-OPN_FROM_TO(UInt8)
 
 //endregion
 

@@ -48,11 +48,11 @@ public class RoundingBenchmark {
             Decimal64Utils.fromFixedPoint(125, 3));
     }
 
-    public static void main(String[] args) throws RunnerException {
-        Options opt = new OptionsBuilder()
-                .include(".*" + RoundingBenchmark.class.getSimpleName() + ".*")
-                .forks(1)
-                .build();
+    public static void main(final String[] args) throws RunnerException {
+        final Options opt = new OptionsBuilder()
+            .include(".*" + RoundingBenchmark.class.getSimpleName() + ".*")
+            .forks(1)
+            .build();
         new Runner(opt).run();
     }
 }

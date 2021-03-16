@@ -27,7 +27,7 @@ public class BigDecimalTest {
         }
 
         final long tic = System.nanoTime();
-        while (System.nanoTime() - tic < 60 * 1000_000_000L) {
+        while (System.nanoTime() - tic < 5 * 1000_000_000L) {
             for (int i = 0; i < 1000_000; ++i) {
                 double testDouble = Math.exp((random.nextDouble() * 2 - 1) * testLogRange);
                 if (random.nextInt(1000) < 500)
@@ -71,9 +71,9 @@ public class BigDecimalTest {
 
     @Test
     public void bigDecimalToDecimal64CornerCases() {
-        BigDecimal dbPi = BigDecimal.valueOf(Math.PI);
+        final BigDecimal dbPi = BigDecimal.valueOf(Math.PI);
 
-        for (BigDecimal testBigDecimal : new BigDecimal[]{
+        for (final BigDecimal testBigDecimal : new BigDecimal[]{
             BigDecimal.valueOf(Long.MAX_VALUE, 0).add(BigDecimal.valueOf(123L, 0)),
             BigDecimal.valueOf(Long.MIN_VALUE, 0),
             BigDecimal.valueOf(Long.MAX_VALUE, 0),
@@ -92,7 +92,7 @@ public class BigDecimalTest {
     private static void toDecimal64(final BigDecimal a) {
         @Decimal final long b = Decimal64Utils.fromBigDecimal(a);
 
-        String aStr = a.toPlainString();
+        final String aStr = a.toPlainString();
         String bStr = Decimal64Utils.toString(b);
         if (!aStr.contains(".") && aStr.length() != bStr.length())
             throw new RuntimeException("BigDecimal(=" + a + ") conversion to Decimal64 order mismatch.");

@@ -33,11 +33,11 @@ public class UnaryOperationBenchmark {
         return Decimal64Utils.abs(decimalValue);
     }
 
-    public static void main(String[] args) throws RunnerException {
-        Options opt = new OptionsBuilder()
-                .include(".*" + UnaryOperationBenchmark.class.getSimpleName() + ".*")
-                .forks(1)
-                .build();
+    public static void main(final String[] args) throws RunnerException {
+        final Options opt = new OptionsBuilder()
+            .include(".*" + UnaryOperationBenchmark.class.getSimpleName() + ".*")
+            .forks(1)
+            .build();
         new Runner(opt).run();
     }
 }

@@ -45,11 +45,11 @@ public class BinaryOperationBenchmark {
         return Decimal64Utils.divide(decimalValue1, decimalValue2);
     }
 
-    public static void main(String[] args) throws RunnerException {
-        Options opt = new OptionsBuilder()
-                .include(".*" + BinaryOperationBenchmark.class.getSimpleName() + ".*")
-                .forks(1)
-                .build();
+    public static void main(final String[] args) throws RunnerException {
+        final Options opt = new OptionsBuilder()
+            .include(".*" + BinaryOperationBenchmark.class.getSimpleName() + ".*")
+            .forks(1)
+            .build();
         new Runner(opt).run();
     }
 }

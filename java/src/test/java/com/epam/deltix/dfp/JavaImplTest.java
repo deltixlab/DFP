@@ -99,7 +99,6 @@ public class JavaImplTest {
         for (int i = 0; i < N; ++i) {
             final long dfp = (i & 1) > 0 ? JavaImpl.fromInt32(m) : JavaImpl.fromInt32V2(m);
             assertEquals(Decimal64Utils.toInt(dfp), m);
-            assertDecimalIdentical(NativeImpl.fromInt32(m), dfp);
             assertDecimalIdentical(NativeImpl.fromInt64(m), dfp);
             assertDecimalIdentical(NativeImpl.fromFloat64(m), dfp);
             m = random.nextInt();
@@ -177,21 +176,16 @@ public class JavaImplTest {
         for (int exp = 398 - 0x2FF; exp <= 398; ++exp) {
             for (int j = 0; j < N; ++j) {
                 final int mantissa = random.nextInt();
-                assertDecimalIdentical(NativeImpl.fromFixedPoint32(mantissa, exp), JavaImpl.fromFixedPointFast(mantissa, exp));
-                assertDecimalIdentical(NativeImpl.fromFixedPoint64(mantissa, exp), JavaImpl.fromFixedPointFast(mantissa, exp));
+                assertDecimalEqual(NativeImpl.fromFixedPoint64(mantissa, exp), JavaImpl.fromFixedPointFast(mantissa, exp));
 
                 if (mantissa >= 0) {
-                    assertDecimalIdentical(NativeImpl.fromFixedPoint32(mantissa, exp), JavaImpl.fromFixedPointFastUnsigned(mantissa, exp));
-                    assertDecimalIdentical(NativeImpl.fromFixedPoint64(mantissa, exp), JavaImpl.fromFixedPointFastUnsigned(mantissa, exp));
+                    assertDecimalEqual(NativeImpl.fromFixedPoint64(mantissa, exp), JavaImpl.fromFixedPointFastUnsigned(mantissa, exp));
                 }
             }
 
-            assertDecimalIdentical(NativeImpl.fromFixedPoint32(0, exp), JavaImpl.fromFixedPointFast(0, exp));
-            assertDecimalIdentical(NativeImpl.fromFixedPoint32(Integer.MIN_VALUE, exp), JavaImpl.fromFixedPointFast(Integer.MIN_VALUE, exp));
-            assertDecimalIdentical(NativeImpl.fromFixedPoint32(Integer.MAX_VALUE, exp), JavaImpl.fromFixedPointFast(Integer.MAX_VALUE, exp));
-            assertDecimalIdentical(NativeImpl.fromFixedPoint64(0, exp), JavaImpl.fromFixedPointFast(0, exp));
-            assertDecimalIdentical(NativeImpl.fromFixedPoint64(Integer.MIN_VALUE, exp), JavaImpl.fromFixedPointFast(Integer.MIN_VALUE, exp));
-            assertDecimalIdentical(NativeImpl.fromFixedPoint64(Integer.MAX_VALUE, exp), JavaImpl.fromFixedPointFast(Integer.MAX_VALUE, exp));
+            assertDecimalEqual(NativeImpl.fromFixedPoint64(0, exp), JavaImpl.fromFixedPointFast(0, exp));
+            assertDecimalEqual(NativeImpl.fromFixedPoint64(Integer.MIN_VALUE, exp), JavaImpl.fromFixedPointFast(Integer.MIN_VALUE, exp));
+            assertDecimalEqual(NativeImpl.fromFixedPoint64(Integer.MAX_VALUE, exp), JavaImpl.fromFixedPointFast(Integer.MAX_VALUE, exp));
         }
     }
 
@@ -326,5 +320,20 @@ public class JavaImplTest {
     private static void checkValues(@Decimal final long value, final boolean refCond, final boolean testCond) {
         if (refCond != testCond)
             throw new RuntimeException("TestValue(=" + Decimal64Utils.toString(value) + ") check error: refCond(=" + refCond + ") != testCond(" + testCond + ").");
+    }
+
+    @Test
+    public void TestRound() {
+        //final long inValue = Decimal64Utils.fromDouble(Math.PI * 1000);
+        //final long inValue = 0x77F7_FFFF_FFFF_FFFFL;
+        final long inValue = Decimal64Utils.fromLong(9_999_999_999_999_999L);
+
+
+        final long testValue = JavaImpl.round(inValue, 0, RoundType.TRUNC);
+        final String inStr = Decimal64Utils.toString(inValue);
+        final int dotIndex = inStr.indexOf('.');
+        final String roundStd = dotIndex != -1 ? inStr.substring(0, dotIndex) : inStr;
+        final long refValue = Decimal64Utils.parse(roundStd);
+        assertDecimalEqual(refValue, testValue);
     }
 }
