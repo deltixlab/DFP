@@ -12,6 +12,7 @@ env:
   GRADLE_OPTS: "-Dorg.gradle.daemon=false"
 
 jobs:
+
   build-native:
     name: Build native ${{ matrix.bits }} libraries (${{ matrix.os }}) with Java ${{ matrix.java }}
     runs-on: ${{ matrix.os }}
@@ -73,6 +74,7 @@ jobs:
             native-gcc/bin/Release/Windows/32/*.dll
             native-gcc/bin/Release/Windows/64/*.dll
           name: NativeLibs
+
   build-native-wrappers:
     name: Build wrappers for native libraries
     runs-on: windows-latest
@@ -118,6 +120,7 @@ jobs:
             java/src/main/java/com/epam/deltix/dfp/NativeImpl.java
             java/src/main/java/com/epam/deltix/dfp/Version.java
           name: NativeLibs
+
   compress:
     name: Compress native libraries
     runs-on: ubuntu-latest
@@ -143,6 +146,7 @@ jobs:
             java/src/main/java/com/epam/deltix/dfp/NativeImpl.java
             java/src/main/java/com/epam/deltix/dfp/Version.java
           name: CompressedNativeLibs
+
   build-jar:
     name: Build JAR on Linux
     runs-on: ubuntu-latest
@@ -180,10 +184,48 @@ jobs:
           path: |
             java/build/libs/*
           name: JavaBuild
+
+  test-dotnet:
+    name: Run .NET ${{ matrix.java }} Tests (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    needs: compress
+    strategy:
+      fail-fast: false
+      matrix:
+        dotnet: [ '2.1' ]
+        os: [ 'ubuntu-latest', 'windows-latest']
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2    
+        with:
+          submodules: 'recursive'    
+      - name: Download compressed libs
+        uses: actions/download-artifact@v2
+        with:
+          name: CompressedNativeLibs
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v1
+        with:
+          java-version: ${{ matrix.dotnet }}
+      - name: Run tests with cake
+        uses: cake-build/cake-action@v1
+        with:
+          script-path: csharp/build.cake
+          target: Run-Unit-Tests
+      - name: Upload test results on failure
+        uses: actions/upload-artifact@v2
+        if: ${{ failure() }}
+        with:
+          path: |
+            csharp/Deltix.DFP/bin/*
+            csharp/*.txt
+            csharp/*.xml
+          name: Dotnet${{ matrix.dotnet }}-${{ runner.os }}-TestReports
+
   test-java:
     name: Run Java ${{ matrix.java }} Tests (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
-    needs: build-jar
+    needs: compress
     strategy:
       fail-fast: false
       matrix:
@@ -206,11 +248,6 @@ jobs:
         with:
           path: ~/.gradle/wrapper
           key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
-      - name: Download JAR
-        uses: actions/download-artifact@v2
-        with:
-          name: JavaBuild
-          path: java/build/libs/
       - name: Download compressed libs
         uses: actions/download-artifact@v2
         with:
