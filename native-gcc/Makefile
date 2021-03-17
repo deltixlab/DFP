@@ -34,8 +34,7 @@ ifeq ($(OsName),OSX)
 	ProjectTargetName = lib$(ProjectName).dylib
 endif
 ProjectTargetFile = $(addprefix $(BinaryDirectory)/,$(ProjectTargetName))
-
-CC = gcc  # C compiler
+CC := $(or $(CC),$(gcc)) # C compiler
 CFLAGS += -c -Wall -Wno-unused-function -fvisibility=hidden -funsigned-char -fno-strict-aliasing -fPIC -DAPI_PREFIX=${ProjectName}_
 LFLAGS += -shared # -nostdlib -lmingw32 -lgcc_s -lgcc -lmoldname -lmingwex -lmsvcrt -lpthread -ladvapi32 -lshell32 -luser32 -lkernel32 -liconv -lmingw32 -lgcc_s -lgcc -lmoldname -lmingwex -lmsvcrt --verbose # --verbose # linking flags
 

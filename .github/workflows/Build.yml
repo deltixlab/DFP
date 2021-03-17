@@ -20,7 +20,7 @@ jobs:
       fail-fast: false
       matrix:
         java: [ '8' ]
-        os: [ 'ubuntu-latest', 'windows-latest']
+        os: [ 'ubuntu-latest', 'windows-latest', 'macos-latest']
         bits: [ '32', '64' ]
         include:
           - bits: 32
@@ -48,16 +48,24 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: ${{ matrix.java }}
-      - name: Install 32bit GCC libraries (Linux)
+      - name: Install build tools (Linux)
         if: ${{ matrix.os == 'ubuntu-latest' && matrix.bits == '32' }}
         run: sudo apt install gcc-multilib 
-      - name: Setup msys2 (Windows)
+      - name: Install build tools (macOS)
+        if: ${{ matrix.os == 'macos-latest' }}
+        run: brew install make
+      - name: Install build tools (Windows)
         if: ${{ matrix.os == 'windows-latest' }}
         uses: msys2/setup-msys2@v2
         with:
           install: git ${{ matrix.package }}
-      - name: Build native libraries with gradle (*nix)
+      - name: Build native libraries with gradle (Linux)
         if: ${{ matrix.os == 'ubuntu-latest' }}
+        run: ./gradlew makeNative${{ matrix.bits }}
+      - name: Build native libraries with gradle (macOS)
+        if: ${{ matrix.os == 'macos-latest' }}
+        env: 
+          CC: gcc-10
         run: ./gradlew makeNative${{ matrix.bits }}
       - name: Build native libraries with gradle (Windows)
         if: ${{ matrix.os == 'windows-latest' }}
@@ -71,6 +79,8 @@ jobs:
           path: |
             native-gcc/bin/Release/Linux/32/*.so
             native-gcc/bin/Release/Linux/64/*.so
+            native-gcc/bin/Release/OSX/32/*.so
+            native-gcc/bin/Release/OSX/64/*.so
             native-gcc/bin/Release/Windows/32/*.dll
             native-gcc/bin/Release/Windows/64/*.dll
           name: NativeLibs
@@ -113,6 +123,8 @@ jobs:
           path: |
             native-gcc/bin/Release/Linux/32/*.so
             native-gcc/bin/Release/Linux/64/*.so
+            native-gcc/bin/Release/OSX/32/*.so
+            native-gcc/bin/Release/OSX/64/*.so
             native-gcc/bin/Release/Windows/32/*.dll
             native-gcc/bin/Release/Windows/64/*.dll
             csharp/EPAM.Deltix.DFP/NativeImpl.cs
@@ -186,14 +198,14 @@ jobs:
           name: JavaBuild
 
   test-dotnet:
-    name: Run .NET ${{ matrix.java }} Tests (${{ matrix.os }})
+    name: Run .NET$ {{ matrix.dotnet }} Tests (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     needs: compress
     strategy:
       fail-fast: false
       matrix:
         dotnet: [ '2.1' ]
-        os: [ 'ubuntu-latest', 'windows-latest']
+        os: [ 'ubuntu-latest', 'windows-latest', 'macos-latest']
     steps:
       - name: Checkout code
         uses: actions/checkout@v2    
@@ -230,7 +242,7 @@ jobs:
       fail-fast: false
       matrix:
         java: [ '8' ]
-        os: [ 'ubuntu-latest', 'windows-latest']
+        os: [ 'ubuntu-latest', 'windows-latest', 'macos-latest']
     steps:
       - name: Checkout code
         uses: actions/checkout@v2    
