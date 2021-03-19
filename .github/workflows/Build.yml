@@ -20,7 +20,7 @@ jobs:
       fail-fast: false
       matrix:
         java: [ '8' ]
-        os: [ 'ubuntu-latest', 'windows-latest', 'macos-latest']
+        os: [ 'ubuntu-latest', 'windows-latest']
         bits: [ '32', '64' ]
         include:
           - bits: 32
