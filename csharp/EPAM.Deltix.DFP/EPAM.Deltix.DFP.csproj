@@ -43,8 +43,14 @@
 		<EmbeddedResource Include="..\..\native-gcc\bin\Release\Windows\64\ddfp$(VersionSuffix)_dll_zst" Link="Windows\x64\ddfp$(VersionSuffix)_dll_zst" />
 		<EmbeddedResource Include="..\..\native-gcc\bin\Release\Linux\32\libddfp$(VersionSuffix)_so_zst" Link="Linux\32\libddfp$(VersionSuffix)_so_zst" />
 		<EmbeddedResource Include="..\..\native-gcc\bin\Release\Linux\64\libddfp$(VersionSuffix)_so_zst" Link="Linux\64\libddfp$(VersionSuffix)_so_zst" />
-		<EmbeddedResource Include="..\..\native-gcc\bin\Release\OSX\64\libddfp$(VersionSuffix)_dylib_zst" Link="OSX\64\libddfp$(VersionSuffix)_dylib_zst" />
 	</ItemGroup>
+	<Choose>
+		<When Condition="Exists('..\..\native-gcc\bin\Release\OSX\64\libddfp$(VersionSuffix)_dylib_zst')">
+			<ItemGroup>
+				<EmbeddedResource Include="..\..\native-gcc\bin\Release\OSX\64\libddfp$(VersionSuffix)_dylib_zst" Link="OSX\64\libddfp$(VersionSuffix)_dylib_zst" />
+			</ItemGroup>
+		</When>
+	</Choose>
 	<!--Target Name="PreBuild" BeforeTargets="PreBuildEvent">
 		<Exec WorkingDirectory="..\.." Command="gradlew :nativeWrappers:makeNativeWrappers" />
 	</Target-->
