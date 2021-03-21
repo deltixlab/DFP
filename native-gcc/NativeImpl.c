@@ -97,7 +97,7 @@ static const uint64 ZERO =                   0x31C0000000000000ll; //e=0,m=0,sig
 //region Conversion
 
 #define OPN_FROM(mcr__type)                         OPN(PPCAT(from, mcr__type), (_Decimal64)x, mcr__type x)
-#define OPN_TO(mcr__type)                           OPNR(PPCAT(to, mcr__type), mcr__type, (mcr__type)x, _Decimal64 x)
+#define OPN_TO(mcr__type)                           OPNR(PPCAT(to, mcr__type), mcr__type, (mcr__type)x.d64, D64Bits x)
 #define OPN_FROM_TO(mcr__type)                      OPN_FROM(mcr__type)     OPN_TO(mcr__type)
 
 typedef double      Float64;
@@ -131,16 +131,19 @@ _Decimal64 scalbnd64(_Decimal64 x, int32 tenPowerFactor) {
     return x;
 }
 
+int isnandun64(D64Bits un64) {
+    return (un64.i64 & MASK_INFINITY_NAN) == MASK_INFINITY_NAN;
+}
 int isnand64(_Decimal64 x) {
     D64Bits un64;
     un64.d64 = x;
-    return (un64.i64 & MASK_INFINITY_NAN) == MASK_INFINITY_NAN;
+    return isnandun64(un64);
 }
 
 OPN_FROM_TO(Float64)
 OPN_FROM_TO(Float32)
 OPN(fromFixedPoint64, scalbnd64((_Decimal64)mantissa, -tenPowerFactor), int64 mantissa, int32 tenPowerFactor)
-OPNR(toFixedPoint, int64, (int64)scalbnd64(value, numberOfDigits), _Decimal64 value, int32 numberOfDigits)
+OPNR(toFixedPoint, int64, (int64)scalbnd64(value.d64, numberOfDigits), D64Bits value, int32 numberOfDigits)
 OPN_FROM_TO(Int64)
 OPN_FROM_TO(UInt64)
 
@@ -160,56 +163,56 @@ OPN_BOOL(signBit, (value & MASK_SIGN) == MASK_SIGN, uint64 value)
 
 //region Comparison
 
-DDFP_API(int32) PPCAT(API_PREFIX, compare) ( _Decimal64 a, _Decimal64 b) {
-    if (a < b)
+DDFP_API(int32) PPCAT(API_PREFIX, compare) ( D64Bits a, D64Bits b) {
+    if (a.d64 < b.d64)
         return -1;
-    if (a > b)
+    if (a.d64 > b.d64)
         return 1;
-    if (a == b)
+    if (a.d64 == b.d64)
         return 0;
-    return isnand64(b) - isnand64(a);
+    return isnandun64(b) - isnandun64(a);
 }
-JNI_API(int32) PPCAT(PPCAT(Java_, JAVA_PREFIX), compare) (void *jEnv, void *jClass,  _Decimal64 a, _Decimal64 b) {
-    if (a < b)
+JNI_API(int32) PPCAT(PPCAT(Java_, JAVA_PREFIX), compare) (void *jEnv, void *jClass,  D64Bits a, D64Bits b) {
+    if (a.d64 < b.d64)
         return -1;
-    if (a > b)
+    if (a.d64 > b.d64)
         return 1;
-    if (a == b)
+    if (a.d64 == b.d64)
         return 0;
-    return isnand64(a) - isnand64(b);
+    return isnandun64(a) - isnandun64(b);
 }
-JNI_API(int32) PPCAT(PPCAT(JavaCritical_, JAVA_PREFIX), compare) ( _Decimal64 a, _Decimal64 b) {
-    if (a < b)
+JNI_API(int32) PPCAT(PPCAT(JavaCritical_, JAVA_PREFIX), compare) ( D64Bits a, D64Bits b) {
+    if (a.d64 < b.d64)
         return -1;
-    if (a > b)
+    if (a.d64 > b.d64)
         return 1;
-    if (a == b)
+    if (a.d64 == b.d64)
         return 0;
-    return isnand64(a) - isnand64(b);
+    return isnandun64(a) - isnandun64(b);
 }
 
-OPN_BOOL(isEqual, a == b, _Decimal64 a, _Decimal64 b)
-OPN_BOOL(isNotEqual, a != b, _Decimal64 a, _Decimal64 b)
-OPN_BOOL(isLess, a < b, _Decimal64 a, _Decimal64 b)
-OPN_BOOL(isLessOrEqual, a <= b, _Decimal64 a, _Decimal64 b)
-OPN_BOOL(isGreater, a > b, _Decimal64 a, _Decimal64 b)
-OPN_BOOL(isGreaterOrEqual, a >=b, _Decimal64 a, _Decimal64 b)
-OPN_BOOL(isZero, a == 0, _Decimal64 a)
-OPN_BOOL(isNonZero, a != 0, _Decimal64 a)
-OPN_BOOL(isPositive, a > 0, _Decimal64 a)
-OPN_BOOL(isNegative, a < 0, _Decimal64 a)
-OPN_BOOL(isNonPositive, a <= 0, _Decimal64 a)
-OPN_BOOL(isNonNegative, a >= 0, _Decimal64 a)
+OPN_BOOL(isEqual, a.d64 == b.d64, D64Bits a, D64Bits b)
+OPN_BOOL(isNotEqual, a.d64 != b.d64, D64Bits a, D64Bits b)
+OPN_BOOL(isLess, a.d64 < b.d64, D64Bits a, D64Bits b)
+OPN_BOOL(isLessOrEqual, a.d64 <= b.d64, D64Bits a, D64Bits b)
+OPN_BOOL(isGreater, a.d64 > b.d64, D64Bits a, D64Bits b)
+OPN_BOOL(isGreaterOrEqual, a.d64 >=b.d64, D64Bits a, D64Bits b)
+OPN_BOOL(isZero, a.d64 == 0, D64Bits a)
+OPN_BOOL(isNonZero, a.d64 != 0, D64Bits a)
+OPN_BOOL(isPositive, a.d64 > 0, D64Bits a)
+OPN_BOOL(isNegative, a.d64 < 0, D64Bits a)
+OPN_BOOL(isNonPositive, a.d64 <= 0, D64Bits a)
+OPN_BOOL(isNonNegative, a.d64 >= 0, D64Bits a)
 
 //endregion
 
 //region Rounding
 
 //@AD: Just compilation stub - segfault
-OPNRR(roundTowardsPositiveInfinity, _Decimal64, *((int *)0) = 42; return nanConst;, _Decimal64 x)
-OPNRR(roundTowardsNegativeInfinity, _Decimal64, *((int *)0) = 42; return nanConst;, _Decimal64 x)
-OPNRR(roundTowardsZero, _Decimal64, *((int *)0) = 42; return nanConst;, _Decimal64 x)
-OPNRR(roundToNearestTiesAwayFromZero, _Decimal64, *((int *)0) = 42; return nanConst;, _Decimal64 x)
+OPNRR(roundTowardsPositiveInfinity, _Decimal64, *((int *)0) = 42; return nanConst;, D64Bits x)
+OPNRR(roundTowardsNegativeInfinity, _Decimal64, *((int *)0) = 42; return nanConst;, D64Bits x)
+OPNRR(roundTowardsZero, _Decimal64, *((int *)0) = 42; return nanConst;, D64Bits x)
+OPNRR(roundToNearestTiesAwayFromZero, _Decimal64, *((int *)0) = 42; return nanConst;, D64Bits x)
 
 //endregion
 
@@ -222,41 +225,41 @@ inline _Decimal64 noNanMin(_Decimal64 a, _Decimal64 b) {
     return a < b ? a : b;
 }
 
-OPN(max2, __bid_unorddd2(a, b) ? nanConst : noNanMax(a, b), _Decimal64 a, _Decimal64 b)
-OPN(max3, __bid_unorddd2(a, b) || __bid_unorddd2(c, c) ? nanConst : noNanMax(noNanMax(a, b), c), _Decimal64 a, _Decimal64 b, _Decimal64 c)
-OPN(max4, __bid_unorddd2(a, b) || __bid_unorddd2(c, d) ? nanConst : noNanMax(noNanMax(a, b), noNanMax(c, d)), _Decimal64 a, _Decimal64 b, _Decimal64 c, _Decimal64 d)
-OPN(min2, __bid_unorddd2(a, b) ? nanConst : noNanMin(a, b), _Decimal64 a, _Decimal64 b)
-OPN(min3, __bid_unorddd2(a, b) || __bid_unorddd2(c, c) ? nanConst : noNanMin(noNanMin(a, b), c), _Decimal64 a, _Decimal64 b, _Decimal64 c)
-OPN(min4, __bid_unorddd2(a, b) || __bid_unorddd2(c, d) ? nanConst : noNanMin(noNanMin(a, b), noNanMin(c, d)), _Decimal64 a, _Decimal64 b, _Decimal64 c, _Decimal64 d)
+OPN(max2, __bid_unorddd2(a.d64, b.d64) ? nanConst : noNanMax(a.d64, b.d64), D64Bits a, D64Bits b)
+OPN(max3, __bid_unorddd2(a.d64, b.d64) || __bid_unorddd2(c.d64, c.d64) ? nanConst : noNanMax(noNanMax(a.d64, b.d64), c.d64), D64Bits a, D64Bits b, D64Bits c)
+OPN(max4, __bid_unorddd2(a.d64, b.d64) || __bid_unorddd2(c.d64, d.d64) ? nanConst : noNanMax(noNanMax(a.d64, b.d64), noNanMax(c.d64, d.d64)), D64Bits a, D64Bits b, D64Bits c, D64Bits d)
+OPN(min2, __bid_unorddd2(a.d64, b.d64) ? nanConst : noNanMin(a.d64, b.d64), D64Bits a, D64Bits b)
+OPN(min3, __bid_unorddd2(a.d64, b.d64) || __bid_unorddd2(c.d64, c.d64) ? nanConst : noNanMin(noNanMin(a.d64, b.d64), c.d64), D64Bits a, D64Bits b, D64Bits c)
+OPN(min4, __bid_unorddd2(a.d64, b.d64) || __bid_unorddd2(c.d64, d.d64) ? nanConst : noNanMin(noNanMin(a.d64, b.d64), noNanMin(c.d64, d.d64)), D64Bits a, D64Bits b, D64Bits c, D64Bits d)
 
 //endregion
 
 //region Arithmetic
 
-OPN(negate, -x, _Decimal64 x)
-OPN(abs, x >= 0 ? x : -x, _Decimal64 x)
-OPN(add2, a + b, _Decimal64 a, _Decimal64 b)
-OPN(add3, a + b + c, _Decimal64 a, _Decimal64 b, _Decimal64 c)
-OPN(add4, a + b + c + d, _Decimal64 a, _Decimal64 b, _Decimal64 c, _Decimal64 d)
-OPN(subtract, a - b, _Decimal64 a, _Decimal64 b)
-OPN(multiply2, a * b, _Decimal64 a, _Decimal64 b)
-OPN(multiply3, a * b * c, _Decimal64 a, _Decimal64 b, _Decimal64 c)
-OPN(multiply4, a * b * c * d, _Decimal64 a, _Decimal64 b, _Decimal64 c, _Decimal64 d)
-OPN(multiplyByInt32, a * integer, _Decimal64 a, int32 integer)
-OPN(multiplyByInt64, a * integer, _Decimal64 a, int64 integer)
-OPN(divide, a / b, _Decimal64 a, _Decimal64 b)
-OPN(divideByInt32, x / integer, _Decimal64 x, int32 integer)
-OPN(divideByInt64, x / integer, _Decimal64 x, int64 integer)
-OPN(multiplyAndAdd, a * b + c, _Decimal64 a, _Decimal64 b, _Decimal64 c)
-OPN(scaleByPowerOfTen, scalbnd64(a, n) , _Decimal64 a, int32 n)
-OPN(mean2, (a + b) / 2, _Decimal64 a, _Decimal64 b)
+OPN(negate, -x.d64, D64Bits x)
+OPN(abs, x.d64 >= 0 ? x.d64 : -x.d64, D64Bits x)
+OPN(add2, a.d64 + b.d64, D64Bits a, D64Bits b)
+OPN(add3, a.d64 + b.d64 + c.d64, D64Bits a, D64Bits b, D64Bits c)
+OPN(add4, a.d64 + b.d64 + c.d64 + d.d64, D64Bits a, D64Bits b, D64Bits c, D64Bits d)
+OPN(subtract, a.d64 - b.d64, D64Bits a, D64Bits b)
+OPN(multiply2, a.d64 * b.d64, D64Bits a, D64Bits b)
+OPN(multiply3, a.d64 * b.d64 * c.d64, D64Bits a, D64Bits b, D64Bits c)
+OPN(multiply4, a.d64 * b.d64 * c.d64 * d.d64, D64Bits a, D64Bits b, D64Bits c, D64Bits d)
+OPN(multiplyByInt32, a.d64 * integer, D64Bits a, int32 integer)
+OPN(multiplyByInt64, a.d64 * integer, D64Bits a, int64 integer)
+OPN(divide, a.d64 / b.d64, D64Bits a, D64Bits b)
+OPN(divideByInt32, x.d64 / integer, D64Bits x, int32 integer)
+OPN(divideByInt64, x.d64 / integer, D64Bits x, int64 integer)
+OPN(multiplyAndAdd, a.d64 * b.d64 + c.d64, D64Bits a, D64Bits b, D64Bits c)
+OPN(scaleByPowerOfTen, scalbnd64(a.d64, n) , D64Bits a, int32 n)
+OPN(mean2, (a.d64 + b.d64) / 2, D64Bits a, D64Bits b)
 
 //endregion
 
 //region Special
 
 //@AD: Just compilation stub - segfault
-OPNRR(nextUp, _Decimal64, *((int *)0) = 42; return nanConst;, _Decimal64 x)
-OPNRR(nextDown, _Decimal64, *((int *)0) = 42; return nanConst;, _Decimal64 x)
+OPNRR(nextUp, _Decimal64, *((int *)0) = 42; return nanConst;, D64Bits x)
+OPNRR(nextDown, _Decimal64, *((int *)0) = 42; return nanConst;, D64Bits x)
 
 //endregion
