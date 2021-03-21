@@ -83,7 +83,7 @@ public class NativeWrappers {
 
         final int exitCode = process.waitFor();
         if (exitCode != 0) {
-            throw new RuntimeException("Log: "+stdOutCollector.message + "\nError: " + stdErrCollector.message);
+            throw new RuntimeException("Log: " + stdOutCollector.message + "\nError: " + stdErrCollector.message);
         }
 
         return stdOutCollector.message;
@@ -207,6 +207,7 @@ public class NativeWrappers {
         switch (type) {
             case "_Decimal64":
             case "decimal64":
+            case "D64Bits":
                 return "UInt64";
             case "int8":
             case "Int8":
@@ -311,6 +312,7 @@ public class NativeWrappers {
         switch (type) {
             case "_Decimal64":
             case "decimal64":
+            case "D64Bits":
                 return "long";
             case "int8":
             case "uint8":
