@@ -46,7 +46,14 @@ typedef union D64Bits_t
 {
     _Decimal64  d64;
     int64       i64;
+    uint64      u64;
 } D64Bits;
+
+inline D64Bits decimal64ToUnion(_Decimal64 x) {
+    D64Bits un64;
+    un64.d64 = x;
+    return un64;
+}
 
 //https://stackoverflow.com/questions/4079243/how-can-i-use-sizeof-in-a-preprocessor-macro
 #define STATIC_ASSERT(condition) typedef char p__LINE__[ (condition) ? 1 : -1];
@@ -70,9 +77,11 @@ JNI_API(mcr__type) PPCAT(PPCAT(JavaCritical_, JAVA_PREFIX), mcr__name) (__VA_ARG
     mcr__body                                                                                               \
 }
 
-#define OPNR(mcr__name, mcr__type, mcr__body, ...)  OPNRR(mcr__name, mcr__type, return mcr__body;, __VA_ARGS__)
+#define OPNR(mcr__name, mcr__type, mcr__body, ...)  OPNRR(mcr__name, mcr__type, return (mcr__body);, __VA_ARGS__)
 
-#define OPN(mcr__name, mcr__body, ...)              OPNR(mcr__name, _Decimal64, mcr__body, __VA_ARGS__)
+#define OPN(mcr__name, mcr__body, ...)              OPNR(mcr__name, D64Bits, decimal64ToUnion(mcr__body), __VA_ARGS__)
+
+#define OPN_UN64(mcr__name, mcr__body, ...)         OPNR(mcr__name, D64Bits, mcr__body, __VA_ARGS__)
 
 #define OPN_BOOL(mcr__name, mcr__body, ...)         OPNR(mcr__name, intBool, mcr__body, __VA_ARGS__)
 
@@ -80,24 +89,24 @@ DDFP_API(int32) __bid_unorddd2 ( _Decimal64 a , _Decimal64 b ); // IsAnyNan
 
 static const _Decimal64 nanConst = 0.0DD / 0.0DD;
 
-static const uint64 MASK_SIGN =              0x8000000000000000ll;
-//static const uint64 MASK_SPECIAL =           0x6000000000000000ll;
-static const uint64 MASK_INFINITY_NAN =      0x7C00000000000000ll;
-static const uint64 MASK_SIGN_INFINITY_NAN = 0xFC00000000000000ll; // SIGN|INF|NAN
-static const uint64 MASK_INFINITY_AND_NAN =  0x7800000000000000ll;
+static const uint64 MASK_SIGN =              0x8000000000000000ull;
+//static const uint64 MASK_SPECIAL =           0x6000000000000000ull;
+static const uint64 MASK_INFINITY_NAN =      0x7C00000000000000ull;
+static const uint64 MASK_SIGN_INFINITY_NAN = 0xFC00000000000000ull; // SIGN|INF|NAN
+static const uint64 MASK_INFINITY_AND_NAN =  0x7800000000000000ull;
 
-static const uint64 POSITIVE_INFINITY =      0x7800000000000000ll;
-static const uint64 NEGATIVE_INFINITY =      0xF800000000000000ll;
-static const uint64 ZERO =                   0x31C0000000000000ll; //e=0,m=0,sign=0
-//static const uint64 MAX_VALUE =              0x77FB86F26FC0FFFFll;
-//static const uint64 MIN_VALUE =              0xF7FB86F26FC0FFFFll;
-//static const uint64 MIN_POSITIVE_VALUE =     0x0000000000000001ll;
-//static const uint64 MAX_NEGATIVE_VALUE =     0x8000000000000001ll;
+static const uint64 POSITIVE_INFINITY =      0x7800000000000000ull;
+static const uint64 NEGATIVE_INFINITY =      0xF800000000000000ull;
+static const uint64 ZERO =                   0x31C0000000000000ull; //e=0,m=0,sign=0
+//static const uint64 MAX_VALUE =              0x77FB86F26FC0FFFFull;
+//static const uint64 MIN_VALUE =              0xF7FB86F26FC0FFFFull;
+//static const uint64 MIN_POSITIVE_VALUE =     0x0000000000000001ull;
+//static const uint64 MAX_NEGATIVE_VALUE =     0x8000000000000001ull;
 
 //region Conversion
 
 #define OPN_FROM(mcr__type)                         OPN(PPCAT(from, mcr__type), (_Decimal64)x, mcr__type x)
-#define OPN_TO(mcr__type)                           OPNR(PPCAT(to, mcr__type), mcr__type, (mcr__type)x.d64, D64Bits x)
+#define OPN_TO(mcr__type)                           OPNR(PPCAT(to, mcr__type), mcr__type, (mcr__type)(x.d64), D64Bits x)
 #define OPN_FROM_TO(mcr__type)                      OPN_FROM(mcr__type)     OPN_TO(mcr__type)
 
 typedef double      Float64;
@@ -131,10 +140,10 @@ _Decimal64 scalbnd64(_Decimal64 x, int32 tenPowerFactor) {
     return x;
 }
 
-int isnandun64(D64Bits un64) {
+inline static int isnandun64(D64Bits un64) {
     return (un64.i64 & MASK_INFINITY_NAN) == MASK_INFINITY_NAN;
 }
-int isnand64(_Decimal64 x) {
+inline static int isnand64(_Decimal64 x) {
     D64Bits un64;
     un64.d64 = x;
     return isnandun64(un64);
@@ -218,19 +227,24 @@ OPNRR(roundToNearestTiesAwayFromZero, _Decimal64, *((int *)0) = 42; return nanCo
 
 //region Minimum & Maximum
 
-inline _Decimal64 noNanMax(_Decimal64 a, _Decimal64 b) {
-    return a > b ? a : b;
+inline static D64Bits noNanMax(D64Bits a, D64Bits b) {
+    return a.d64 > b.d64 ? a : b;
 }
-inline _Decimal64 noNanMin(_Decimal64 a, _Decimal64 b) {
-    return a < b ? a : b;
+inline static D64Bits noNanMin(D64Bits a, D64Bits b) {
+    return a.d64 < b.d64 ? a : b;
+}
+inline static D64Bits nanConstU() {
+    D64Bits un64;
+    un64.d64 = nanConst;
+    return un64;
 }
 
-OPN(max2, __bid_unorddd2(a.d64, b.d64) ? nanConst : noNanMax(a.d64, b.d64), D64Bits a, D64Bits b)
-OPN(max3, __bid_unorddd2(a.d64, b.d64) || __bid_unorddd2(c.d64, c.d64) ? nanConst : noNanMax(noNanMax(a.d64, b.d64), c.d64), D64Bits a, D64Bits b, D64Bits c)
-OPN(max4, __bid_unorddd2(a.d64, b.d64) || __bid_unorddd2(c.d64, d.d64) ? nanConst : noNanMax(noNanMax(a.d64, b.d64), noNanMax(c.d64, d.d64)), D64Bits a, D64Bits b, D64Bits c, D64Bits d)
-OPN(min2, __bid_unorddd2(a.d64, b.d64) ? nanConst : noNanMin(a.d64, b.d64), D64Bits a, D64Bits b)
-OPN(min3, __bid_unorddd2(a.d64, b.d64) || __bid_unorddd2(c.d64, c.d64) ? nanConst : noNanMin(noNanMin(a.d64, b.d64), c.d64), D64Bits a, D64Bits b, D64Bits c)
-OPN(min4, __bid_unorddd2(a.d64, b.d64) || __bid_unorddd2(c.d64, d.d64) ? nanConst : noNanMin(noNanMin(a.d64, b.d64), noNanMin(c.d64, d.d64)), D64Bits a, D64Bits b, D64Bits c, D64Bits d)
+OPN_UN64(max2, __bid_unorddd2(a.d64, b.d64) ? nanConstU() : noNanMax(a, b), D64Bits a, D64Bits b)
+OPN_UN64(max3, __bid_unorddd2(a.d64, b.d64) || __bid_unorddd2(c.d64, c.d64) ? nanConstU() : noNanMax(noNanMax(a, b), c), D64Bits a, D64Bits b, D64Bits c)
+OPN_UN64(max4, __bid_unorddd2(a.d64, b.d64) || __bid_unorddd2(c.d64, d.d64) ? nanConstU() : noNanMax(noNanMax(a, b), noNanMax(c, d)), D64Bits a, D64Bits b, D64Bits c, D64Bits d)
+OPN_UN64(min2, __bid_unorddd2(a.d64, b.d64) ? nanConstU() : noNanMin(a, b), D64Bits a, D64Bits b)
+OPN_UN64(min3, __bid_unorddd2(a.d64, b.d64) || __bid_unorddd2(c.d64, c.d64) ? nanConstU() : noNanMin(noNanMin(a, b), c), D64Bits a, D64Bits b, D64Bits c)
+OPN_UN64(min4, __bid_unorddd2(a.d64, b.d64) || __bid_unorddd2(c.d64, d.d64) ? nanConstU() : noNanMin(noNanMin(a, b), noNanMin(c, d)), D64Bits a, D64Bits b, D64Bits c, D64Bits d)
 
 //endregion
 
