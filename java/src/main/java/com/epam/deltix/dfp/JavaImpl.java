@@ -1386,6 +1386,7 @@ class JavaImpl {
 
         int expShift = 0;
         long divFactor = 1;
+        int addExponent = 0;
         { // Truncate all digits except last one
             long tenPower = 10;
             int expPower = 1;
@@ -1396,6 +1397,7 @@ class JavaImpl {
             if (absPower >= 16) {
                 divFactor = MAX_COEFFICIENT + 1;
                 expShift = 16;
+                addExponent = absPower - expShift;
 
             } else {
                 while (absPower != 0 && coefficient != 0) {
@@ -1414,30 +1416,31 @@ class JavaImpl {
         // Process last digit
         switch (roundType) {
             case ROUND:
-                parts.coefficient = ((parts.coefficient + divFactor / 2) / divFactor) * divFactor;
+                parts.coefficient = addExponent == 0 ? ((parts.coefficient + divFactor / 2) / divFactor) * divFactor : 0;
                 break;
 
             case TRUNC:
-                parts.coefficient = (parts.coefficient / divFactor) * divFactor;
+                parts.coefficient = addExponent == 0 ? (parts.coefficient / divFactor) * divFactor : 0;
                 break;
 
             case FLOOR:
-                if (parts.isNegative())
-                    parts.coefficient = ((parts.coefficient + divFactor - 1) / divFactor) * divFactor;
+                if (!parts.isNegative())
+                    parts.coefficient = addExponent == 0 ? (parts.coefficient / divFactor) * divFactor : 0;
                 else
-                    parts.coefficient = (parts.coefficient / divFactor) * divFactor;
+                    parts.coefficient = addExponent == 0 ? ((parts.coefficient + divFactor - 1) / divFactor) * divFactor : divFactor;
                 break;
 
             case CEIL:
-                if (parts.isNegative())
-                    parts.coefficient = (parts.coefficient / divFactor) * divFactor;
+                if (!parts.isNegative())
+                    parts.coefficient = addExponent == 0 ? ((parts.coefficient + divFactor - 1) / divFactor) * divFactor : divFactor;
                 else
-                    parts.coefficient = ((parts.coefficient + divFactor - 1) / divFactor) * divFactor;
+                    parts.coefficient = addExponent == 0 ? (parts.coefficient / divFactor) * divFactor : 0;
                 break;
 
             default:
                 throw new IllegalArgumentException("Unsupported roundType(=" + roundType + ") value.");
         }
+        parts.exponent += addExponent;
         if (parts.coefficient == 0)
             return JavaImpl.ZERO;
 
