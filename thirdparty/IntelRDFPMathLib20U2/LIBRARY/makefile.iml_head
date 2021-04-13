@@ -293,8 +293,8 @@ LongFileListToFile = rm -f $4; $(call EchoLongFileList,$1,$2,$3) > $4
 Warning = $(warning $1 = $($1))
 Error = $(warning $1 = $($1))
        
-OS_ALIAS     := Linux FreeBSD  Darwin SunOS HP-UX Windows_NT CYGWIN_NT-5.1 CYGWIN_NT-5.2-WOW64 CYGWIN_NT-6.1-WOW64
-OS_MAP_LIST  := LINUX FREEBSD  MACH   LINUX LINUX WINNT      WINNT         WINNT               WINNT
+OS_ALIAS     := Linux FreeBSD  Darwin SunOS HP-UX Windows_NT CYGWIN_NT-5.1 CYGWIN_NT-5.2-WOW64 CYGWIN_NT-6.1-WOW64 CYGWIN_NT-10.0
+OS_MAP_LIST  := LINUX FREEBSD  MACH   LINUX LINUX WINNT      WINNT         WINNT               WINNT               WINNT
 OS_LIST      := LINUX FREEBSD  MACH   WINNT
 OS_TYPE      := LINUX LINUX    LINUX  WINNT
 OS_TYPES := LINUX WINNT
@@ -522,9 +522,9 @@ ifeq ($(origin CC_NAME),undefined)
     endif
 endif
 
-CC_NAME_LIST  := icc icl gcc cl cc
-CC_TYPE_LIST  := gcc cl  gcc cl gcc
-CC_TYPES      := gcc cl
+CC_NAME_LIST  := icc icl   gcc clang cc
+CC_TYPE_LIST  := gcc clang gcc clang gcc
+CC_TYPES      := gcc clang
 INTEL_CC_LIST := icc icl
 
 CC_NAME_INDEX := $(call GetIndex,$(CC_NAME),$(CC_NAME_LIST))
