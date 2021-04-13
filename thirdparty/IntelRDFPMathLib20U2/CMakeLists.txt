@@ -5,9 +5,21 @@ set(CALL_BY_REF "0" CACHE STRING "The numerical arguments and results are passed
 set(GLOBAL_RND "1" CACHE STRING "The rounding mode is a global variable _IDEC_glbround")
 set(GLOBAL_FLAGS "1" CACHE STRING "The exception status flags are represented by a global variable _IDEC_glbflags")
 
+if(UNIX)
+	add_definitions(-DLINUX)
+elseif(WIN32)
+	add_definitions(-DWINDOWS)
+elseif(APPLE)
+	add_definitions(-DAPPLE)
+endif()
+add_definitions(-DUSE_COMPILER_F128_TYPE=0)
+add_definitions(-DUSE_COMPILER_F80_TYPE=0)
+add_definitions(-DUSE_NATIVE_QUAD_TYPE=0)
+add_definitions(-Defi2)
 add_definitions(-DDECIMAL_CALL_BY_REFERENCE=${CALL_BY_REF})
 add_definitions(-DDECIMAL_GLOBAL_ROUNDING=${GLOBAL_RND})
 add_definitions(-DDECIMAL_GLOBAL_EXCEPTION_FLAGS=${GLOBAL_FLAGS})
+
 
 add_subdirectory (LIBRARY)
 # add_subdirectory (Demo)
