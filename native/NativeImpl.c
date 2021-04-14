@@ -1,9 +1,3 @@
-#if defined(M_PI)
-#error The libC is under the LGPL license! Only the libgcc with GCC RUNTIME LIBRARY EXCEPTION can be used.
-#endif
-
-// See the "GNU Compiler Collection Internals" for the list of available DFP functions.
-
 #ifndef API_PREFIX
 #define API_PREFIX    ddfp_
 #endif
