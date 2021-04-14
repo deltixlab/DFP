@@ -16,7 +16,7 @@
 #endif
 
 #if defined(_WIN32)
-#define DDFP_API(x) __declspec(dllexport) x
+#define DDFP_API(x) __declspec(dllexport) x __cdecl
 #else
 #define DDFP_API(x) x __attribute__ ((visibility("default")))
 #endif
@@ -87,7 +87,10 @@ JNI_API(mcr__type) PPCAT(PPCAT(JavaCritical_, JAVA_PREFIX), mcr__name) (__VA_ARG
 
 #define OPN_BOOL(mcr__name, mcr__body, ...)         OPNR(mcr__name, intBool, mcr__body, __VA_ARGS__)
 
-static const BID_UINT64 nanConst = 0x7C00000000000000ull;
+static const BID_UINT64 nanConst =  0x7C00000000000000ull;
+static const BID_UINT64 zeroConst = 0x31C0000000000000ull;
+static const BID_UINT64 oneConst =  0x31C0000000000001ull;
+static const BID_UINT64 twoConst =  0x31C0000000000002ull;
 
 static const uint64 MASK_SIGN =              0x8000000000000000ull;
 //static const uint64 MASK_SPECIAL =           0x6000000000000000ull;
@@ -120,26 +123,6 @@ typedef uint16      UInt16;
 typedef int8        Int8;
 typedef uint8       UInt8;
 
-BID_UINT64 scalbnd64(BID_UINT64 x, int32 tenPowerFactor) {
-    D64Bits un64;
-    un64.d64 = x;
-    if ((un64.i64 & MASK_INFINITY_AND_NAN) == MASK_INFINITY_AND_NAN)
-        return x;
-
-    BID_UINT64 tenPower = 10;
-    if (tenPowerFactor < 0)
-        tenPower = 1 / tenPower;
-    int absFactor = tenPowerFactor >= 0 ? tenPowerFactor : -tenPowerFactor;
-    while(absFactor) {
-        if (absFactor & 1)
-            x *= tenPower;
-        tenPower *= tenPower;
-        absFactor >>= 1;
-    }
-
-    return x;
-}
-
 inline static int isnandun64(D64Bits un64) {
     return (un64.i64 & MASK_INFINITY_NAN) == MASK_INFINITY_NAN;
 }
@@ -149,24 +132,24 @@ inline static int isnand64(BID_UINT64 x) {
     return isnandun64(un64);
 }
 
-OPN_FROM_TO(Float64)
-OPN_FROM_TO(Float32)
-OPN(fromFixedPoint64, scalbnd64((BID_UINT64)mantissa, -tenPowerFactor), int64 mantissa, int32 tenPowerFactor)
-OPNR(toFixedPoint, int64, (int64)scalbnd64(value.d64, numberOfDigits), D64Bits value, int32 numberOfDigits)
-OPN_FROM_TO(Int64)
-OPN_FROM_TO(UInt64)
+//OPN_FROM_TO(Float64)
+//OPN_FROM_TO(Float32)
+//OPN(fromFixedPoint64, bid64_scalbn((BID_UINT64)mantissa, -tenPowerFactor), int64 mantissa, int32 tenPowerFactor)
+//OPNR(toFixedPoint, int64, (int64)bid64_scalbn(value.d64, numberOfDigits), D64Bits value, int32 numberOfDigits)
+//OPN_FROM_TO(Int64)
+//OPN_FROM_TO(UInt64)
 
 //endregion
 
 //region Classification
 
-OPN_BOOL(isNaN,  (value & MASK_INFINITY_NAN) == MASK_INFINITY_NAN, uint64 value)
-OPN_BOOL(isInfinity, (value & MASK_INFINITY_NAN) == POSITIVE_INFINITY, uint64 value)
-OPN_BOOL(isPositiveInfinity, (value & MASK_SIGN_INFINITY_NAN) == POSITIVE_INFINITY, uint64 value)
-OPN_BOOL(isNegativeInfinity, (value & MASK_SIGN_INFINITY_NAN) == NEGATIVE_INFINITY, uint64 value)
-OPN_BOOL(isFinite, (value & MASK_INFINITY_AND_NAN) != MASK_INFINITY_AND_NAN, uint64 value)
-OPN_BOOL(isNormal, ((value & MASK_INFINITY_AND_NAN) != MASK_INFINITY_AND_NAN) && (value != ZERO), uint64 value)
-OPN_BOOL(signBit, (value & MASK_SIGN) == MASK_SIGN, uint64 value)
+ OPN_BOOL(isNaN,  (value & MASK_INFINITY_NAN) == MASK_INFINITY_NAN, uint64 value)
+ OPN_BOOL(isInfinity, (value & MASK_INFINITY_NAN) == POSITIVE_INFINITY, uint64 value)
+ OPN_BOOL(isPositiveInfinity, (value & MASK_SIGN_INFINITY_NAN) == POSITIVE_INFINITY, uint64 value)
+ OPN_BOOL(isNegativeInfinity, (value & MASK_SIGN_INFINITY_NAN) == NEGATIVE_INFINITY, uint64 value)
+ OPN_BOOL(isFinite, (value & MASK_INFINITY_AND_NAN) != MASK_INFINITY_AND_NAN, uint64 value)
+ OPN_BOOL(isNormal, ((value & MASK_INFINITY_AND_NAN) != MASK_INFINITY_AND_NAN) && (value != ZERO), uint64 value)
+ OPN_BOOL(signBit, (value & MASK_SIGN) == MASK_SIGN, uint64 value)
 
 //endregion
 
@@ -200,18 +183,18 @@ JNI_API(int32) PPCAT(PPCAT(JavaCritical_, JAVA_PREFIX), compare) ( D64Bits a, D6
     return isnandun64(a) - isnandun64(b);
 }
 
-OPN_BOOL(isEqual, a.d64 == b.d64, D64Bits a, D64Bits b)
-OPN_BOOL(isNotEqual, a.d64 != b.d64, D64Bits a, D64Bits b)
-OPN_BOOL(isLess, a.d64 < b.d64, D64Bits a, D64Bits b)
-OPN_BOOL(isLessOrEqual, a.d64 <= b.d64, D64Bits a, D64Bits b)
-OPN_BOOL(isGreater, a.d64 > b.d64, D64Bits a, D64Bits b)
-OPN_BOOL(isGreaterOrEqual, a.d64 >=b.d64, D64Bits a, D64Bits b)
-OPN_BOOL(isZero, a.d64 == 0, D64Bits a)
-OPN_BOOL(isNonZero, a.d64 != 0, D64Bits a)
-OPN_BOOL(isPositive, a.d64 > 0, D64Bits a)
-OPN_BOOL(isNegative, a.d64 < 0, D64Bits a)
-OPN_BOOL(isNonPositive, a.d64 <= 0, D64Bits a)
-OPN_BOOL(isNonNegative, a.d64 >= 0, D64Bits a)
+ OPN_BOOL(isEqual, bid64_quiet_equal(a.d64, b.d64), D64Bits a, D64Bits b)
+ OPN_BOOL(isNotEqual, bid64_quiet_not_equal(a.d64, b.d64), D64Bits a, D64Bits b)
+ OPN_BOOL(isLess, bid64_quiet_less(a.d64, b.d64), D64Bits a, D64Bits b)
+ OPN_BOOL(isLessOrEqual, bid64_quiet_less_equal(a.d64, b.d64), D64Bits a, D64Bits b)
+ OPN_BOOL(isGreater, bid64_quiet_greater(a.d64, b.d64), D64Bits a, D64Bits b)
+ OPN_BOOL(isGreaterOrEqual, bid64_quiet_greater_equal(a.d64, b.d64), D64Bits a, D64Bits b)
+ OPN_BOOL(isZero, bid64_quiet_equal(a.d64, zeroConst), D64Bits a)
+ OPN_BOOL(isNonZero, bid64_quiet_not_equal(a.d64, zeroConst), D64Bits a)
+ OPN_BOOL(isPositive, bid64_quiet_greater(a.d64, zeroConst), D64Bits a)
+ OPN_BOOL(isNegative, bid64_quiet_less(a.d64, zeroConst), D64Bits a)
+ OPN_BOOL(isNonPositive, bid64_quiet_less_equal(a.d64, zeroConst), D64Bits a)
+ OPN_BOOL(isNonNegative, bid64_quiet_greater_equal(a.d64, zeroConst), D64Bits a)
 
 //endregion
 
@@ -252,21 +235,21 @@ OPN_UN64(min4, bid64_quiet_unordered(a.d64, b.d64) || bid64_quiet_unordered(c.d6
 
 OPN(negate, -x.d64, D64Bits x)
 OPN(abs, x.d64 >= 0 ? x.d64 : -x.d64, D64Bits x)
-OPN(add2, a.d64 + b.d64, D64Bits a, D64Bits b)
-OPN(add3, a.d64 + b.d64 + c.d64, D64Bits a, D64Bits b, D64Bits c)
-OPN(add4, a.d64 + b.d64 + c.d64 + d.d64, D64Bits a, D64Bits b, D64Bits c, D64Bits d)
-OPN(subtract, a.d64 - b.d64, D64Bits a, D64Bits b)
-OPN(multiply2, a.d64 * b.d64, D64Bits a, D64Bits b)
-OPN(multiply3, a.d64 * b.d64 * c.d64, D64Bits a, D64Bits b, D64Bits c)
-OPN(multiply4, a.d64 * b.d64 * c.d64 * d.d64, D64Bits a, D64Bits b, D64Bits c, D64Bits d)
+ OPN(add2, bid64_add(a.d64, b.d64), D64Bits a, D64Bits b)
+ OPN(add3, bid64_add(bid64_add(a.d64, b.d64), c.d64), D64Bits a, D64Bits b, D64Bits c)
+ OPN(add4, bid64_add(bid64_add(a.d64, b.d64), bid64_add(c.d64, d.d64)), D64Bits a, D64Bits b, D64Bits c, D64Bits d)
+ OPN(subtract, bid64_sub(a.d64, b.d64), D64Bits a, D64Bits b)
+ OPN(multiply2, bid64_mul(a.d64, b.d64), D64Bits a, D64Bits b)
+ OPN(multiply3, bid64_mul(bid64_mul(a.d64, b.d64), c.d64), D64Bits a, D64Bits b, D64Bits c)
+ OPN(multiply4, bid64_mul(bid64_mul(a.d64, b.d64), bid64_mul(c.d64, d.d64)), D64Bits a, D64Bits b, D64Bits c, D64Bits d)
 OPN(multiplyByInt32, a.d64 * integer, D64Bits a, int32 integer)
 OPN(multiplyByInt64, a.d64 * integer, D64Bits a, int64 integer)
-OPN(divide, a.d64 / b.d64, D64Bits a, D64Bits b)
+ OPN(divide, bid64_div(a.d64, b.d64), D64Bits a, D64Bits b)
 OPN(divideByInt32, x.d64 / integer, D64Bits x, int32 integer)
 OPN(divideByInt64, x.d64 / integer, D64Bits x, int64 integer)
-OPN(multiplyAndAdd, a.d64 * b.d64 + c.d64, D64Bits a, D64Bits b, D64Bits c)
-OPN(scaleByPowerOfTen, scalbnd64(a.d64, n) , D64Bits a, int32 n)
-OPN(mean2, (a.d64 + b.d64) / 2, D64Bits a, D64Bits b)
+ OPN(multiplyAndAdd, bid64_fma(a.d64, b.d64, c.d64), D64Bits a, D64Bits b, D64Bits c)
+ OPN(scaleByPowerOfTen, bid64_scalbn(a.d64, n) , D64Bits a, int32 n)
+ OPN(mean2, bid64_div(bid64_add(a.d64, b.d64), twoConst), D64Bits a, D64Bits b)
 
 //endregion
 
