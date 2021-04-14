@@ -143,13 +143,13 @@ inline static int isnand64(BID_UINT64 x) {
 
 //region Classification
 
- OPN_BOOL(isNaN,  (value & MASK_INFINITY_NAN) == MASK_INFINITY_NAN, uint64 value)
- OPN_BOOL(isInfinity, (value & MASK_INFINITY_NAN) == POSITIVE_INFINITY, uint64 value)
- OPN_BOOL(isPositiveInfinity, (value & MASK_SIGN_INFINITY_NAN) == POSITIVE_INFINITY, uint64 value)
- OPN_BOOL(isNegativeInfinity, (value & MASK_SIGN_INFINITY_NAN) == NEGATIVE_INFINITY, uint64 value)
- OPN_BOOL(isFinite, (value & MASK_INFINITY_AND_NAN) != MASK_INFINITY_AND_NAN, uint64 value)
- OPN_BOOL(isNormal, ((value & MASK_INFINITY_AND_NAN) != MASK_INFINITY_AND_NAN) && (value != ZERO), uint64 value)
- OPN_BOOL(signBit, (value & MASK_SIGN) == MASK_SIGN, uint64 value)
+OPN_BOOL(isNaN, bid64_isNaN(x.d64), D64Bits x)
+OPN_BOOL(isInfinity, bid64_isInf(x.d64), D64Bits x)
+OPN_BOOL(isPositiveInfinity, (intBool)(bid64_isInf(x.d64) && !bid64_isSigned(x.d64)), D64Bits x)
+OPN_BOOL(isNegativeInfinity, (intBool)(bid64_isInf(x.d64) && bid64_isSigned(x.d64)), D64Bits x)
+OPN_BOOL(isFinite, bid64_isFinite(x.d64), D64Bits x)
+OPN_BOOL(isNormal, bid64_isNormal(x.d64), D64Bits x)
+OPN_BOOL(signBit, bid64_isSigned(x.d64), D64Bits x)
 
 //endregion
 
@@ -183,18 +183,18 @@ JNI_API(int32) PPCAT(PPCAT(JavaCritical_, JAVA_PREFIX), compare) ( D64Bits a, D6
     return isnandun64(a) - isnandun64(b);
 }
 
- OPN_BOOL(isEqual, bid64_quiet_equal(a.d64, b.d64), D64Bits a, D64Bits b)
- OPN_BOOL(isNotEqual, bid64_quiet_not_equal(a.d64, b.d64), D64Bits a, D64Bits b)
- OPN_BOOL(isLess, bid64_quiet_less(a.d64, b.d64), D64Bits a, D64Bits b)
- OPN_BOOL(isLessOrEqual, bid64_quiet_less_equal(a.d64, b.d64), D64Bits a, D64Bits b)
- OPN_BOOL(isGreater, bid64_quiet_greater(a.d64, b.d64), D64Bits a, D64Bits b)
- OPN_BOOL(isGreaterOrEqual, bid64_quiet_greater_equal(a.d64, b.d64), D64Bits a, D64Bits b)
- OPN_BOOL(isZero, bid64_quiet_equal(a.d64, zeroConst), D64Bits a)
- OPN_BOOL(isNonZero, bid64_quiet_not_equal(a.d64, zeroConst), D64Bits a)
- OPN_BOOL(isPositive, bid64_quiet_greater(a.d64, zeroConst), D64Bits a)
- OPN_BOOL(isNegative, bid64_quiet_less(a.d64, zeroConst), D64Bits a)
- OPN_BOOL(isNonPositive, bid64_quiet_less_equal(a.d64, zeroConst), D64Bits a)
- OPN_BOOL(isNonNegative, bid64_quiet_greater_equal(a.d64, zeroConst), D64Bits a)
+OPN_BOOL(isEqual, bid64_quiet_equal(a.d64, b.d64), D64Bits a, D64Bits b)
+OPN_BOOL(isNotEqual, bid64_quiet_not_equal(a.d64, b.d64), D64Bits a, D64Bits b)
+OPN_BOOL(isLess, bid64_quiet_less(a.d64, b.d64), D64Bits a, D64Bits b)
+OPN_BOOL(isLessOrEqual, bid64_quiet_less_equal(a.d64, b.d64), D64Bits a, D64Bits b)
+OPN_BOOL(isGreater, bid64_quiet_greater(a.d64, b.d64), D64Bits a, D64Bits b)
+OPN_BOOL(isGreaterOrEqual, bid64_quiet_greater_equal(a.d64, b.d64), D64Bits a, D64Bits b)
+OPN_BOOL(isZero, bid64_isZero(a.d64), D64Bits a)
+OPN_BOOL(isNonZero, bid64_quiet_not_equal(a.d64, zeroConst), D64Bits a)
+OPN_BOOL(isPositive, bid64_quiet_greater(a.d64, zeroConst), D64Bits a)
+OPN_BOOL(isNegative, bid64_quiet_less(a.d64, zeroConst), D64Bits a)
+OPN_BOOL(isNonPositive, bid64_quiet_less_equal(a.d64, zeroConst), D64Bits a)
+OPN_BOOL(isNonNegative, bid64_quiet_greater_equal(a.d64, zeroConst), D64Bits a)
 
 //endregion
 
@@ -210,54 +210,47 @@ OPNRR(roundToNearestTiesAwayFromZero, BID_UINT64, *((int *)0) = 42; return nanCo
 
 //region Minimum & Maximum
 
-inline static D64Bits noNanMax(D64Bits a, D64Bits b) {
-    return a.d64 > b.d64 ? a : b;
-}
-inline static D64Bits noNanMin(D64Bits a, D64Bits b) {
-    return a.d64 < b.d64 ? a : b;
-}
-inline static D64Bits nanConstU() {
+inline static D64Bits bidToD64(BID_UINT64 x) {
     D64Bits un64;
-    un64.d64 = nanConst;
+    un64.d64 = x;
     return un64;
 }
 
-OPN_UN64(max2, bid64_quiet_unordered(a.d64, b.d64) ? nanConstU() : noNanMax(a, b), D64Bits a, D64Bits b)
-OPN_UN64(max3, bid64_quiet_unordered(a.d64, b.d64) || bid64_quiet_unordered(c.d64, c.d64) ? nanConstU() : noNanMax(noNanMax(a, b), c), D64Bits a, D64Bits b, D64Bits c)
-OPN_UN64(max4, bid64_quiet_unordered(a.d64, b.d64) || bid64_quiet_unordered(c.d64, d.d64) ? nanConstU() : noNanMax(noNanMax(a, b), noNanMax(c, d)), D64Bits a, D64Bits b, D64Bits c, D64Bits d)
-OPN_UN64(min2, bid64_quiet_unordered(a.d64, b.d64) ? nanConstU() : noNanMin(a, b), D64Bits a, D64Bits b)
-OPN_UN64(min3, bid64_quiet_unordered(a.d64, b.d64) || bid64_quiet_unordered(c.d64, c.d64) ? nanConstU() : noNanMin(noNanMin(a, b), c), D64Bits a, D64Bits b, D64Bits c)
-OPN_UN64(min4, bid64_quiet_unordered(a.d64, b.d64) || bid64_quiet_unordered(c.d64, d.d64) ? nanConstU() : noNanMin(noNanMin(a, b), noNanMin(c, d)), D64Bits a, D64Bits b, D64Bits c, D64Bits d)
+OPN_UN64(max2, bidToD64(bid64_isNaN(a.d64) || bid64_isNaN(b.d64) ? nanConst : bid64_maxnum(a.d64, b.d64)), D64Bits a, D64Bits b)
+OPN_UN64(max3, bidToD64(bid64_isNaN(a.d64) || bid64_isNaN(b.d64) || bid64_isNaN(c.d64) ? nanConst : bid64_maxnum(bid64_maxnum(a.d64, b.d64), c.d64)), D64Bits a, D64Bits b, D64Bits c)
+OPN_UN64(max4, bidToD64(bid64_isNaN(a.d64) || bid64_isNaN(b.d64) || bid64_isNaN(c.d64) || bid64_isNaN(d.d64) ? nanConst : bid64_maxnum(bid64_maxnum(a.d64, b.d64), bid64_maxnum(c.d64, d.d64))), D64Bits a, D64Bits b, D64Bits c, D64Bits d)
+OPN_UN64(min2, bidToD64(bid64_isNaN(a.d64) || bid64_isNaN(b.d64) ? nanConst : bid64_minnum(a.d64, b.d64)), D64Bits a, D64Bits b)
+OPN_UN64(min3, bidToD64(bid64_isNaN(a.d64) || bid64_isNaN(b.d64) || bid64_isNaN(c.d64) ? nanConst : bid64_minnum(bid64_minnum(a.d64, b.d64), c.d64)), D64Bits a, D64Bits b, D64Bits c)
+OPN_UN64(min4, bidToD64(bid64_isNaN(a.d64) || bid64_isNaN(b.d64) || bid64_isNaN(c.d64) || bid64_isNaN(d.d64) ? nanConst : bid64_minnum(bid64_minnum(a.d64, b.d64), bid64_minnum(c.d64, d.d64))), D64Bits a, D64Bits b, D64Bits c, D64Bits d)
 
 //endregion
 
 //region Arithmetic
 
-OPN(negate, -x.d64, D64Bits x)
-OPN(abs, x.d64 >= 0 ? x.d64 : -x.d64, D64Bits x)
- OPN(add2, bid64_add(a.d64, b.d64), D64Bits a, D64Bits b)
- OPN(add3, bid64_add(bid64_add(a.d64, b.d64), c.d64), D64Bits a, D64Bits b, D64Bits c)
- OPN(add4, bid64_add(bid64_add(a.d64, b.d64), bid64_add(c.d64, d.d64)), D64Bits a, D64Bits b, D64Bits c, D64Bits d)
- OPN(subtract, bid64_sub(a.d64, b.d64), D64Bits a, D64Bits b)
- OPN(multiply2, bid64_mul(a.d64, b.d64), D64Bits a, D64Bits b)
- OPN(multiply3, bid64_mul(bid64_mul(a.d64, b.d64), c.d64), D64Bits a, D64Bits b, D64Bits c)
- OPN(multiply4, bid64_mul(bid64_mul(a.d64, b.d64), bid64_mul(c.d64, d.d64)), D64Bits a, D64Bits b, D64Bits c, D64Bits d)
-OPN(multiplyByInt32, a.d64 * integer, D64Bits a, int32 integer)
-OPN(multiplyByInt64, a.d64 * integer, D64Bits a, int64 integer)
- OPN(divide, bid64_div(a.d64, b.d64), D64Bits a, D64Bits b)
-OPN(divideByInt32, x.d64 / integer, D64Bits x, int32 integer)
-OPN(divideByInt64, x.d64 / integer, D64Bits x, int64 integer)
- OPN(multiplyAndAdd, bid64_fma(a.d64, b.d64, c.d64), D64Bits a, D64Bits b, D64Bits c)
- OPN(scaleByPowerOfTen, bid64_scalbn(a.d64, n) , D64Bits a, int32 n)
- OPN(mean2, bid64_div(bid64_add(a.d64, b.d64), twoConst), D64Bits a, D64Bits b)
+OPN(negate, bid64_negate(x.d64), D64Bits x)
+OPN(abs, bid64_abs(x.d64), D64Bits x)
+OPN(add2, bid64_add(a.d64, b.d64), D64Bits a, D64Bits b)
+OPN(add3, bid64_add(bid64_add(a.d64, b.d64), c.d64), D64Bits a, D64Bits b, D64Bits c)
+OPN(add4, bid64_add(bid64_add(a.d64, b.d64), bid64_add(c.d64, d.d64)), D64Bits a, D64Bits b, D64Bits c, D64Bits d)
+OPN(subtract, bid64_sub(a.d64, b.d64), D64Bits a, D64Bits b)
+OPN(multiply2, bid64_mul(a.d64, b.d64), D64Bits a, D64Bits b)
+OPN(multiply3, bid64_mul(bid64_mul(a.d64, b.d64), c.d64), D64Bits a, D64Bits b, D64Bits c)
+OPN(multiply4, bid64_mul(bid64_mul(a.d64, b.d64), bid64_mul(c.d64, d.d64)), D64Bits a, D64Bits b, D64Bits c, D64Bits d)
+    OPN(multiplyByInt32, a.d64 * integer, D64Bits a, int32 integer)
+    OPN(multiplyByInt64, a.d64 * integer, D64Bits a, int64 integer)
+OPN(divide, bid64_div(a.d64, b.d64), D64Bits a, D64Bits b)
+    OPN(divideByInt32, x.d64 / integer, D64Bits x, int32 integer)
+    OPN(divideByInt64, x.d64 / integer, D64Bits x, int64 integer)
+OPN(multiplyAndAdd, bid64_fma(a.d64, b.d64, c.d64), D64Bits a, D64Bits b, D64Bits c)
+OPN(scaleByPowerOfTen, bid64_scalbn(a.d64, n) , D64Bits a, int32 n)
+OPN(mean2, bid64_div(bid64_add(a.d64, b.d64), twoConst), D64Bits a, D64Bits b)
 
 //endregion
 
 //region Special
 
-//@AD: Just compilation stub - segfault
-OPNRR(nextUp, BID_UINT64, *((int *)0) = 42; return nanConst;, D64Bits x)
-OPNRR(nextDown, BID_UINT64, *((int *)0) = 42; return nanConst;, D64Bits x)
+OPN(nextUp, bid64_nextup(x.d64), D64Bits x)
+OPN(nextDown, bid64_nextdown(x.d64), D64Bits x)
 
 //endregion
 
