@@ -1,14 +1,21 @@
-cmake_minimum_required (VERSION 2.8.11)
+cmake_minimum_required (VERSION 2.8.12)
 project (DFPMathLibrary)
 
 set(CALL_BY_REF "0" CACHE STRING "The numerical arguments and results are passed by reference")
 set(GLOBAL_RND "1" CACHE STRING "The rounding mode is a global variable _IDEC_glbround")
 set(GLOBAL_FLAGS "1" CACHE STRING "The exception status flags are represented by a global variable _IDEC_glbflags")
 
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE Release)
+endif()
+
 if(UNIX)
 	add_definitions(-DLINUX)
+	add_definitions(-Dlinux)
 elseif(WIN32)
 	add_definitions(-DWINDOWS)
+	add_definitions(-Dwinnt)
+	add_definitions(-MT)
 elseif(APPLE)
 	add_definitions(-DAPPLE)
 endif()
