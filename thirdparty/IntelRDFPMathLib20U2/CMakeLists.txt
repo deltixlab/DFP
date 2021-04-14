@@ -22,4 +22,4 @@ add_definitions(-DDECIMAL_GLOBAL_EXCEPTION_FLAGS=${GLOBAL_FLAGS})
 
 
 add_subdirectory (LIBRARY)
-# add_subdirectory (Demo)
+add_subdirectory (EXAMPLES)

@@ -251,7 +251,6 @@ set(${NAME}_SRCS
 
 add_library(${NAME} STATIC ${${NAME}_SRCS})
 
-
-# Make sure the compiler can find include files for our Hello library
-# when other libraries or executables link to Hello
-# target_include_directories (Hello PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+# Make sure the compiler can find include files for our library
+# when other libraries or executables link to it
+target_include_directories (${NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
