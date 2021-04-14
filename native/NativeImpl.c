@@ -1,3 +1,6 @@
+#include <bid_conf.h>
+#include <bid_functions.h>
+
 #ifndef API_PREFIX
 #define API_PREFIX    ddfp_
 #endif
@@ -11,7 +14,12 @@
 #else
 #define JNI_API(x) x __attribute__ ((visibility("default")))
 #endif
+
+#if defined(_WIN32)
+#define DDFP_API(x) __declspec(dllexport) x
+#else
 #define DDFP_API(x) x __attribute__ ((visibility("default")))
+#endif
 
 
 /*
@@ -25,7 +33,7 @@
  */
 #define PPCAT(A, B) PPCAT_NX(A, B)
 
-typedef _Decimal64          decimal64;
+typedef BID_UINT64          decimal64;
 typedef char                int8;
 typedef unsigned char       uint8;
 typedef short               int16;
@@ -38,12 +46,12 @@ typedef int                 intBool;
 
 typedef union D64Bits_t
 {
-    _Decimal64  d64;
+    BID_UINT64  d64;
     int64       i64;
     uint64      u64;
 } D64Bits;
 
-inline D64Bits decimal64ToUnion(_Decimal64 x) {
+inline D64Bits decimal64ToUnion(BID_UINT64 x) {
     D64Bits un64;
     un64.d64 = x;
     return un64;
@@ -79,9 +87,7 @@ JNI_API(mcr__type) PPCAT(PPCAT(JavaCritical_, JAVA_PREFIX), mcr__name) (__VA_ARG
 
 #define OPN_BOOL(mcr__name, mcr__body, ...)         OPNR(mcr__name, intBool, mcr__body, __VA_ARGS__)
 
-DDFP_API(int32) __bid_unorddd2 ( _Decimal64 a , _Decimal64 b ); // IsAnyNan
-
-static const _Decimal64 nanConst = 0.0DD / 0.0DD;
+static const BID_UINT64 nanConst = 0x7C00000000000000ull;
 
 static const uint64 MASK_SIGN =              0x8000000000000000ull;
 //static const uint64 MASK_SPECIAL =           0x6000000000000000ull;
@@ -99,7 +105,7 @@ static const uint64 ZERO =                   0x31C0000000000000ull; //e=0,m=0,si
 
 //region Conversion
 
-#define OPN_FROM(mcr__type)                         OPN(PPCAT(from, mcr__type), (_Decimal64)x, mcr__type x)
+#define OPN_FROM(mcr__type)                         OPN(PPCAT(from, mcr__type), (BID_UINT64)x, mcr__type x)
 #define OPN_TO(mcr__type)                           OPNR(PPCAT(to, mcr__type), mcr__type, (mcr__type)(x.d64), D64Bits x)
 #define OPN_FROM_TO(mcr__type)                      OPN_FROM(mcr__type)     OPN_TO(mcr__type)
 
@@ -114,13 +120,13 @@ typedef uint16      UInt16;
 typedef int8        Int8;
 typedef uint8       UInt8;
 
-_Decimal64 scalbnd64(_Decimal64 x, int32 tenPowerFactor) {
+BID_UINT64 scalbnd64(BID_UINT64 x, int32 tenPowerFactor) {
     D64Bits un64;
     un64.d64 = x;
     if ((un64.i64 & MASK_INFINITY_AND_NAN) == MASK_INFINITY_AND_NAN)
         return x;
 
-    _Decimal64 tenPower = 10;
+    BID_UINT64 tenPower = 10;
     if (tenPowerFactor < 0)
         tenPower = 1 / tenPower;
     int absFactor = tenPowerFactor >= 0 ? tenPowerFactor : -tenPowerFactor;
@@ -137,7 +143,7 @@ _Decimal64 scalbnd64(_Decimal64 x, int32 tenPowerFactor) {
 inline static int isnandun64(D64Bits un64) {
     return (un64.i64 & MASK_INFINITY_NAN) == MASK_INFINITY_NAN;
 }
-inline static int isnand64(_Decimal64 x) {
+inline static int isnand64(BID_UINT64 x) {
     D64Bits un64;
     un64.d64 = x;
     return isnandun64(un64);
@@ -145,7 +151,7 @@ inline static int isnand64(_Decimal64 x) {
 
 OPN_FROM_TO(Float64)
 OPN_FROM_TO(Float32)
-OPN(fromFixedPoint64, scalbnd64((_Decimal64)mantissa, -tenPowerFactor), int64 mantissa, int32 tenPowerFactor)
+OPN(fromFixedPoint64, scalbnd64((BID_UINT64)mantissa, -tenPowerFactor), int64 mantissa, int32 tenPowerFactor)
 OPNR(toFixedPoint, int64, (int64)scalbnd64(value.d64, numberOfDigits), D64Bits value, int32 numberOfDigits)
 OPN_FROM_TO(Int64)
 OPN_FROM_TO(UInt64)
@@ -212,10 +218,10 @@ OPN_BOOL(isNonNegative, a.d64 >= 0, D64Bits a)
 //region Rounding
 
 //@AD: Just compilation stub - segfault
-OPNRR(roundTowardsPositiveInfinity, _Decimal64, *((int *)0) = 42; return nanConst;, D64Bits x)
-OPNRR(roundTowardsNegativeInfinity, _Decimal64, *((int *)0) = 42; return nanConst;, D64Bits x)
-OPNRR(roundTowardsZero, _Decimal64, *((int *)0) = 42; return nanConst;, D64Bits x)
-OPNRR(roundToNearestTiesAwayFromZero, _Decimal64, *((int *)0) = 42; return nanConst;, D64Bits x)
+OPNRR(roundTowardsPositiveInfinity, BID_UINT64, *((int *)0) = 42; return nanConst;, D64Bits x)
+OPNRR(roundTowardsNegativeInfinity, BID_UINT64, *((int *)0) = 42; return nanConst;, D64Bits x)
+OPNRR(roundTowardsZero, BID_UINT64, *((int *)0) = 42; return nanConst;, D64Bits x)
+OPNRR(roundToNearestTiesAwayFromZero, BID_UINT64, *((int *)0) = 42; return nanConst;, D64Bits x)
 
 //endregion
 
@@ -233,12 +239,12 @@ inline static D64Bits nanConstU() {
     return un64;
 }
 
-OPN_UN64(max2, __bid_unorddd2(a.d64, b.d64) ? nanConstU() : noNanMax(a, b), D64Bits a, D64Bits b)
-OPN_UN64(max3, __bid_unorddd2(a.d64, b.d64) || __bid_unorddd2(c.d64, c.d64) ? nanConstU() : noNanMax(noNanMax(a, b), c), D64Bits a, D64Bits b, D64Bits c)
-OPN_UN64(max4, __bid_unorddd2(a.d64, b.d64) || __bid_unorddd2(c.d64, d.d64) ? nanConstU() : noNanMax(noNanMax(a, b), noNanMax(c, d)), D64Bits a, D64Bits b, D64Bits c, D64Bits d)
-OPN_UN64(min2, __bid_unorddd2(a.d64, b.d64) ? nanConstU() : noNanMin(a, b), D64Bits a, D64Bits b)
-OPN_UN64(min3, __bid_unorddd2(a.d64, b.d64) || __bid_unorddd2(c.d64, c.d64) ? nanConstU() : noNanMin(noNanMin(a, b), c), D64Bits a, D64Bits b, D64Bits c)
-OPN_UN64(min4, __bid_unorddd2(a.d64, b.d64) || __bid_unorddd2(c.d64, d.d64) ? nanConstU() : noNanMin(noNanMin(a, b), noNanMin(c, d)), D64Bits a, D64Bits b, D64Bits c, D64Bits d)
+OPN_UN64(max2, bid64_quiet_unordered(a.d64, b.d64) ? nanConstU() : noNanMax(a, b), D64Bits a, D64Bits b)
+OPN_UN64(max3, bid64_quiet_unordered(a.d64, b.d64) || bid64_quiet_unordered(c.d64, c.d64) ? nanConstU() : noNanMax(noNanMax(a, b), c), D64Bits a, D64Bits b, D64Bits c)
+OPN_UN64(max4, bid64_quiet_unordered(a.d64, b.d64) || bid64_quiet_unordered(c.d64, d.d64) ? nanConstU() : noNanMax(noNanMax(a, b), noNanMax(c, d)), D64Bits a, D64Bits b, D64Bits c, D64Bits d)
+OPN_UN64(min2, bid64_quiet_unordered(a.d64, b.d64) ? nanConstU() : noNanMin(a, b), D64Bits a, D64Bits b)
+OPN_UN64(min3, bid64_quiet_unordered(a.d64, b.d64) || bid64_quiet_unordered(c.d64, c.d64) ? nanConstU() : noNanMin(noNanMin(a, b), c), D64Bits a, D64Bits b, D64Bits c)
+OPN_UN64(min4, bid64_quiet_unordered(a.d64, b.d64) || bid64_quiet_unordered(c.d64, d.d64) ? nanConstU() : noNanMin(noNanMin(a, b), noNanMin(c, d)), D64Bits a, D64Bits b, D64Bits c, D64Bits d)
 
 //endregion
 
@@ -267,7 +273,8 @@ OPN(mean2, (a.d64 + b.d64) / 2, D64Bits a, D64Bits b)
 //region Special
 
 //@AD: Just compilation stub - segfault
-OPNRR(nextUp, _Decimal64, *((int *)0) = 42; return nanConst;, D64Bits x)
-OPNRR(nextDown, _Decimal64, *((int *)0) = 42; return nanConst;, D64Bits x)
+OPNRR(nextUp, BID_UINT64, *((int *)0) = 42; return nanConst;, D64Bits x)
+OPNRR(nextDown, BID_UINT64, *((int *)0) = 42; return nanConst;, D64Bits x)
 
 //endregion
+

@@ -1,5 +1,5 @@
 cmake_minimum_required (VERSION 2.8.12)
-project (DFPMathLibrary)
+project (native)
 
 set(CALL_BY_REF "0" CACHE STRING "The numerical arguments and results are passed by reference")
 set(GLOBAL_RND "1" CACHE STRING "The rounding mode is a global variable _IDEC_glbround")
@@ -27,9 +27,12 @@ add_definitions(-DDECIMAL_CALL_BY_REFERENCE=${CALL_BY_REF})
 add_definitions(-DDECIMAL_GLOBAL_ROUNDING=${GLOBAL_RND})
 add_definitions(-DDECIMAL_GLOBAL_EXCEPTION_FLAGS=${GLOBAL_FLAGS})
 
+#set(CMAKE_C_VISIBILITY_PRESET default)
+#set(CMAKE_CXX_VISIBILITY_PRESET default)
+#set(CMAKE_VISIBILITY_INLINES_HIDDEN 0)
 
-add_subdirectory (../thirdparty/IntelRDFPMathLib20U2/LIBRARY)
-add_subdirectory (../thirdparty/IntelRDFPMathLib20U2/EXAMPLES)
+add_subdirectory (../thirdparty/IntelRDFPMathLib20U2/LIBRARY LIBRARY)
+add_subdirectory (../thirdparty/IntelRDFPMathLib20U2/EXAMPLES EXAMPLES)
 
 add_library(dfp SHARED NativeImpl.c)
 target_link_libraries (dfp LINK_PUBLIC bid)
