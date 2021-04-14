@@ -34,5 +34,7 @@ add_definitions(-DDECIMAL_GLOBAL_EXCEPTION_FLAGS=${GLOBAL_FLAGS})
 add_subdirectory (../thirdparty/IntelRDFPMathLib20U2/LIBRARY LIBRARY)
 add_subdirectory (../thirdparty/IntelRDFPMathLib20U2/EXAMPLES EXAMPLES)
 
+add_definitions(-DAPI_PREFIX=${API_PREFIX}_)
 add_library(dfp SHARED NativeImpl.c)
 target_link_libraries (dfp LINK_PUBLIC bid)
+set_target_properties(dfp PROPERTIES OUTPUT_NAME ${API_PREFIX})
