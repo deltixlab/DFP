@@ -1,13 +1,8 @@
-def makeTool
-if (System.properties['os.name'].toLowerCase().contains('windows'))
-    makeTool = "mingw32-make"
-else
-    makeTool = "make"
-
-task makeNative32(type: Exec) {
-    commandLine makeTool, 'Configuration=Release', 'Architecture=32', 'VersionSuffix=' + versioning()["suffix"]
+task makeNativeWindows(type: Exec) {
+    commandLine "$rootDir/native/buildWindows.bat", 'ddfp' + versioning()["suffix"]
+    workingDir("$rootDir/native")
 }
 
 task makeNative64(type: Exec) {
-    commandLine makeTool, 'Configuration=Release', 'Architecture=64', 'VersionSuffix=' + versioning()["suffix"]
+    commandLine 'make', 'Configuration=Release', 'Architecture=64', 'VersionSuffix=' + versioning()["suffix"]
 }

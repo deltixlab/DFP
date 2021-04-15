@@ -16,6 +16,7 @@ allprojects {
 //else
 //    versionSuffixFile.write versionSuffix
 
-        return ["three": version, "four": version4, "suffix": versionSuffix, "sha": versionSha]
+        return ["major": versionMajor, "minor": versionMinor, "build": versionBuild, "commit": versionCommit,
+                "three": version, "four": version4, "suffix": versionSuffix, "sha": versionSha]
     }
 }
