@@ -1,2 +1,2 @@
-add_executable (addDemo add.c)
-target_link_libraries (addDemo LINK_PUBLIC bid)
+add_executable (demo demo.c)
+target_link_libraries (demo LINK_PUBLIC bid)

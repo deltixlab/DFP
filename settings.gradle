@@ -3,3 +3,4 @@ include(':nativeWrappers')
 include(':native')
 include(':java')
 project(':java').name = 'epam-deltix-dfp'
+include(':javaDecimalDemo')
