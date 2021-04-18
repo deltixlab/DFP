@@ -1,3 +1,12 @@
+def getGitHash = { ->
+    def stdout = new ByteArrayOutputStream()
+    exec {
+        commandLine 'git', 'rev-parse', 'HEAD'
+        standardOutput = stdout
+    }
+    return stdout.toString().trim()
+}
+
 allprojects {
     ext.versioning = {
         def finder = (version =~ /(\d+)(?:\.(\d+))?(?:\.(\d+))?(?:\.(\d+))?/)
@@ -7,7 +16,7 @@ allprojects {
         def versionCommit = finder[0][4] != null ? (finder[0][4] as Integer) : 0
         //"git rev-list --count HEAD".execute().text.replace("\n", "").replace("\r", "") as Integer
         def version4 = "$versionMajor.$versionMinor.$versionBuild.$versionCommit"
-        def versionSha = "git rev-parse HEAD".execute().text.trim()
+        def versionSha = getGitHash()
 
         def versionSuffix = version.replace(".", "x").replace("-", "x")
 //def versionSuffixFile = new File("$rootDir/versionSuffix.txt")

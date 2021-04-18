@@ -25,7 +25,7 @@ public class NativeWrappers {
 //
 //        for (final Path path : processList)
 //            processNativeFile(path, apiPrefix);
-        processNativeFile(Paths.get(".", "native-gcc", "NativeImpl.c").toAbsolutePath(), apiPrefix, args[0], args[1], args[2]);
+        processNativeFile(Paths.get(".", "native", "NativeImpl.c").toAbsolutePath(), apiPrefix, args[0], args[1], args[2]);
     }
 
     private static class StreamCollector implements Runnable {
@@ -76,15 +76,12 @@ public class NativeWrappers {
     }
 
     private static String gccPreprocess(final Path path, final String apiPrefix) throws IOException, InterruptedException {
-        final Process process = new ProcessBuilder().command("gcc", "-DAPI_PREFIX=" + apiPrefix, "-E", '"' + path.toString() + '"').start();
+        final Process process = new ProcessBuilder().command("clang", "-DAPI_PREFIX=" + apiPrefix, "-E", '"' + path.toString() + '"').start();
 
         final StreamCollector stdOutCollector = new StreamCollector(process, process.getInputStream());
         final StreamCollector stdErrCollector = new StreamCollector(process, process.getErrorStream());
 
-        final int exitCode = process.waitFor();
-        if (exitCode != 0) {
-            throw new RuntimeException("Log: " + stdOutCollector.message + "\nError: " + stdErrCollector.message);
-        }
+        process.waitFor(); // Ignore exitCode because of missed headers
 
         return stdOutCollector.message;
     }
@@ -101,7 +98,12 @@ public class NativeWrappers {
         }
     }
 
-    private static List<ApiEntry> collectApi(final String body, final String apiPrefix) {
+    private static List<ApiEntry> collectApi(String body, final String apiPrefix) {
+        body = body
+            .replaceAll("\\b__declspec\\s*\\(\\s*dllexport\\s*\\)", "")
+            .replaceAll("\\b__cdecl\\b", "")
+            .replaceAll("\\b__stdcall\\b", "");
+
         final Matcher matcher = Pattern.compile("(?<=^|[;}])\\s*([^;}]*?)\\s+(" + apiPrefix + "\\w+)\\s*\\((.*?)\\)\\s*"
             //  https://stackoverflow.com/questions/47162098/is-it-possible-to-match-nested-brackets-with-a-regex-without-using-recursion-or/47162099#47162099
             // + "(?=\\{)(?:(?=.*?\\{(?!.*?\\1)(.*\\}(?!.*\\2).*))(?=.*?\\}(?!.*?\\2)(.*)).)+?.*?(?=\\1)[^{]*(?=\\2$)"

@@ -20,11 +20,8 @@ sourceSets {
             srcDir "$rootDir/NativeUtils/Zstandard/java/src/main/java"
 
             resources {
-                srcDirs = ["$rootDir/native-gcc/bin/Release/"]
-                include '**/*_so.zst'
-                include '**/*.so.zst'
-                include '**/*.dylib.zst'
-                include '**/*.dll.zst'
+                srcDirs = ["$rootDir/native/bin/Release/"]
+                include '**/*.zst'
             }
         }
     }
