@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <bid_conf.h>
 #include <bid_functions.h>
 
