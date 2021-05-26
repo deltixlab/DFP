@@ -16,7 +16,7 @@ var configuration = Argument("configuration", "Release");
 Task("Native-Rename")
     .Does(() =>
 {
-	var files = GetFiles("../native-gcc/bin/Release/**/*.zst");
+	var files = GetFiles("../native/bin/Release/**/*.zst");
 	foreach(var file in files)
 	{
 		MoveFile(file, file.ToString().Replace('.', '_'));

@@ -1,5 +1,7 @@
 using RTMath.Utilities;
+using System;
 using System.IO;
+using System.Runtime.InteropServices;
 
 namespace EPAM.Deltix.DFP
 {
@@ -15,7 +17,7 @@ namespace EPAM.Deltix.DFP
 			{
 				if (isLoaded)
 					return;
-				var archName = ResourceLoader.OS.Is64 ? "x64" : "x32";
+				var archName = GetArchName();
 
 				var loader = ResourceLoader
 					.From($"EPAM.Deltix.DFP.{ResourceLoader.OS.Name}.{archName}.*")
@@ -26,6 +28,28 @@ namespace EPAM.Deltix.DFP
 
 				isLoaded = true;
 			}
+		}
+
+		internal static string GetArchName()
+		{
+#if NET40
+			return ResourceLoader.OS.Is64 ? "amd64" : "x86";
+#endif
+#if NETSTANDARD2_0
+			switch (RuntimeInformation.ProcessArchitecture)
+			{
+				case Architecture.X86:
+					return "x86";
+				case Architecture.X64:
+					return "amd64";
+				case Architecture.Arm:
+					return "arm";
+				case Architecture.Arm64:
+					return "aarch64";
+				default:
+					throw new SystemException("Unsupported architecture (=" + RuntimeInformation.ProcessArchitecture + ").");
+			}
+#endif
 		}
 	}
 }

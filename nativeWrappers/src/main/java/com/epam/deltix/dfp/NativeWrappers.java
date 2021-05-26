@@ -210,6 +210,7 @@ public class NativeWrappers {
             case "_Decimal64":
             case "decimal64":
             case "D64Bits":
+            case "BID_UINT64":
                 return "UInt64";
             case "int8":
             case "Int8":
@@ -315,6 +316,7 @@ public class NativeWrappers {
             case "_Decimal64":
             case "decimal64":
             case "D64Bits":
+            case "BID_UINT64":
                 return "long";
             case "int8":
             case "uint8":
