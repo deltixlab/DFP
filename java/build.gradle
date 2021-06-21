@@ -16,6 +16,7 @@ sourceSets {
     main {
         java {
             srcDir "$rootDir/java/src/main/java"
+            srcDir "$rootDir/java/build/generated/sources/nativeWrappers"
             srcDir "$rootDir/NativeUtils/java/main/src/main/java"
             srcDir "$rootDir/NativeUtils/Zstandard/java/src/main/java"
 

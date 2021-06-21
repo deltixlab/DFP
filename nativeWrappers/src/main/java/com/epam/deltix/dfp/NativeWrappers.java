@@ -72,7 +72,7 @@ public class NativeWrappers {
 
         final String javaPrefix = "Java_com_epam_deltix_dfp_NativeImpl_";
         final List<ApiEntry> javaApi = collectApi(preprocess, javaPrefix);
-        makeJavaWrappers(javaApi, javaPrefix);
+        makeJavaWrappers(versionThreeDigits, javaApi, javaPrefix);
     }
 
     private static String gccPreprocess(final Path path, final String apiPrefix) throws IOException, InterruptedException {
@@ -264,19 +264,22 @@ public class NativeWrappers {
         }
     }
 
-    private static void makeJavaWrappers(final List<ApiEntry> javaApi, final String javaPrefix) throws IOException {
+    private static void makeJavaWrappers(final String versionThreeDigits, final List<ApiEntry> javaApi, final String javaPrefix) throws IOException {
         final int prefixLength = javaPrefix.length();
 
-        try (final BufferedWriter writer =
-                 Files.newBufferedWriter(Paths.get(
-                     "java", "src", "main", "java", "com", "epam", "deltix", "dfp", "NativeImpl.java"),
-                     StandardCharsets.UTF_8)) {
+        final Path outPath =
+            Paths.get("java", "build", "generated", "sources", "nativeWrappers", "com", "epam", "deltix", "dfp");
+        Files.createDirectories(outPath);
+
+        try (final BufferedWriter writer = Files.newBufferedWriter(outPath.resolve("NativeImpl.java"), StandardCharsets.UTF_8)) {
             writer.write("package com.epam.deltix.dfp;\n" +
                 "\n" +
                 "final class NativeImpl {\n" +
                 "    static {\n" +
                 "        NativeImplLoader.load();\n" +
-                "    }\n"
+                "    }\n" +
+                "\n" +
+                "    public static final String version = \"" + versionThreeDigits + "\";\n"
             );
 
             for (final ApiEntry entry : javaApi) {
