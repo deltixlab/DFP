@@ -9,7 +9,7 @@ repositories {
 sourceCompatibility = 1.7
 
 dependencies {
-    implementation project(":epam-deltix-dfp")
+    implementation project(":dfp")
 }
 
 jar {
