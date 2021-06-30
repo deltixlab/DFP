@@ -18,7 +18,10 @@ DFP uses Java long to represent base-10 floating point numbers. DFP is based on 
 
 ## Description/Usage
 
-[Quick Start Guide](docs/quickstart.md)
+* [Quick Start Guide](docs/quickstart.md)
+* [Tips and Trick](doc/TipsNTricks.md)
+* [FAQ](doc/FAQ.md) 
+
 
 
 ## Building
