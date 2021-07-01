@@ -17,10 +17,16 @@ project (native)
 
 #set(CMAKE_C_FLAGS "--target=arm-linux-gnueabihf -march=armv7a -mfloat-abi=hard -nobuiltininc --sysroot=/usr/arm-linux-gnueabihf -I/usr/arm-linux-gnueabihf/include -I/usr/arm-linux-gnueabihf/include/linux -I/usr/arm-linux-gnueabihf/include/c++/9")
 
-set(CMAKE_C_FLAGS "--target=arm-linux-gnueabihf -march=armv7a -mfloat-abi=hard \
-                   --sysroot=/home/user/llvm/clang+llvm-12.0.0-armv7a-linux-gnueabihf \
-                   -I/home/user/llvm/clang+llvm-12.0.0-armv7a-linux-gnueabihf/include/c++/v1 \
-                   -I/usr/arm-linux-gnueabihf/include")
+#set(CMAKE_C_FLAGS "--target=arm-linux-gnueabihf -march=armv7a -mfloat-abi=hard \
+#                   --sysroot=/home/user/llvm/clang+llvm-12.0.0-armv7a-linux-gnueabihf \
+#                   -I/home/user/llvm/clang+llvm-12.0.0-armv7a-linux-gnueabihf/include/c++/v1 \
+#                   -I/usr/arm-linux-gnueabihf/include")
+
+set(CMAKE_C_FLAGS "--target=aarch64-linux-gnu \
+                   --sysroot=/home/user/llvm/clang+llvm-12.0.0-aarch64-linux-gnu \
+                   -I/home/user/llvm/clang+llvm-12.0.0-aarch64-linux-gnu/include/c++/v1 \
+                   -I/usr/aarch64-linux-gnu/include")
+
 set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS}")
 
 message(STATUS "CMAKE_SYSTEM_PROCESSOR: " ${CMAKE_SYSTEM_PROCESSOR})
