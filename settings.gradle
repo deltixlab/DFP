@@ -2,5 +2,5 @@ include(':javaSystemInfo')
 include(':nativeWrappers')
 include(':native')
 include(':java')
-project(':java').name = 'epam-deltix-dfp'
+project(':java').name = 'dfp'
 include(':javaDecimalDemo')
