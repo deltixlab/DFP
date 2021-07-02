@@ -22,10 +22,15 @@ project (native)
 #                   -I/home/user/llvm/clang+llvm-12.0.0-armv7a-linux-gnueabihf/include/c++/v1 \
 #                   -I/usr/arm-linux-gnueabihf/include")
 
-set(CMAKE_C_FLAGS "--target=aarch64-linux-gnu \
-                   --sysroot=/home/user/llvm/clang+llvm-12.0.0-aarch64-linux-gnu \
-                   -I/home/user/llvm/clang+llvm-12.0.0-aarch64-linux-gnu/include/c++/v1 \
-                   -I/usr/aarch64-linux-gnu/include")
+#set(CMAKE_C_FLAGS "--target=aarch64-linux-gnu \
+#                   --sysroot=/home/user/llvm/clang+llvm-12.0.0-aarch64-linux-gnu \
+#                   -I/home/user/llvm/clang+llvm-12.0.0-aarch64-linux-gnu/include/c++/v1 \
+#                   -I/usr/aarch64-linux-gnu/include")
+
+set(CMAKE_C_FLAGS "--target=i686-linux-gnu \
+                   --sysroot=/home/user/llvm/clang+llvm-12.0.0-i386-unknown-freebsd12 \
+                   -I/home/user/llvm/clang+llvm-12.0.0-i386-unknown-freebsd12/include/c++/v1 \
+                   -I/usr/i686-linux-gnu/include")
 
 set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS}")
 
