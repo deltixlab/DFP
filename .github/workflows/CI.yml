@@ -66,7 +66,7 @@ jobs:
           submodules: 'recursive'
       - name: build
         run: |
-          ./gradlew runSystemInfo
+          ./gradlew makeNativeDarwin
 #       - uses: actions/upload-artifact@v2
 #         with:
 #           name: build-native-macos
