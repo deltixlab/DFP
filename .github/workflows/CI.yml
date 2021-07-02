@@ -29,8 +29,9 @@ jobs:
           tar -xf clang+llvm-12.0.0-aarch64-linux-gnu.tar.xz
           tar -xf clang+llvm-12.0.0-i386-unknown-freebsd12.tar.xz
           
-          cd ../DFP
-          ./gradlew makeNativeLinux
+          pwd
+#          cd ../DFP
+#          ./gradlew makeNativeLinux
 
 #   prepare:
 #     if: ${{ !contains(github.event.head_commit.message, '[skip-ci]') && startsWith(github.ref, 'refs/heads/release-') }}
