@@ -3,6 +3,11 @@ task makeNativeWindows(type: Exec) {
     workingDir("$rootDir/native")
 }
 
+task makeNativeLinux(type: Exec) {
+    commandLine "$rootDir/native/buildLinux.sh", 'ddfp' + versioning()["suffix"]
+    workingDir("$rootDir/native")
+}
+
 task makeNative64(type: Exec) {
     commandLine 'make', 'Configuration=Release', 'Architecture=64', 'VersionSuffix=' + versioning()["suffix"]
 }
