@@ -1,12 +1,30 @@
 #!/usr/bin/env bash
-set -e
+set -ex
 
-COMPILER=${3:-clang}
+CCOMPILER=${2:-clang}
+CXXCOMPILER=${2:-clang++}
+VERBOSE=${3:-ON}
 
-mkdir build$2
-cd build$2
-cmake -G "Unix Makefiles" -DAPI_PREFIX=$1 -DCMAKE_C_COMPILER=$COMPILER -DCMAKE_CXX_COMPILER=$COMPILER ../
-make
-mkdir -p ../bin/Release/Linux/$2
-cp ./*.so ../bin/Release/Linux/$2
+rm -rf ./build
+mkdir build
+cd build
+
+$CCOMPILER --version
+
+cmake -G "Unix Makefiles" -DAPI_PREFIX=$1 -DCMAKE_VERBOSE_MAKEFILE=$VERBOSE -DCMAKE_C_COMPILER=$CCOMPILER -DCMAKE_CXX_COMPILER=$CXXCOMPILER -DTARGET=arm-linux-gnueabihf -DTARGET_EX='-march=armv7a -mfloat-abi=hard' -DSYSROOT=../../../llvm/clang+llvm-12.0.0-armv7a-linux-gnueabihf -DCMAKE_INSTALL_PREFIX=../bin/Release/Linux/arm ../
+make install
+
+rm -rf ./*
+cmake -G "Unix Makefiles" -DAPI_PREFIX=$1 -DCMAKE_VERBOSE_MAKEFILE=$VERBOSE -DCMAKE_C_COMPILER=$CCOMPILER -DCMAKE_CXX_COMPILER=$CXXCOMPILER -DTARGET=aarch64-linux-gnu -DSYSROOT=../../../llvm/clang+llvm-12.0.0-aarch64-linux-gnu -DCMAKE_INSTALL_PREFIX=../bin/Release/Linux/aarch64 ../
+make install
+
+rm -rf ./*
+cmake -G "Unix Makefiles" -DAPI_PREFIX=$1 -DCMAKE_VERBOSE_MAKEFILE=$VERBOSE -DCMAKE_C_COMPILER=$CCOMPILER -DCMAKE_CXX_COMPILER=$CXXCOMPILER -DTARGET=i686-linux-gnu -DSYSROOT=../../../llvm/clang+llvm-12.0.0-i386-unknown-freebsd12 -DCMAKE_INSTALL_PREFIX=../bin/Release/Linux/i386 ../
+make install
+
+rm -rf ./*
+cmake -G "Unix Makefiles" -DAPI_PREFIX=$1 -DCMAKE_VERBOSE_MAKEFILE=$VERBOSE -DCMAKE_C_COMPILER=$CCOMPILER -DCMAKE_CXX_COMPILER=$CXXCOMPILER -DCMAKE_INSTALL_PREFIX=../bin/Release/Linux/amd64 ../
+make install
+
 cd ..
+rm -rf ./build
