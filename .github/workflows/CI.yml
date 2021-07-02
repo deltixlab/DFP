@@ -36,7 +36,7 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: build-native-linux
-          path: ./*/native/bin*
+          path: ./*native/bin*
           retention-days: 7
 
 
@@ -54,7 +54,7 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: build-native-windows
-          path: ./*/native/bin*
+          path: ./*native/bin*
           retention-days: 7
 
   compress-native:
@@ -79,7 +79,7 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: compress-native
-          path: ./*/native/bin*
+          path: ./*native/bin*
           retention-days: 7
 
 #   prepare:
