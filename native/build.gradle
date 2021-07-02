@@ -8,6 +8,11 @@ task makeNativeLinux(type: Exec) {
     workingDir("$rootDir/native")
 }
 
+task makeNativeDarwin(type: Exec) {
+    commandLine "$rootDir/native/buildDarwin.sh", 'ddfp' + versioning()["suffix"]
+    workingDir("$rootDir/native")
+}
+
 task makeNative64(type: Exec) {
     commandLine 'make', 'Configuration=Release', 'Architecture=64', 'VersionSuffix=' + versioning()["suffix"]
 }
