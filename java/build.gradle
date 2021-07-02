@@ -9,7 +9,7 @@ apply plugin: 'me.champeau.gradle.jmh'
 sourceCompatibility = 1.7
 
 repositories {
-    jcenter()
+    mavenCentral()
 }
 
 sourceSets {

@@ -3,7 +3,7 @@ plugins {
 }
 
 repositories {
-    jcenter()
+    mavenCentral()
 }
 
 sourceCompatibility = 1.7
@@ -14,4 +14,10 @@ jar {
             'Main-Class': 'com.epam.deltix.dfp.SystemInfo'
         )
     }
+}
+
+task runSystemInfo(dependsOn: compileJava, type: JavaExec) {
+    main = "com.epam.deltix.dfp.SystemInfo"
+    classpath = sourceSets.main.runtimeClasspath
+    workingDir = "$rootDir"
 }
