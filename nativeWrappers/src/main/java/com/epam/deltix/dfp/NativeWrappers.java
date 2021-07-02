@@ -31,12 +31,14 @@ public class NativeWrappers {
     private static class StreamCollector implements Runnable {
         final Process process;
         private final InputStream stream;
+        private final Thread thread;
         public String message;
 
         public StreamCollector(final Process process, final InputStream stream) {
             this.process = process;
             this.stream = stream;
-            new Thread(this).start();
+            this.thread = new Thread(this);
+            thread.start();
         }
 
         public void run() {
@@ -58,12 +60,21 @@ public class NativeWrappers {
                 throw new RuntimeException(e);
             }
         }
+
+        public String getMessage() {
+            try {
+                thread.join();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            return message;
+        }
     }
 
     private static void processNativeFile(final Path path, final String apiPrefix, final String versionThreeDigits,
                                           final String versionSuffix, final String versionSha) throws IOException, InterruptedException {
 
-        final String preprocess = gccPreprocess(path, apiPrefix);
+        final String preprocess = callPreprocess(path, apiPrefix);
 
         final List<ApiEntry> api = collectApi(preprocess, apiPrefix);
 
@@ -75,15 +86,15 @@ public class NativeWrappers {
         makeJavaWrappers(versionThreeDigits, javaApi, javaPrefix);
     }
 
-    private static String gccPreprocess(final Path path, final String apiPrefix) throws IOException, InterruptedException {
-        final Process process = new ProcessBuilder().command("clang", "-DAPI_PREFIX=" + apiPrefix, "-E", '"' + path.toString() + '"').start();
+    private static String callPreprocess(final Path path, final String apiPrefix) throws IOException, InterruptedException {
+        final Process process = new ProcessBuilder().command("clang", "-DAPI_PREFIX=" + apiPrefix, "-E", path.toString()).start();
 
         final StreamCollector stdOutCollector = new StreamCollector(process, process.getInputStream());
         final StreamCollector stdErrCollector = new StreamCollector(process, process.getErrorStream());
 
         process.waitFor(); // Ignore exitCode because of missed headers
 
-        return stdOutCollector.message;
+        return stdOutCollector.getMessage();
     }
 
     private static class ApiEntry {
