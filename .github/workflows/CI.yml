@@ -13,7 +13,7 @@ jobs:
       - name: test
         run: |
           pwd
-          ll -a /home
+          ls -al /home
 
 #   prepare:
 #     if: ${{ !contains(github.event.head_commit.message, '[skip-ci]') && startsWith(github.ref, 'refs/heads/release-') }}
