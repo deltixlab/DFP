@@ -10,6 +10,9 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
       - name: test
         run: |
           sudo apt install -yqq g++-9-arm-linux-gnueabihf \
