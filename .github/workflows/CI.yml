@@ -9,9 +9,6 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        arch: [armv7a-linux-gnueabihf, aarch64-linux-gnu, i386-unknown-freebsd12]
     steps:
       - uses: actions/checkout@v2
         with:
@@ -26,9 +23,13 @@ jobs:
           mkdir llvm
           cd llvm          
 
-          curl -OL https://github.com/llvm/llvm-project/releases/download/llvmorg-12.0.0/clang+llvm-12.0.0-${{ matrix.arch }}.tar.xz
+          curl -OL https://github.com/llvm/llvm-project/releases/download/llvmorg-12.0.0/clang+llvm-12.0.0-armv7a-linux-gnueabihf.tar.xz
+          curl -OL https://github.com/llvm/llvm-project/releases/download/llvmorg-12.0.0/clang+llvm-12.0.0-aarch64-linux-gnu.tar.xz
+          curl -OL https://github.com/llvm/llvm-project/releases/download/llvmorg-12.0.0/clang+llvm-12.0.0-i386-unknown-freebsd12.tar.xz
 
-          tar -xvf clang+llvm-12.0.0-${{ matrix.arch }}.tar.xz
+          tar -xf clang+llvm-12.0.0-armv7a-linux-gnueabihf.tar.xz
+          tar -xf clang+llvm-12.0.0-aarch64-linux-gnu.tar.xz
+          tar -xf clang+llvm-12.0.0-i386-unknown-freebsd12.tar.xz
 
           ls -al
           cd ../DFP/
