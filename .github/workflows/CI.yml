@@ -41,6 +41,21 @@ jobs:
           name: build-native-linux
           path: native/bin
 
+
+  build-native-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+      - name: build
+        run: |
+          ./gradlew makeNativeWindows
+      - uses: actions/upload-artifact@v2
+        with:
+          name: build-native-windows
+          path: native/bin
+
 #   prepare:
 #     if: ${{ !contains(github.event.head_commit.message, '[skip-ci]') && startsWith(github.ref, 'refs/heads/release-') }}
 #     runs-on: ubuntu-latest
