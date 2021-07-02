@@ -12,10 +12,10 @@ jobs:
     steps:
       - name: test
         run: |
-          apt install -yqq g++-9-arm-linux-gnueabihf \
-                           g++-9-aarch64-linux-gnu \
-                           g++-9-i686-linux-gnu \
-                           xz-utils
+          sudo apt install -yqq g++-9-arm-linux-gnueabihf \
+                                g++-9-aarch64-linux-gnu \
+                                g++-9-i686-linux-gnu \
+                                xz-utils
 
           cd ..
           mkdir llvm
