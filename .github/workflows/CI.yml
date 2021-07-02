@@ -32,11 +32,15 @@ jobs:
           cd ../DFP/
           ls -al
           ./gradlew makeNativeLinux
-          
+
+          ./gradlew makeNativeWrappers
+
       - uses: actions/upload-artifact@v2
         with:
           name: build-native-linux
-          path: ./*native/bin*
+          path: |
+            ./*native/bin*
+            ./*java/build/generated/sources/nativeWrappers/com/epam/deltix/dfp*
           retention-days: 7
 
 
@@ -51,13 +55,10 @@ jobs:
       - name: build
         run: |
           ./gradlew makeNativeWindows
-          ./gradlew makeNativeWrappers
       - uses: actions/upload-artifact@v2
         with:
           name: build-native-windows
-          path: |
-            ./*native/bin*
-            ./*java/build/generated/sources/nativeWrappers/com/epam/deltix/dfp*
+          path: ./*native/bin*
           retention-days: 7
 
 
