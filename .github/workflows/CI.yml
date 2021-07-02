@@ -7,7 +7,7 @@ on:
 
 jobs:
 
-  test:
+  build-native-linux:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -35,6 +35,12 @@ jobs:
           cd ../DFP/
           ls -al
           ./gradlew makeNativeLinux
+          
+      - uses: actions/upload-artifact@v2
+        with:
+          name: build-native-linux
+          path: |
+            native/bin/*
 
 #   prepare:
 #     if: ${{ !contains(github.event.head_commit.message, '[skip-ci]') && startsWith(github.ref, 'refs/heads/release-') }}
@@ -57,24 +63,7 @@ jobs:
 #           git commit -am "[skip-ci] Generate next snapshot version"
 #           git push origin HEAD
 
-#   build_native_linux:
-#     if: ${{ always() && !contains(github.event.head_commit.message, '[skip-ci]') }}
-#     needs: prepare
-#     runs-on: [self-hosted, Linux, IntelParallelStudioXE]
-#     steps:
-#       - uses: actions/checkout@v2
-#         with:
-#           submodules: 'true'
-#       - uses: cake-build/cake-action@v1.2.0
-#         with:
-#           script-path: csharp/build.cake
-#           target: BuildNativeLinuxLibs
-#       - uses: actions/upload-artifact@v2
-#         with:
-#           name: build_linux
-#           path: |
-#             native/bin/Release/Linux/32/*.so
-#             native/bin/Release/Linux/64/*.so
+
 
 #   build_native_windows:
 #     if: ${{ always() && !contains(github.event.head_commit.message, '[skip-ci]') }}
