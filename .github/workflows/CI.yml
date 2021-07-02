@@ -4,83 +4,99 @@ on: push
 
 jobs:
 
-  build-native-linux:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          submodules: 'recursive'
-      - name: build
-        run: |
-          sudo apt install -yqq g++-9-arm-linux-gnueabihf \
-                                g++-9-aarch64-linux-gnu \
-                                g++-9-i686-linux-gnu \
+#   build-native-linux:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v2
+#         with:
+#           submodules: 'recursive'
+#       - name: build
+#         run: |
+#           sudo apt install -yqq g++-9-arm-linux-gnueabihf \
+#                                 g++-9-aarch64-linux-gnu \
+#                                 g++-9-i686-linux-gnu \
 
-          cd ..
-          mkdir llvm
-          cd llvm          
+#           cd ..
+#           mkdir llvm
+#           cd llvm          
 
-          curl -OL https://github.com/llvm/llvm-project/releases/download/llvmorg-12.0.0/clang+llvm-12.0.0-armv7a-linux-gnueabihf.tar.xz
-          curl -OL https://github.com/llvm/llvm-project/releases/download/llvmorg-12.0.0/clang+llvm-12.0.0-aarch64-linux-gnu.tar.xz
-          curl -OL https://github.com/llvm/llvm-project/releases/download/llvmorg-12.0.0/clang+llvm-12.0.0-i386-unknown-freebsd12.tar.xz
+#           curl -OL https://github.com/llvm/llvm-project/releases/download/llvmorg-12.0.0/clang+llvm-12.0.0-armv7a-linux-gnueabihf.tar.xz
+#           curl -OL https://github.com/llvm/llvm-project/releases/download/llvmorg-12.0.0/clang+llvm-12.0.0-aarch64-linux-gnu.tar.xz
+#           curl -OL https://github.com/llvm/llvm-project/releases/download/llvmorg-12.0.0/clang+llvm-12.0.0-i386-unknown-freebsd12.tar.xz
 
-          tar -xf clang+llvm-12.0.0-armv7a-linux-gnueabihf.tar.xz
-          tar -xf clang+llvm-12.0.0-aarch64-linux-gnu.tar.xz
-          tar -xf clang+llvm-12.0.0-i386-unknown-freebsd12.tar.xz
+#           tar -xf clang+llvm-12.0.0-armv7a-linux-gnueabihf.tar.xz
+#           tar -xf clang+llvm-12.0.0-aarch64-linux-gnu.tar.xz
+#           tar -xf clang+llvm-12.0.0-i386-unknown-freebsd12.tar.xz
 
-          ls -al
-          cd ../DFP/
-          ls -al
-          ./gradlew makeNativeLinux
+#           ls -al
+#           cd ../DFP/
+#           ls -al
+#           ./gradlew makeNativeLinux
           
-      - uses: actions/upload-artifact@v2
-        with:
-          name: build-native-linux
-          path: ./*native/bin*
-          retention-days: 7
+#       - uses: actions/upload-artifact@v2
+#         with:
+#           name: build-native-linux
+#           path: ./*native/bin*
+#           retention-days: 7
 
 
-  build-native-windows:
-    runs-on: windows-latest
+#   build-native-windows:
+#     runs-on: windows-latest
+#     steps:
+#       - uses: actions/checkout@v2
+#         with:
+#           submodules: 'recursive'
+#       - name: Use MSBuild
+#         uses: microsoft/setup-msbuild@v1.0.2
+#       - name: build
+#         run: |
+#           ./gradlew makeNativeWindows
+#       - uses: actions/upload-artifact@v2
+#         with:
+#           name: build-native-windows
+#           path: ./*native/bin*
+#           retention-days: 7
+
+
+  build-native-macos:
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v2
         with:
           submodules: 'recursive'
-      - name: Use MSBuild
-        uses: microsoft/setup-msbuild@v1.0.2
       - name: build
         run: |
-          ./gradlew makeNativeWindows
-      - uses: actions/upload-artifact@v2
-        with:
-          name: build-native-windows
-          path: ./*native/bin*
-          retention-days: 7
+          ./gradlew runSystemInfo
+#       - uses: actions/upload-artifact@v2
+#         with:
+#           name: build-native-macos
+#           path: ./*native/bin*
+#           retention-days: 7
 
-  compress-native:
-    runs-on: ubuntu-latest
-    needs: [build-native-linux, build-native-windows]
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          submodules: 'recursive'
-      - name: Download native-linux artifacts
-        uses: actions/download-artifact@v2
-        with:
-          name: build-native-linux
-      - name: Download native-windows artifacts
-        uses: actions/download-artifact@v2
-        with:
-          name: build-native-windows
-      - name: compress
-        run: |
-          zstd --version
-          zstd -19 --rm -r ./native/bin
-      - uses: actions/upload-artifact@v2
-        with:
-          name: compress-native
-          path: ./*native/bin*
-          retention-days: 7
+#   compress-native:
+#     runs-on: ubuntu-latest
+#     needs: [build-native-linux, build-native-windows]
+#     steps:
+#       - uses: actions/checkout@v2
+#         with:
+#           submodules: 'recursive'
+#       - name: Download native-linux artifacts
+#         uses: actions/download-artifact@v2
+#         with:
+#           name: build-native-linux
+#       - name: Download native-windows artifacts
+#         uses: actions/download-artifact@v2
+#         with:
+#           name: build-native-windows
+#       - name: compress
+#         run: |
+#           zstd --version
+#           zstd -19 --rm -r ./native/bin
+#       - uses: actions/upload-artifact@v2
+#         with:
+#           name: compress-native
+#           path: ./*native/bin*
+#           retention-days: 7
 
 #   prepare:
 #     if: ${{ !contains(github.event.head_commit.message, '[skip-ci]') && startsWith(github.ref, 'refs/heads/release-') }}
