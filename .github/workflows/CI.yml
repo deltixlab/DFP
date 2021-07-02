@@ -1,0 +1,295 @@
+name: Release CI
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [wip-*]
+
+jobs:
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: test
+        run: |
+          pwd
+          ll -a /home
+
+#   prepare:
+#     if: ${{ !contains(github.event.head_commit.message, '[skip-ci]') && startsWith(github.ref, 'refs/heads/release-') }}
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout
+#         uses: actions/checkout@v2
+#       - name: Prepare
+#         run: |
+#           git config user.name github-actions
+#           git config user.email github-actions@github.com
+#           git checkout -b workflow-$GITHUB_RUN_ID
+#           versionSnapshot=`grep 'version=' gradle.properties | sed 's/version=\([^-]*\)/\1/'`
+#           versionRelease=`echo $versionSnapshot | sed 's/\([^-]*\)-SNAPSHOT/\1/'`
+#           versionSnapshotNext=`echo $versionSnapshot | perl -pe 's/^((\d+\.)*)(\d+)(.*)$/$1.($3+1).$4/e'`
+#           echo "$versionSnapshot -> $versionRelease  -> $versionSnapshotNext"
+#           sed -i "s/version=$versionSnapshot/version=$versionRelease/" gradle.properties
+#           git commit -am "[skip-ci] Generate release version"
+#           sed -i "s/version=$versionRelease/version=$versionSnapshotNext/" gradle.properties
+#           git commit -am "[skip-ci] Generate next snapshot version"
+#           git push origin HEAD
+
+#   build_native_linux:
+#     if: ${{ always() && !contains(github.event.head_commit.message, '[skip-ci]') }}
+#     needs: prepare
+#     runs-on: [self-hosted, Linux, IntelParallelStudioXE]
+#     steps:
+#       - uses: actions/checkout@v2
+#         with:
+#           submodules: 'true'
+#       - uses: cake-build/cake-action@v1.2.0
+#         with:
+#           script-path: csharp/build.cake
+#           target: BuildNativeLinuxLibs
+#       - uses: actions/upload-artifact@v2
+#         with:
+#           name: build_linux
+#           path: |
+#             native/bin/Release/Linux/32/*.so
+#             native/bin/Release/Linux/64/*.so
+
+#   build_native_windows:
+#     if: ${{ always() && !contains(github.event.head_commit.message, '[skip-ci]') }}
+#     needs: prepare
+#     runs-on: [self-hosted, Windows, IntelParallelStudioXE]
+#     steps:
+#       - uses: actions/checkout@v2
+#         with:
+#           submodules: 'true'
+#       - uses: cake-build/cake-action@v1.2.0
+#         with:
+#           script-path: csharp/build.cake
+#           target: BuildNativeWindowsLibs
+#       - uses: actions/upload-artifact@v2
+#         with:
+#           name: build_windows
+#           path: |
+#             native/bin/Release/Windows/32/*.dll
+#             native/bin/Release/Windows/64/*.dll
+
+#   compress_native:
+#     if: ${{ always() && !contains(github.event.head_commit.message, '[skip-ci]') }}
+#     needs: [build_native_linux, build_native_windows]
+#     runs-on: [self-hosted, Linux]
+#     steps:
+#       - uses: actions/checkout@v2
+#       - uses: actions/download-artifact@v2
+#         with:
+#           name: build_linux
+#           path: native/bin/Release/Linux/
+#       - uses: actions/download-artifact@v2
+#         with:
+#           path: native/bin/Release/Windows/
+#           name: build_windows
+#       - uses: cake-build/cake-action@v1.2.0
+#         with:
+#           script-path: csharp/build.cake
+#           target: CompressNativeLibs
+#       - uses: actions/upload-artifact@v2
+#         with:
+#           name: compressed
+#           path: |
+#             native/bin
+
+#   build_linux_jar:
+#     if: ${{ always() && !contains(github.event.head_commit.message, '[skip-ci]') }}
+#     needs: compress_native
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v2
+#         with:
+#           submodules: 'recursive'
+#       - uses: actions/download-artifact@v2
+#         with:
+#           name: compressed
+#           path: native/bin
+#       - uses: actions/setup-java@v1.4.3
+#         with:
+#           java-version: 1.8
+#       - uses: eskatos/gradle-command-action@v1.3.3
+#         with:
+#           arguments: shadowJar
+#       - uses: actions/upload-artifact@v2
+#         with:
+#           name: test_java_linux
+#           path: |
+#             java/build/libs/*
+
+#   test_java_windows:
+#     if: ${{ always() && !contains(github.event.head_commit.message, '[skip-ci]') }}
+#     needs: compress_native
+#     runs-on: [self-hosted, Windows]
+#     steps:
+#       - uses: actions/checkout@v2
+#         with:
+#           submodules: 'recursive'
+#       - uses: actions/download-artifact@v2
+#         with:
+#           name: compressed
+#           path: native/bin
+#       - uses: eskatos/gradle-command-action@v1.3.3
+#         with:
+#           arguments: check
+#       - uses: actions/upload-artifact@v2
+#         with:
+#           name: test_java_windows
+#           path: |
+#             java/build/reports/*
+
+#   test_java_linux:
+#     if: ${{ always() && !contains(github.event.head_commit.message, '[skip-ci]') }}
+#     needs: compress_native
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v2
+#         with:
+#           submodules: 'recursive'
+#       - uses: actions/setup-java@v1.4.3
+#         with:
+#           java-version: 1.8
+#       - uses: actions/download-artifact@v2
+#         with:
+#           name: compressed
+#           path: native/bin
+#       - uses: eskatos/gradle-command-action@v1.3.3
+#         with:
+#           arguments: check
+#       - uses: actions/upload-artifact@v2
+#         with:
+#           name: test_java_linux
+#           path: |
+#             java/build/reports/*
+
+#   test_dotnet_linux:
+#     if: ${{ always() && !contains(github.event.head_commit.message, '[skip-ci]') }}
+#     needs: compress_native
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v2
+#         with:
+#           submodules: 'recursive'
+#       - uses: actions/download-artifact@v2
+#         with:
+#           name: compressed
+#           path: native/bin
+#       - uses: actions/setup-dotnet@v1.7.2
+#         with:
+#           dotnet-version: 2.1.607
+#       - uses: cake-build/cake-action@v1.2.0
+#         with:
+#           script-path: csharp/build.cake
+#           target: Run-Unit-Tests
+#       - uses: actions/upload-artifact@v2
+#         with:
+#           name: test_dotnet_linux
+#           path: |
+#             csharp/Deltix.DFP/bin/*
+#             csharp/*.txt
+#             csharp/*.xml
+
+#   test_dotnet_windows:
+#     if: ${{ always() && !contains(github.event.head_commit.message, '[skip-ci]') }}
+#     needs: compress_native
+#     runs-on: [self-hosted, Windows]
+#     steps:
+#       - uses: actions/checkout@v2
+#         with:
+#           submodules: 'recursive'
+#       - uses: actions/download-artifact@v2
+#         with:
+#           name: compressed
+#           path: native/bin
+#       - uses: cake-build/cake-action@v1.2.0
+#         with:
+#           script-path: csharp/build.cake
+#           target: Run-Unit-Tests
+#       - uses: actions/upload-artifact@v2
+#         with:
+#           name: test_dotnet_windows
+#           path: |
+#             csharp/Deltix.DFP/bin/*
+#             csharp/*.txt
+#             csharp/*.xml
+
+#   release:
+#     if: ${{ !contains(github.event.head_commit.message, '[skip-ci]') && startsWith(github.ref, 'refs/heads/release-') }}
+#     needs: 
+#         - test_java_linux
+#         - test_java_windows
+#         - test_dotnet_linux
+#         - test_dotnet_windows
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout
+#         uses: actions/checkout@v2
+#       - name: Release
+#         run: |
+#           git config user.name github-actions
+#           git config user.email github-actions@github.com
+#           git fetch
+#           git checkout -b workflow-$GITHUB_RUN_ID origin/workflow-$GITHUB_RUN_ID~1
+#           versionRelease=`grep 'version=' gradle.properties | sed 's/version=\([^-]*\)/\1/'`
+#           echo $versionRelease
+#           git tag $versionRelease
+#           git push origin origin/workflow-$GITHUB_RUN_ID:$GITHUB_REF
+
+#   publish_java:
+#     if: ${{ !contains(github.event.head_commit.message, '[skip-ci]') && startsWith(github.ref, 'refs/heads/release-') }}
+#     needs: release
+#     runs-on: ubuntu-latest
+#     steps:
+#     - uses: actions/checkout@v2
+#     - uses: actions/download-artifact@v2
+#     - uses: actions/setup-java@v1.4.3
+#       with:
+#         java-version: 1.8
+#     - run: ./gradlew publish
+#       env:
+#         MAVEN_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+#         MAVEN_PASSWORD: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+#         MAVEN_SNAPSHOT_URL: https://oss.sonatype.org/content/repositories/snapshots
+#         MAVEN_RELEASE_URL:  https://oss.sonatype.org/service/local/staging/deploy/maven2
+
+#   publish_csharp:
+#     if: ${{ !contains(github.event.head_commit.message, '[skip-ci]') && startsWith(github.ref, 'refs/heads/release-') }}
+#     needs: release
+#     runs-on: ubuntu-latest
+#     steps:
+#     - uses: actions/checkout@v1
+#     - uses: actions/download-artifact@v2
+#       with:
+#         name: compressed
+#         path: native/bin
+#     - uses: actions/setup-dotnet@v1.7.2
+#       with:
+#         dotnet-version: 2.1.607
+#     - uses: cake-build/cake-action@v1.2.0
+#       with:
+#         target: Pack
+#         script-path: csharp/build.cake
+#         arguments: |
+#           configuration: Release
+#     - run: dotnet nuget push csharp/artifacts/Zstandard.*.nupkg -k ${{ secrets.NUGET_API_KEY }} -s ${{ secrets.NUGET_URL }}
+
+#   cleanup:
+#     if: ${{ always() && !contains(github.event.head_commit.message, '[skip-ci]') }}
+#     needs: 
+#       - publish_java
+#       - publish_csharp
+#     runs-on: ubuntu-latest
+#     continue-on-error: ${{ !startsWith(github.ref, 'refs/heads/release-') }}
+#     steps:
+#       - name: Checkout
+#         uses: actions/checkout@v2
+#       - name: Cleanup
+#         run: |
+#           git config user.name github-actions
+#           git config user.email github-actions@github.com
+#           git push origin --delete workflow-$GITHUB_RUN_ID || true
