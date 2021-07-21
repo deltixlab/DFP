@@ -1,7 +1,5 @@
 # Quick Start
 
-Here is a very short example of DFP:
-
 Add the following dependency to your Java project (Gradle sample):
 
 ```groovy
@@ -10,7 +8,7 @@ dependencies {
 }
 ```
 
-Use it:
+Here is a very short example of DFP usage:
 
 ```java
 import deltix.dfp.Decimal64Utils;
