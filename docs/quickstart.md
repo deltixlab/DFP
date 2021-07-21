@@ -20,7 +20,7 @@ import deltix.dfp.Decimal64Utils;
 
 This may look a bit bulky, but if you are familiar with similar libraries like Joda Money, or BigDecimal, you will find it reasonable. 
 
-Key points:
+## Key points:
 
 * Everything related to DFP is provided by helper class Decimal64Utils.
 * Use 'fromXXX' factory methods to construct DFP number. For example
