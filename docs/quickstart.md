@@ -2,6 +2,16 @@
 
 Here is a very short example of DFP:
 
+Add the following dependency to your Java project (Gradle sample):
+
+```json
+dependencies {
+    compile 'com.epam.deltix:dfp:0.11.01'
+}
+```
+
+Use it:
+
 ```java
 import deltix.dfp.Decimal64Utils;
 
