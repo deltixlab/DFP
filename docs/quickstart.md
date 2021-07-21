@@ -4,7 +4,7 @@ Here is a very short example of DFP:
 
 Add the following dependency to your Java project (Gradle sample):
 
-```json
+```groovy
 dependencies {
     compile 'com.epam.deltix:dfp:0.11.01'
 }
