@@ -8,8 +8,10 @@ Make sure you annotate all decimal fields/parameters/variables with ``@Decimal``
 ### Mixing constants:
 
 ```java
+@Decimal long actualPositionSize = 0; // BUG
+
 private boolean isFlat() {
-	return (actualPositionSize == 1);
+	return (actualPositionSize == 0); // BUG
 }
 ```
 We recommend using Decimal64Util.fromLong(123) or predefined constants like DEcimal64Util.ZERO.
@@ -29,7 +31,7 @@ Examples that probably won't work as intended (assuming all variables are @Decim
 Accidental (or not) usage of Math library function to operate on @Decimal numbers. This will result in error in almost all cases. Example:
 
 ```java
-@Decimal long childQuantity = Decimal64Utils.subtract(Math.min(remainingQuantity, displayQuantity), quantityOnTheMarket);
+@Decimal long childQuantity = Decimal64Utils.subtract(Math.min(remainingQuantity, displayQuantity), quantityOnTheMarket); // BUG
 ```
  
 ### Conversion from ``double``
