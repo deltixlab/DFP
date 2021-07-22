@@ -1,6 +1,6 @@
 # Common pitfalls when using Decimal64
 
-Frequent problems with @Decimal observed in Deltix codebase:
+Frequent problems with @Decimal observed in our codebases:
 
 ### Lack of @Decimal annotation
 Make sure you annotate all decimal fields/parameters/variables with ``@Decimal`` annotation to explain your intent. Also, at some point we plan to introduce automatic type safety checker that will rely on these annotation.
@@ -36,9 +36,7 @@ Accidental (or not) usage of Math library function to operate on @Decimal number
  
 ### Conversion from ``double``
 
-Getting prices out of "traditional" Deltix market data. Unlike new "universal" market data format, traditional Deltix market data messages used java double to represent prices and sizes.
- 
-Problem is - when you convert double to decimal64 rounding errors are likely. For example, double value 99.085 will be converted as 99.08499999999999. You need to round results. 
+Many Java APIs use `double` for market data prices and sizes. Problem is - when you convert double to decimal64 rounding errors are likely. For example, double value 99.085 will be converted as 99.08499999999999. You need to round results. 
  For example, to convert price of some instrument use tick size:
 
 ```java 
