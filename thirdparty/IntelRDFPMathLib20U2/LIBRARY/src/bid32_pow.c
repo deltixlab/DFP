@@ -29,7 +29,9 @@
 
 
 #include "bid_internal.h"
+#if APPLE
 #include <stdlib.h>
+#endif
 
 #define BID32_NAN 0x7c000000ul
 #define BID32_1   0x32800001ul

@@ -29,7 +29,9 @@
 
 
 #include "bid_trans.h"
+#if APPLE
 #include <stdlib.h>
+#endif
 
 #define BID64_0 0x31c0000000000000ull
 #define BID64_1 0x31c0000000000001ull
