@@ -28,6 +28,7 @@
 ******************************************************************************/
 
 #include "bid_trans.h"
+#include <stdlib.h>
 
 static BID_UINT128 BID128_0 = {BID128_LH_INIT( 0x0000000000000000ull, 0x3040000000000000ull )};
 static BID_UINT128 BID128_ZERO = {BID128_LH_INIT( 0x0000000000000000ull, 0x0000000000000000ull )};

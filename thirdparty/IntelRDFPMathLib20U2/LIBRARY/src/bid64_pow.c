@@ -29,6 +29,7 @@
 
 
 #include "bid_trans.h"
+#include <stdlib.h>
 
 #define BID64_0 0x31c0000000000000ull
 #define BID64_1 0x31c0000000000001ull
