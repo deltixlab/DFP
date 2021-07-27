@@ -1,8 +1,10 @@
 cmake_minimum_required (VERSION 2.8.12)
 project (native)
 
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_IN}")
+
 if (TARGET)
-   set(CMAKE_C_FLAGS "--target=${TARGET} ${TARGET_EX} --sysroot=${SYSROOT} -I${SYSROOT}/include/c++/v1 -I/usr/${TARGET}/include")
+   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} --target=${TARGET} ${TARGET_EX} --sysroot=${SYSROOT} -I${SYSROOT}/include/c++/v1 -I/usr/${TARGET}/include")
 endif()
 
 #set(CMAKE_C_FLAGS "--target=arm-linux-gnueabihf -march=armv7a -mfloat-abi=hard \
