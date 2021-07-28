@@ -9,11 +9,23 @@ jobs:
     steps:
       - name: build-osxcross-toolchain
         run: |
+          sudo apt install clang make libssl-dev liblzma-dev libxml2-dev fuse
           git clone --recursive --depth 1 https://github.com/tpoechtrager/osxcross.git
           cd ./osxcross/tarballs/
           wget https://github.com/phracker/MacOSX-SDKs/releases/download/11.3/MacOSX11.3.sdk.tar.xz
           cd ..
           UNATTENDED=yes OSX_VERSION_MIN=10.7 JOBS=4 ./build.sh
+          mkdir osxcross-target
+          tar -zcvf ./osxcross-target/osxcross-target-$(git rev-parse HEAD).tar.gz ./target/*
+      - name: upload to S3
+      - uses: shallwefootball/s3-upload-action@master
+        with:
+          aws_key_id: ${{ secrets.AWS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY}}
+          aws_bucket: ${{ secrets.AWS_BUCKET }}
+          source_dir: './osxcross/osxcross-target'
+          destination_dir: 'osxcross-target'
+          
 
 #   build-native-linux:
 #     runs-on: ubuntu-latest
