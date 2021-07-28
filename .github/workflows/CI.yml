@@ -17,14 +17,13 @@ jobs:
           UNATTENDED=yes OSX_VERSION_MIN=10.7 JOBS=4 ./build.sh
           mkdir osxcross-target
           tar -zcvf ./osxcross-target/osxcross-target-$(git rev-parse HEAD).tar.gz ./target/*
-      - name: upload to S3
-      - uses: shallwefootball/s3-upload-action@master
+      - name: assets-osxcross-toolchain
+        uses: ncipollo/release-action@v1
         with:
-          aws_key_id: ${{ secrets.AWS_KEY_ID }}
-          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY}}
-          aws_bucket: ${{ secrets.AWS_BUCKET }}
-          source_dir: './osxcross/osxcross-target'
-          destination_dir: 'osxcross-target'
+          artifacts: "./osxcross-target/osxcross-target-*.tar.gz"
+          prerelease: true
+          tag: "osxcross-target-$(git rev-parse HEAD)"
+          token: ${{ secrets.GITHUB_TOKEN }}
           
 
 #   build-native-linux:
