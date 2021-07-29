@@ -1,21 +1,37 @@
 #!/usr/bin/env bash
 set -ex
 
-CCOMPILER=${2:-clang}
-CXXCOMPILER=${2:-clang++}
-VERBOSE=${3:-ON}
+# https://github.com/tpoechtrager/osxcross
+# https://github.com/phracker/MacOSX-SDKs/releases
+# https://github.com/ribasco/ucgdisplay/tree/master/native
+# https://gist.github.com/jeffheifetz/f9ec3b04312387d6b0720ce41921fddb
+
+
+OSXCROSS_HOST_SUFFIX=${2:-apple-darwin20.4}
+OSXCROSS_TARGET_DIR=${3:-/home/user/macos01/osxcross/target}
+OSXCROSS_SDK=${4:-$OSXCROSS_TARGET_DIR/SDK/MacOSX11.3.sdk}
+OSXCROSS_TARGET=${5:-darwin20.4}
+VERBOSE=${6:-ON}
 
 rm -rf ./build
 mkdir build
 cd build
 
-$CCOMPILER --version
-
-cmake -G "Unix Makefiles" -DAPI_PREFIX=$1 -DCMAKE_VERBOSE_MAKEFILE=$VERBOSE -DCMAKE_C_COMPILER=$CCOMPILER -DCMAKE_CXX_COMPILER=$CXXCOMPILER -DCMAKE_C_FLAGS="-arch aarch64"  -DCMAKE_INSTALL_PREFIX=../bin/Release/Linux/aarch64 ../
+CROSS_HOST=x86_64
+OSXCROSS_HOST=$CROSS_HOST-$OSXCROSS_HOST_SUFFIX \
+	OSXCROSS_TARGET_DIR=$OSXCROSS_TARGET_DIR \
+	OSXCROSS_SDK=$OSXCROSS_SDK \
+	OSXCROSS_TARGET=$OSXCROSS_TARGET \
+	cmake -G "Unix Makefiles" -DAPI_PREFIX=$1 -DCMAKE_VERBOSE_MAKEFILE=$VERBOSE -DCMAKE_TOOLCHAIN_FILE=$OSXCROSS_TARGET_DIR/toolchain.cmake -DCMAKE_INSTALL_PREFIX=../bin/Release/Darwin/$CROSS_HOST -DAPPLE=TRUE ../
 make install
 
 rm -rf ./*
-cmake -G "Unix Makefiles" -DAPI_PREFIX=$1 -DCMAKE_VERBOSE_MAKEFILE=$VERBOSE -DCMAKE_C_COMPILER=$CCOMPILER -DCMAKE_CXX_COMPILER=$CXXCOMPILER -DCMAKE_INSTALL_PREFIX=../bin/Release/Darwin/x86_64 ../
+CROSS_HOST=arm64
+OSXCROSS_HOST=$CROSS_HOST-$OSXCROSS_HOST_SUFFIX \
+	OSXCROSS_TARGET_DIR=$OSXCROSS_TARGET_DIR \
+	OSXCROSS_SDK=$OSXCROSS_SDK \
+	OSXCROSS_TARGET=$OSXCROSS_TARGET \
+	cmake -G "Unix Makefiles" -DAPI_PREFIX=$1 -DCMAKE_VERBOSE_MAKEFILE=$VERBOSE -DCMAKE_TOOLCHAIN_FILE=$OSXCROSS_TARGET_DIR/toolchain.cmake -DCMAKE_INSTALL_PREFIX=../bin/Release/Darwin/$CROSS_HOST -DAPPLE=TRUE ../
 make install
 
 cd ..
