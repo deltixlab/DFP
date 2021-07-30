@@ -22,10 +22,11 @@ namespace EPAM.Deltix.DFP
 			{
 				if (isLoaded)
 					return;
+				var osName = GetOsName();
 				var archName = GetArchName();
 
 				var loader = ResourceLoader
-					.From($"EPAM.Deltix.DFP.{ResourceLoader.OS.Name}.{archName}.*")
+					.From($"EPAM.Deltix.DFP.{osName}.{archName}.*")
 					.To(Path.Combine(Path.GetTempPath(), "EPAM.Deltix", "DFP", ResourceLoader.OS.AssemblyVersion, archName))
 					// .LowercasePathOnLinux(false)
 					.TryRandomFallbackSubDirectory(true)
@@ -35,17 +36,23 @@ namespace EPAM.Deltix.DFP
 			}
 		}
 
-		const string ARCH_AMD64 = "amd64";
-		const string ARCH_X86 = "x86";
-		const string ARCH_ARM = "arm";
-		const string ARCH_AARCH64 = "aarch64";
+		internal static string GetOsName()
+		{
+			if (ResourceLoader.OS.IsWindows)
+				return "Windows";
+			if (ResourceLoader.OS.IsLinux)
+				return "Linux";
+			if (ResourceLoader.OS.IsOsx)
+				return "Darwin";
+			throw new SystemException($"Unsupported operation system: {ResourceLoader.OS.Name}.");
+		}
 
 		internal static string GetArchName()
 		{
 #if NET40
 			if (ResourceLoader.OS.IsWindows)
 			{
-				return ResourceLoader.OS.Is64 ? ARCH_AMD64 : ARCH_X86;
+				return ResourceLoader.OS.Is64 ? "amd64" : "x86";
 			}
 			if (ResourceLoader.OS.IsUnix)
 			{
@@ -53,24 +60,52 @@ namespace EPAM.Deltix.DFP
 			}
 			if (ResourceLoader.OS.IsOsx)
 			{
-				return ARCH_AMD64;
+				return "amd64";
 			}
 			throw new SystemException("Can't detect operation system.");
 #endif
 #if NETSTANDARD2_0
-			switch (RuntimeInformation.ProcessArchitecture)
+			if (ResourceLoader.OS.IsWindows)
 			{
-				case Architecture.X86:
-					return ARCH_X86;
-				case Architecture.X64:
-					return ARCH_AMD64;
-				case Architecture.Arm:
-					return ARCH_ARM;
-				case Architecture.Arm64:
-					return ARCH_AARCH64;
-				default:
-					throw new SystemException("Unsupported architecture (=" + RuntimeInformation.ProcessArchitecture + ").");
+				switch (RuntimeInformation.ProcessArchitecture)
+				{
+					case Architecture.X86:
+						return "x86";
+					case Architecture.X64:
+						return "amd64";
+					default:
+						throw new SystemException("Unsupported architecture (=" + RuntimeInformation.ProcessArchitecture + ").");
+				}
 			}
+			if (ResourceLoader.OS.IsLinux)
+			{
+				switch (RuntimeInformation.ProcessArchitecture)
+				{
+					case Architecture.X86:
+						return "i386";
+					case Architecture.X64:
+						return "amd64";
+					case Architecture.Arm:
+						return "arm";
+					case Architecture.Arm64:
+						return "aarch64";
+					default:
+						throw new SystemException("Unsupported architecture (=" + RuntimeInformation.ProcessArchitecture + ").");
+				}
+			}
+			if (ResourceLoader.OS.IsOsx)
+			{
+				switch (RuntimeInformation.ProcessArchitecture)
+				{
+					case Architecture.X64:
+						return "x86_64";
+					case Architecture.Arm64:
+						return "arm64";
+					default:
+						throw new SystemException("Unsupported architecture (=" + RuntimeInformation.ProcessArchitecture + ").");
+				}
+			}
+			throw new SystemException($"Unsupported operation system: {ResourceLoader.OS.Name}.");
 #endif
 		}
 
@@ -98,18 +133,18 @@ namespace EPAM.Deltix.DFP
 			string fileArch = match.Groups[2].Value;
 
 			if (fileArch.Contains("aarch64"))
-				return ARCH_AARCH64;
+				return "aarch64";
 
 			if (fileArch.Contains("ARM"))
-				return ARCH_ARM;
+				return "arm";
 
 			string[] amd64Alias = new string[] { "x86-64", "x86_64", "AMD64", "Intel 64", "Intel64", "EM64T", "x64" };
 			if (amd64Alias.Any(a => a.Equals(fileArch)))
-				return ARCH_AMD64;
+				return "amd64";
 
 			string[] x86Suffix = new string[] { "386", "586", "686" };
 			if (x86Suffix.Any(s => fileArch.Contains(s)))
-				return ARCH_X86;
+				return "i386";
 
 			throw new SystemException("Unsupported architecture string(=" + fileArch + ").");
 		}

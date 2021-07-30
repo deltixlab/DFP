@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 	<Import Project="Version.targets" />
 	<PropertyGroup>
 		<TargetFrameworks>netstandard2.0;net40</TargetFrameworks>
@@ -45,14 +45,9 @@
 		<EmbeddedResource Include="..\..\native\bin\Release\Linux\amd64\libddfp$(VersionSuffix)_so_zst" Link="Linux\amd64\libddfp$(VersionSuffix)_so_zst" />
 		<EmbeddedResource Include="..\..\native\bin\Release\Linux\arm\libddfp$(VersionSuffix)_so_zst" Link="Linux\arm\libddfp$(VersionSuffix)_so_zst" />
 		<EmbeddedResource Include="..\..\native\bin\Release\Linux\aarch64\libddfp$(VersionSuffix)_so_zst" Link="Linux\aarch64\libddfp$(VersionSuffix)_so_zst" />
-	</ItemGroup>
-	<Choose>
-		<When Condition="Exists('..\..\native\bin\Release\OSX\amd64\libddfp$(VersionSuffix)_dylib_zst')">
-			<ItemGroup>
-				<EmbeddedResource Include="..\..\native\bin\Release\OSX\amd64\libddfp$(VersionSuffix)_dylib_zst" Link="OSX\amd64\libddfp$(VersionSuffix)_dylib_zst" />
-			</ItemGroup>
-		</When>
-	</Choose>
+        <EmbeddedResource Include="..\..\native\bin\Release\Darwin\x86_64\libddfp$(VersionSuffix)_dylib_zst" Link="Darwin\x86_64\libddfp$(VersionSuffix)_dylib_zst" />
+        <EmbeddedResource Include="..\..\native\bin\Release\Darwin\arm64\libddfp$(VersionSuffix)_dylib_zst" Link="Darwin\arm64\libddfp$(VersionSuffix)_dylib_zst" />
+    </ItemGroup>
 	<!--Target Name="PreBuild" BeforeTargets="PreBuildEvent">
 		<Exec WorkingDirectory="..\.." Command="gradlew :nativeWrappers:makeNativeWrappers" />
 	</Target-->

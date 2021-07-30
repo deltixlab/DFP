@@ -15,12 +15,15 @@ public class NativeImplLoader {
                 version = version.substring(0, version.length() - "-SNAPSHOT".length());
 
             String osName = System.getProperty("os.name");
+            String osArch = System.getProperty("os.arch");
+
             if (osName.toLowerCase(Locale.ROOT).contains("windows"))
                 osName = "Windows";
-            if (osName.toLowerCase(Locale.ROOT).contains("Mac OS X"))
+            if (osName.toLowerCase(Locale.ROOT).contains("mac")) {
                 osName = "Darwin";
-
-            final String osArch = System.getProperty("os.arch");
+                if (osArch.toLowerCase(Locale.ROOT).contains("aarch64"))
+                    osArch = "arm64";
+            }
 
             ResourceLoader
                 .from(NativeImpl.class, osName + "/" + osArch + "/*") // This version now also works, but is probably less efficient

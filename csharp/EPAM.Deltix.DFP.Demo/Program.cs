@@ -137,14 +137,53 @@ namespace EPAM.Deltix.DFP.Demo
 			Console.WriteLine("x - y: " + x.Subtract(y));
 		}
 
-        static void Main(string[] args)
+        static int Main(string[] args)
         {
-			//TestToString();
-			//TestOldDecimal();
-			SimpleBenchmark.Run();
-			Double binary64 = new Random().NextDouble();
-			Decimal64 decimal64 = Decimal64.FromDouble(binary64);
-			Console.WriteLine(decimal64);
-        }
-    }
+			if (args.Length == 0)
+			{
+				//TestToString();
+				//TestOldDecimal();
+				SimpleBenchmark.Run();
+				Double binary64 = new Random().NextDouble();
+				Decimal64 decimal64 = Decimal64.FromDouble(binary64);
+				Console.WriteLine(decimal64);
+				return 0;
+			}
+			else
+			{
+				if (args.Length != 3)
+				{
+					Console.Error.WriteLine("Usage: <A> <op> <B>");
+					return 1;
+				}
+
+				var argA = Decimal64.Parse(args[0]);
+				var argB = Decimal64.Parse(args[2]);
+				var result = processOperation(args[1], argA, argB);
+
+				Console.WriteLine(argA + "(=" + argA.ToUnderlying() + ") " + args[1] + " " +
+					argB + "(=" + argB.ToUnderlying() + ") = " +
+					result + "(=" + result.ToUnderlying() + ")");
+
+				return 0;
+			}
+		}
+
+		private static Decimal64 processOperation(string operation, Decimal64 argA, Decimal64 argB)
+		{
+			switch (operation)
+			{
+				case "+":
+					return argA.Add(argB);
+				case "-":
+					return argA.Subtract(argB);
+				case "*":
+					return argA.Multiply(argB);
+				case "/":
+					return argA.Divide(argB);
+				default:
+					throw new ArgumentException($"Unsupported operation '{operation}'.");
+			}
+		}
+	}
 }
