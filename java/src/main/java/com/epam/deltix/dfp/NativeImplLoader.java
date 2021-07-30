@@ -17,6 +17,8 @@ public class NativeImplLoader {
             String osName = System.getProperty("os.name");
             if (osName.toLowerCase(Locale.ROOT).contains("windows"))
                 osName = "Windows";
+            if (osName.toLowerCase(Locale.ROOT).contains("Mac OS X"))
+                osName = "Darwin";
 
             final String osArch = System.getProperty("os.arch");
 
