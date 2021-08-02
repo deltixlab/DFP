@@ -9,7 +9,7 @@ task makeNativeLinux(type: Exec) {
 }
 
 task makeNativeDarwin(type: Exec) {
-    commandLine "$rootDir/native/buildDarwin.sh", 'ddfp' + versioning()["suffix"]
+    commandLine "$rootDir/native/buildDarwin.sh", 'ddfp' + versioning()["suffix"], "apple-darwin20.4", "$rootDir/osxcross/target"
     workingDir("$rootDir/native")
 }
 
