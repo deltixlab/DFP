@@ -8,7 +8,7 @@ set -ex
 
 
 OSXCROSS_HOST_SUFFIX=${2:-apple-darwin20.4}
-OSXCROSS_TARGET_DIR=${3:-../osxcross/target}
+OSXCROSS_TARGET_DIR=${3:-../../osxcross/target}
 OSXCROSS_SDK=${4:-$OSXCROSS_TARGET_DIR/SDK/MacOSX11.3.sdk}
 OSXCROSS_TARGET=${5:-darwin20.4}
 VERBOSE=${6:-ON}
@@ -16,9 +16,6 @@ VERBOSE=${6:-ON}
 rm -rf ./build
 mkdir build
 cd build
-
-pwd
-ls $OSXCROSS_TARGET_DIR/bin
 
 CROSS_HOST=x86_64
 OSXCROSS_HOST=$CROSS_HOST-$OSXCROSS_HOST_SUFFIX \
