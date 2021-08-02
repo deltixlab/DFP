@@ -12,13 +12,13 @@
 #if defined(_WIN32)
 #define JNI_API(x) __declspec(dllexport) x __stdcall
 #else
-#define JNI_API(x) x __attribute__ ((visibility("default")))
+#define JNI_API(x) x __attribute__ ((externally_visible,visibility("default")))
 #endif
 
 #if defined(_WIN32)
 #define DDFP_API(x) __declspec(dllexport) x __cdecl
 #else
-#define DDFP_API(x) x __attribute__ ((visibility("default")))
+#define DDFP_API(x) x __attribute__ ((externally_visible,visibility("default")))
 #endif
 
 
