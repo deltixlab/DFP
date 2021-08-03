@@ -39,14 +39,7 @@
 		<Compile Include="..\..\NativeUtils\csharp\NativeUtils\ResourceLoaderUtils.cs" Link="NativeUtils\ResourceLoaderUtils.cs" />
 	</ItemGroup>
 	<ItemGroup>
-		<EmbeddedResource Include="..\..\native\bin\Release\Windows\x86\ddfp$(VersionSuffix)_dll_zst" Link="Windows\x86\ddfp$(VersionSuffix)_dll_zst" />
-		<EmbeddedResource Include="..\..\native\bin\Release\Windows\amd64\ddfp$(VersionSuffix)_dll_zst" Link="Windows\amd64\ddfp$(VersionSuffix)_dll_zst" />
-		<EmbeddedResource Include="..\..\native\bin\Release\Linux\i386\libddfp$(VersionSuffix)_so_zst" Link="Linux\x86\libddfp$(VersionSuffix)_so_zst" />
-		<EmbeddedResource Include="..\..\native\bin\Release\Linux\amd64\libddfp$(VersionSuffix)_so_zst" Link="Linux\amd64\libddfp$(VersionSuffix)_so_zst" />
-		<EmbeddedResource Include="..\..\native\bin\Release\Linux\arm\libddfp$(VersionSuffix)_so_zst" Link="Linux\arm\libddfp$(VersionSuffix)_so_zst" />
-		<EmbeddedResource Include="..\..\native\bin\Release\Linux\aarch64\libddfp$(VersionSuffix)_so_zst" Link="Linux\aarch64\libddfp$(VersionSuffix)_so_zst" />
-        <EmbeddedResource Include="..\..\native\bin\Release\Darwin\x86_64\libddfp$(VersionSuffix)_dylib_zst" Link="Darwin\x86_64\libddfp$(VersionSuffix)_dylib_zst" />
-        <EmbeddedResource Include="..\..\native\bin\Release\Darwin\arm64\libddfp$(VersionSuffix)_dylib_zst" Link="Darwin\arm64\libddfp$(VersionSuffix)_dylib_zst" />
+		<EmbeddedResource Include="..\..\native\bin\Release\**\*" />
     </ItemGroup>
 	<!--Target Name="PreBuild" BeforeTargets="PreBuildEvent">
 		<Exec WorkingDirectory="..\.." Command="gradlew :nativeWrappers:makeNativeWrappers" />
