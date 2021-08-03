@@ -94,7 +94,6 @@ jobs:
       - name: build
         run: |
           sudo apt install clang make libssl-dev liblzma-dev libxml2-dev fuse
-          git clone --recursive --depth 1 https://github.com/tpoechtrager/osxcross.git
           cd ./osxcross/tarballs/
           wget https://github.com/phracker/MacOSX-SDKs/releases/download/11.3/MacOSX11.3.sdk.tar.xz
           cd ..
