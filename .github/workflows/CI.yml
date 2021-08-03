@@ -1,6 +1,9 @@
 name: Release CI
 
-on: push
+on:
+  workflow_dispatch: 
+  push:
+    branches: [release-*]
 
 jobs:
 
