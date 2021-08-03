@@ -1,2 +1,6 @@
-include ':java'
-project(':java').name = 'deltix-dfp'
+include(':javaSystemInfo')
+include(':nativeWrappers')
+include(':native')
+include(':java')
+project(':java').name = 'dfp'
+include(':javaDecimalDemo')

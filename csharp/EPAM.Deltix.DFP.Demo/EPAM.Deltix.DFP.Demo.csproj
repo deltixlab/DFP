@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFrameworks>netcoreapp3.0;net40</TargetFrameworks>
+    <IsPackable>false</IsPackable>
+    <RootNamespace>EPAM.Deltix.DFP.Demo</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\EPAM.Deltix.DFP\EPAM.Deltix.DFP.csproj" />
+  </ItemGroup>
+</Project>

@@ -1,5 +1,7 @@
-## Legal
+# Branch Model
 
-By submitting a pull request, you represent that you have the right to license
-your contribution to Deltix and the community, and agree by submitting the patch
-that your contributions are licensed under the Apache 2.0 license.
+There are several special branches within a project:
+  * `master` - main development branch.
+  * `release-*` - release branches. For this and only this branches automatic
+  versioning and publishing of artifacts is configured.
+  

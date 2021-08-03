@@ -1,0 +1,495 @@
+name: Release CI
+
+on: push
+
+jobs:
+
+#   build-osxcross-toolchain:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: build-osxcross-toolchain
+#         run: |
+#           sudo apt install clang make libssl-dev liblzma-dev libxml2-dev fuse
+#           git clone --recursive --depth 1 https://github.com/tpoechtrager/osxcross.git
+#           cd ./osxcross/tarballs/
+#           wget https://github.com/phracker/MacOSX-SDKs/releases/download/11.3/MacOSX11.3.sdk.tar.xz
+#           cd ..
+#           UNATTENDED=yes OSX_VERSION_MIN=10.7 JOBS=4 ./build.sh
+#           mkdir osxcross-target
+#           tar -zcvf ./osxcross-target/osxcross-target-$(git rev-parse HEAD).tar.gz ./target/*
+#       - name: assets-osxcross-toolchain
+#         uses: ncipollo/release-action@v1
+#         with:
+#           artifacts: "./osxcross-target/osxcross-target-*.tar.gz"
+#           prerelease: true
+#           tag: "osxcross-target-$(git rev-parse HEAD)"
+#           token: ${{ secrets.GITHUB_TOKEN }}
+
+  build-native-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+      - name: build
+        run: |
+          sudo apt install -yqq g++-9-arm-linux-gnueabihf \
+                                g++-9-aarch64-linux-gnu \
+                                g++-9-i686-linux-gnu \
+
+          cd ..
+          mkdir llvm
+          cd llvm
+
+          curl -OL https://github.com/llvm/llvm-project/releases/download/llvmorg-12.0.0/clang+llvm-12.0.0-armv7a-linux-gnueabihf.tar.xz
+          curl -OL https://github.com/llvm/llvm-project/releases/download/llvmorg-12.0.0/clang+llvm-12.0.0-aarch64-linux-gnu.tar.xz
+          curl -OL https://github.com/llvm/llvm-project/releases/download/llvmorg-12.0.0/clang+llvm-12.0.0-i386-unknown-freebsd12.tar.xz
+
+          tar -xf clang+llvm-12.0.0-armv7a-linux-gnueabihf.tar.xz
+          tar -xf clang+llvm-12.0.0-aarch64-linux-gnu.tar.xz
+          tar -xf clang+llvm-12.0.0-i386-unknown-freebsd12.tar.xz
+
+          ls -al
+          cd ../DFP/
+          ls -al
+          ./gradlew makeNativeLinux
+
+          ./gradlew makeNativeWrappers
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: build-native-linux
+          path: |
+            ./*native/bin*
+            ./*java/build/generated/sources/nativeWrappers/com/epam/deltix/dfp*
+            ./csharp/EPAM.Deltix.DFP/NativeImpl.cs
+            ./csharp/EPAM.Deltix.DFP/Version.targets
+          retention-days: 7
+
+
+  build-native-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+      - name: Use MSBuild
+        uses: microsoft/setup-msbuild@v1.0.2
+      - name: build
+        run: |
+          ./gradlew makeNativeWindows
+      - uses: actions/upload-artifact@v2
+        with:
+          name: build-native-windows
+          path: ./*native/bin*
+          retention-days: 7
+
+
+  build-native-macos:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+      - name: build
+        run: |
+          sudo apt install clang make libssl-dev liblzma-dev libxml2-dev fuse
+          cd ./osxcross/tarballs/
+          wget https://github.com/phracker/MacOSX-SDKs/releases/download/11.3/MacOSX11.3.sdk.tar.xz
+          cd ..
+          UNATTENDED=yes OSX_VERSION_MIN=10.7 JOBS=4 ./build.sh
+          cd ..
+          ./gradlew makeNativeDarwin
+      - uses: actions/upload-artifact@v2
+        with:
+          name: build-native-macos
+          path: ./*native/bin*
+          retention-days: 7
+
+  compress-native:
+    runs-on: ubuntu-latest
+    needs: [build-native-linux, build-native-windows, build-native-macos]
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+      - name: Download native-linux artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: build-native-linux
+      - name: Download native-windows artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: build-native-windows
+      - name: Download native-macos artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: build-native-macos
+      - name: compress
+        run: |
+          zstd --version
+          zstd -19 --rm -r ./native/bin
+      - uses: actions/upload-artifact@v2
+        with:
+          name: compress-native
+          path: |
+            ./*native/bin*
+            ./*java/build/generated/sources/nativeWrappers/com/epam/deltix/dfp*
+            ./csharp/EPAM.Deltix.DFP/NativeImpl.cs
+            ./csharp/EPAM.Deltix.DFP/Version.targets
+          retention-days: 7
+
+  build-java:
+    runs-on: ubuntu-latest
+    needs: [compress-native]
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+      - name: Download compress-native artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: compress-native
+      - name: Setup java
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: '8'
+      - name: build
+        run: |
+          ./gradlew jar
+      - uses: actions/upload-artifact@v2
+        with:
+          name: java-jars
+          path: |
+            ./*java/build/libs/*
+            ./*javaDecimalDemo/build/libs/*
+          retention-days: 7
+
+  build-dotnet:
+    runs-on: windows-latest
+    needs: [compress-native]
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+      - name: Download compress-native artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: compress-native
+      - name: Use MSBuild
+        uses: microsoft/setup-msbuild@v1.0.2
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v1.8.1
+        with:
+          dotnet-version: '3.1.x'
+      - name: build
+        run: |
+          cd csharp
+          ./build -Target Build
+      - uses: actions/upload-artifact@v2
+        with:
+          name: dotnet-build
+          path: |
+            ./*csharp/EPAM.Deltix.DFP/bin/Release/*
+            ./*csharp/EPAM.Deltix.DFP.Demo/bin/Release/*
+          retention-days: 7
+
+  test-java:
+    runs-on: ubuntu-latest
+    needs: [compress-native]
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+      - name: Download compress-native artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: compress-native
+      - name: test
+        run: |
+          ./gradlew check
+
+  test-dotnet:
+    runs-on: windows-latest
+    needs: [compress-native]
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+      - name: Download compress-native artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: compress-native
+      - name: Use MSBuild
+        uses: microsoft/setup-msbuild@v1.0.2
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v1.8.1
+        with:
+          dotnet-version: '3.1.x'
+      - name: test
+        run: |
+          cd csharp
+          ./build -Target Run-Unit-Tests
+
+#   prepare:
+#     if: ${{ !contains(github.event.head_commit.message, '[skip-ci]') && startsWith(github.ref, 'refs/heads/release-') }}
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout
+#         uses: actions/checkout@v2
+#       - name: Prepare
+#         run: |
+#           git config user.name github-actions
+#           git config user.email github-actions@github.com
+#           git checkout -b workflow-$GITHUB_RUN_ID
+#           versionSnapshot=`grep 'version=' gradle.properties | sed 's/version=\([^-]*\)/\1/'`
+#           versionRelease=`echo $versionSnapshot | sed 's/\([^-]*\)-SNAPSHOT/\1/'`
+#           versionSnapshotNext=`echo $versionSnapshot | perl -pe 's/^((\d+\.)*)(\d+)(.*)$/$1.($3+1).$4/e'`
+#           echo "$versionSnapshot -> $versionRelease  -> $versionSnapshotNext"
+#           sed -i "s/version=$versionSnapshot/version=$versionRelease/" gradle.properties
+#           git commit -am "[skip-ci] Generate release version"
+#           sed -i "s/version=$versionRelease/version=$versionSnapshotNext/" gradle.properties
+#           git commit -am "[skip-ci] Generate next snapshot version"
+#           git push origin HEAD
+
+
+
+#   build_native_windows:
+#     if: ${{ always() && !contains(github.event.head_commit.message, '[skip-ci]') }}
+#     needs: prepare
+#     runs-on: [self-hosted, Windows, IntelParallelStudioXE]
+#     steps:
+#       - uses: actions/checkout@v2
+#         with:
+#           submodules: 'true'
+#       - uses: cake-build/cake-action@v1.2.0
+#         with:
+#           script-path: csharp/build.cake
+#           target: BuildNativeWindowsLibs
+#       - uses: actions/upload-artifact@v2
+#         with:
+#           name: build_windows
+#           path: |
+#             native/bin/Release/Windows/32/*.dll
+#             native/bin/Release/Windows/64/*.dll
+
+#   compress_native:
+#     if: ${{ always() && !contains(github.event.head_commit.message, '[skip-ci]') }}
+#     needs: [build_native_linux, build_native_windows]
+#     runs-on: [self-hosted, Linux]
+#     steps:
+#       - uses: actions/checkout@v2
+#       - uses: actions/download-artifact@v2
+#         with:
+#           name: build_linux
+#           path: native/bin/Release/Linux/
+#       - uses: actions/download-artifact@v2
+#         with:
+#           path: native/bin/Release/Windows/
+#           name: build_windows
+#       - uses: cake-build/cake-action@v1.2.0
+#         with:
+#           script-path: csharp/build.cake
+#           target: CompressNativeLibs
+#       - uses: actions/upload-artifact@v2
+#         with:
+#           name: compressed
+#           path: |
+#             native/bin
+
+#   build_linux_jar:
+#     if: ${{ always() && !contains(github.event.head_commit.message, '[skip-ci]') }}
+#     needs: compress_native
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v2
+#         with:
+#           submodules: 'recursive'
+#       - uses: actions/download-artifact@v2
+#         with:
+#           name: compressed
+#           path: native/bin
+#       - uses: actions/setup-java@v1.4.3
+#         with:
+#           java-version: 1.8
+#       - uses: eskatos/gradle-command-action@v1.3.3
+#         with:
+#           arguments: shadowJar
+#       - uses: actions/upload-artifact@v2
+#         with:
+#           name: test_java_linux
+#           path: |
+#             java/build/libs/*
+
+#   test_java_windows:
+#     if: ${{ always() && !contains(github.event.head_commit.message, '[skip-ci]') }}
+#     needs: compress_native
+#     runs-on: [self-hosted, Windows]
+#     steps:
+#       - uses: actions/checkout@v2
+#         with:
+#           submodules: 'recursive'
+#       - uses: actions/download-artifact@v2
+#         with:
+#           name: compressed
+#           path: native/bin
+#       - uses: eskatos/gradle-command-action@v1.3.3
+#         with:
+#           arguments: check
+#       - uses: actions/upload-artifact@v2
+#         with:
+#           name: test_java_windows
+#           path: |
+#             java/build/reports/*
+
+#   test_java_linux:
+#     if: ${{ always() && !contains(github.event.head_commit.message, '[skip-ci]') }}
+#     needs: compress_native
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v2
+#         with:
+#           submodules: 'recursive'
+#       - uses: actions/setup-java@v1.4.3
+#         with:
+#           java-version: 1.8
+#       - uses: actions/download-artifact@v2
+#         with:
+#           name: compressed
+#           path: native/bin
+#       - uses: eskatos/gradle-command-action@v1.3.3
+#         with:
+#           arguments: check
+#       - uses: actions/upload-artifact@v2
+#         with:
+#           name: test_java_linux
+#           path: |
+#             java/build/reports/*
+
+#   test_dotnet_linux:
+#     if: ${{ always() && !contains(github.event.head_commit.message, '[skip-ci]') }}
+#     needs: compress_native
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v2
+#         with:
+#           submodules: 'recursive'
+#       - uses: actions/download-artifact@v2
+#         with:
+#           name: compressed
+#           path: native/bin
+#       - uses: actions/setup-dotnet@v1.7.2
+#         with:
+#           dotnet-version: 2.1.607
+#       - uses: cake-build/cake-action@v1.2.0
+#         with:
+#           script-path: csharp/build.cake
+#           target: Run-Unit-Tests
+#       - uses: actions/upload-artifact@v2
+#         with:
+#           name: test_dotnet_linux
+#           path: |
+#             csharp/Deltix.DFP/bin/*
+#             csharp/*.txt
+#             csharp/*.xml
+
+#   test_dotnet_windows:
+#     if: ${{ always() && !contains(github.event.head_commit.message, '[skip-ci]') }}
+#     needs: compress_native
+#     runs-on: [self-hosted, Windows]
+#     steps:
+#       - uses: actions/checkout@v2
+#         with:
+#           submodules: 'recursive'
+#       - uses: actions/download-artifact@v2
+#         with:
+#           name: compressed
+#           path: native/bin
+#       - uses: cake-build/cake-action@v1.2.0
+#         with:
+#           script-path: csharp/build.cake
+#           target: Run-Unit-Tests
+#       - uses: actions/upload-artifact@v2
+#         with:
+#           name: test_dotnet_windows
+#           path: |
+#             csharp/Deltix.DFP/bin/*
+#             csharp/*.txt
+#             csharp/*.xml
+
+#   release:
+#     if: ${{ !contains(github.event.head_commit.message, '[skip-ci]') && startsWith(github.ref, 'refs/heads/release-') }}
+#     needs:
+#         - test_java_linux
+#         - test_java_windows
+#         - test_dotnet_linux
+#         - test_dotnet_windows
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout
+#         uses: actions/checkout@v2
+#       - name: Release
+#         run: |
+#           git config user.name github-actions
+#           git config user.email github-actions@github.com
+#           git fetch
+#           git checkout -b workflow-$GITHUB_RUN_ID origin/workflow-$GITHUB_RUN_ID~1
+#           versionRelease=`grep 'version=' gradle.properties | sed 's/version=\([^-]*\)/\1/'`
+#           echo $versionRelease
+#           git tag $versionRelease
+#           git push origin origin/workflow-$GITHUB_RUN_ID:$GITHUB_REF
+
+#   publish_java:
+#     if: ${{ !contains(github.event.head_commit.message, '[skip-ci]') && startsWith(github.ref, 'refs/heads/release-') }}
+#     needs: release
+#     runs-on: ubuntu-latest
+#     steps:
+#     - uses: actions/checkout@v2
+#     - uses: actions/download-artifact@v2
+#     - uses: actions/setup-java@v1.4.3
+#       with:
+#         java-version: 1.8
+#     - run: ./gradlew publish
+#       env:
+#         MAVEN_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+#         MAVEN_PASSWORD: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+#         MAVEN_SNAPSHOT_URL: https://oss.sonatype.org/content/repositories/snapshots
+#         MAVEN_RELEASE_URL:  https://oss.sonatype.org/service/local/staging/deploy/maven2
+
+#   publish_csharp:
+#     if: ${{ !contains(github.event.head_commit.message, '[skip-ci]') && startsWith(github.ref, 'refs/heads/release-') }}
+#     needs: release
+#     runs-on: ubuntu-latest
+#     steps:
+#     - uses: actions/checkout@v1
+#     - uses: actions/download-artifact@v2
+#       with:
+#         name: compressed
+#         path: native/bin
+#     - uses: actions/setup-dotnet@v1.7.2
+#       with:
+#         dotnet-version: 2.1.607
+#     - uses: cake-build/cake-action@v1.2.0
+#       with:
+#         target: Pack
+#         script-path: csharp/build.cake
+#         arguments: |
+#           configuration: Release
+#     - run: dotnet nuget push csharp/artifacts/Zstandard.*.nupkg -k ${{ secrets.NUGET_API_KEY }} -s ${{ secrets.NUGET_URL }}
+
+#   cleanup:
+#     if: ${{ always() && !contains(github.event.head_commit.message, '[skip-ci]') }}
+#     needs:
+#       - publish_java
+#       - publish_csharp
+#     runs-on: ubuntu-latest
+#     continue-on-error: ${{ !startsWith(github.ref, 'refs/heads/release-') }}
+#     steps:
+#       - name: Checkout
+#         uses: actions/checkout@v2
+#       - name: Cleanup
+#         run: |
+#           git config user.name github-actions
+#           git config user.email github-actions@github.com
+#           git push origin --delete workflow-$GITHUB_RUN_ID || true

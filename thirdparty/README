@@ -1,0 +1,8 @@
+IntelRDFPMathLib20U2
+	https://software.intel.com/en-us/articles/intel-decimal-floating-point-math-library
+	https://www.netlib.org/misc/intel/
+	Intel Decimal Floating-Point Math Library 2.0.2
+	Changes made:
+	 - Add compilation support with CYGWIN on Windows 10 platform
+     - In makefile cl compiler replaced with clang
+     - Add add.c to EXAMPLES for the decimal operation tests.
