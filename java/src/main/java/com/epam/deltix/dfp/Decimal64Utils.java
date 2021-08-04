@@ -308,6 +308,7 @@ public class Decimal64Utils {
      * Convert {@code @Decimal long} value to {@code BigDecimal} binary floating point value.
      * <p>Note that not all decimal FP values can be exactly represented as binary FP values.
      *
+     * @param value 64-bit floating point dfp value.
      * @return {@code BigDecimal} value
      */
     public static BigDecimal toBigDecimal(@Decimal final long value) {

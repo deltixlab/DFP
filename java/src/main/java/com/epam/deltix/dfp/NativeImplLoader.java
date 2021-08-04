@@ -1,6 +1,6 @@
 package com.epam.deltix.dfp;
 
-import rtmath.utilities.ResourceLoader;
+import com.epam.deltix.utilities.ResourceLoader;
 
 import java.nio.file.Paths;
 import java.util.Locale;
