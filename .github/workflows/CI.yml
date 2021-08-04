@@ -26,7 +26,7 @@ jobs:
 #           token: ${{ secrets.GITHUB_TOKEN }}
 
   prepare:
-    if: ${{ startsWith(github.ref, 'refs/heads/release-') }}
+    if: ${{ startsWith(github.ref, 'refs/heads/release*') }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -265,7 +265,7 @@ jobs:
           ./build -Target Run-Unit-Tests
 
   release:
-    if: ${{ startsWith(github.ref, 'refs/heads/release-') }}
+    if: ${{ startsWith(github.ref, 'refs/heads/release*') }}
     needs: [build-java, test-java, build-dotnet, test-dotnet]
     runs-on: ubuntu-latest
     steps:
@@ -283,7 +283,7 @@ jobs:
           git push origin origin/workflow-$GITHUB_RUN_ID:$GITHUB_REF
 
   publish_java:
-    if: ${{ startsWith(github.ref, 'refs/heads/release-') }}
+    if: ${{ startsWith(github.ref, 'refs/heads/release*') }}
     needs: [release]
     runs-on: ubuntu-latest
     steps:
@@ -303,7 +303,7 @@ jobs:
 #         MAVEN_RELEASE_URL:  https://oss.sonatype.org/service/local/staging/deploy/maven2
 
   publish_csharp:
-    if: ${{ startsWith(github.ref, 'refs/heads/release-') }}
+    if: ${{ startsWith(github.ref, 'refs/heads/release*') }}
     needs: [release]
     runs-on: ubuntu-latest
     steps:
@@ -327,10 +327,10 @@ jobs:
 #     - run: dotnet nuget push csharp/artifacts/Zstandard.*.nupkg -k ${{ secrets.NUGET_API_KEY }} -s ${{ secrets.NUGET_URL }}
 
   cleanup:
-    if: ${{ startsWith(github.ref, 'refs/heads/release-') }}
+    if: ${{ startsWith(github.ref, 'refs/heads/release*') }}
     needs: [publish_java, publish_csharp]
     runs-on: ubuntu-latest
-    continue-on-error: ${{ !startsWith(github.ref, 'refs/heads/release-') }}
+    continue-on-error: ${{ !startsWith(github.ref, 'refs/heads/release*') }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
