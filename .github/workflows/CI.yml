@@ -31,6 +31,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
       - name: Prepare
         run: |
           git config user.name github-actions
@@ -267,6 +269,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
       - name: Release
         run: |
           git config user.name github-actions
@@ -284,9 +288,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: actions/download-artifact@v2
       with:
-        name: java-jars
+        submodules: 'recursive'
+    - name: Download compress-native artifacts
+      uses: actions/download-artifact@v2
+      with:
+        name: compress-native
     - uses: actions/setup-java@v2
       with:
         distribution: 'adopt'
@@ -305,7 +312,9 @@ jobs:
     runs-on: windows-latest
     steps:
     - name: Checkout code
-      uses: actions/checkout@v1
+      uses: actions/checkout@v2
+      with:
+        submodules: 'recursive'
     - name: Download compress-native artifacts
       uses: actions/download-artifact@v2
       with:
@@ -320,6 +329,7 @@ jobs:
         script-path: csharp/build.cake
         arguments: |
           configuration: Release
+    - run: dotnet nuget push csharp/artifacts/*.nupkg -s $pwd
 #     - run: dotnet nuget push csharp/artifacts/*.nupkg -k ${{ secrets.NUGET_API_KEY }} -s ${{ secrets.NUGET_URL }}
 
   cleanup:
@@ -330,6 +340,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
       - name: Cleanup
         run: |
           git config user.name github-actions
