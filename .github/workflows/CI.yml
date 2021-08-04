@@ -207,8 +207,6 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: compress-native
-      - name: Use MSBuild
-        uses: microsoft/setup-msbuild@v1.0.2
       - name: Setup dotnet
         uses: actions/setup-dotnet@v1.8.1
         with:
@@ -253,8 +251,6 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: compress-native
-      - name: Use MSBuild
-        uses: microsoft/setup-msbuild@v1.0.2
       - name: Setup dotnet
         uses: actions/setup-dotnet@v1.8.1
         with:
@@ -282,7 +278,7 @@ jobs:
           git tag $versionRelease
           git push origin origin/workflow-$GITHUB_RUN_ID:$GITHUB_REF
 
-  publish_java:
+  publish-java:
 #     if: ${{ startsWith(github.ref, 'refs/heads/release*') }}
     needs: [release]
     runs-on: ubuntu-latest
@@ -295,6 +291,7 @@ jobs:
       with:
         distribution: 'adopt'
         java-version: '8'
+    - run: ./gradlew publishToMavenLocal
 #     - run: ./gradlew publish
 #       env:
 #         MAVEN_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
@@ -302,18 +299,17 @@ jobs:
 #         MAVEN_SNAPSHOT_URL: https://oss.sonatype.org/content/repositories/snapshots
 #         MAVEN_RELEASE_URL:  https://oss.sonatype.org/service/local/staging/deploy/maven2
 
-  publish_csharp:
+  publish-dotnet:
 #     if: ${{ startsWith(github.ref, 'refs/heads/release*') }}
     needs: [release]
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
     - name: Checkout code
       uses: actions/checkout@v1
-    - name: Download dotnet
+    - name: Download compress-native artifacts
       uses: actions/download-artifact@v2
       with:
-        name: dotnet-build
-#         path: native/bin
+        name: compress-native
     - name: Setup dotnet
       uses: actions/setup-dotnet@v1.8.1
       with:
@@ -324,11 +320,11 @@ jobs:
         script-path: csharp/build.cake
         arguments: |
           configuration: Release
-#     - run: dotnet nuget push csharp/artifacts/Zstandard.*.nupkg -k ${{ secrets.NUGET_API_KEY }} -s ${{ secrets.NUGET_URL }}
+#     - run: dotnet nuget push csharp/artifacts/*.nupkg -k ${{ secrets.NUGET_API_KEY }} -s ${{ secrets.NUGET_URL }}
 
   cleanup:
 #     if: ${{ startsWith(github.ref, 'refs/heads/release*') }}
-    needs: [publish_java, publish_csharp]
+    needs: [publish-java, publish-dotnet]
     runs-on: ubuntu-latest
 #     continue-on-error: ${{ !startsWith(github.ref, 'refs/heads/release*') }}
     steps:
