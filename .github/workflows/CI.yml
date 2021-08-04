@@ -25,7 +25,30 @@ jobs:
 #           tag: "osxcross-target-$(git rev-parse HEAD)"
 #           token: ${{ secrets.GITHUB_TOKEN }}
 
+  prepare:
+#     if: ${{ startsWith(github.ref, 'refs/heads/release*') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Prepare
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git checkout -b workflow-$GITHUB_RUN_ID
+          versionSnapshot=`grep 'version=' gradle.properties | sed 's/version=\([^-]*\)/\1/'`
+          versionRelease=`echo $versionSnapshot | sed 's/\([^-]*\)-SNAPSHOT/\1/'`
+          versionSnapshotNext=`echo $versionSnapshot | perl -pe 's/^((\d+\.)*)(\d+)(.*)$/$1.($3+1).$4/e'`
+          echo "$versionSnapshot -> $versionRelease  -> $versionSnapshotNext"
+          sed -i "s/version=$versionSnapshot/version=$versionRelease/" gradle.properties
+          git commit -am "[skip-ci] Generate release version"
+          sed -i "s/version=$versionRelease/version=$versionSnapshotNext/" gradle.properties
+          git commit -am "[skip-ci] Generate next snapshot version"
+          git push origin HEAD
+
   build-native-linux:
+#     if: ${{ always() }}
+    needs: [prepare]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -68,6 +91,8 @@ jobs:
 
 
   build-native-windows:
+#     if: ${{ always() }}
+    needs: [prepare]
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v2
@@ -86,6 +111,8 @@ jobs:
 
 
   build-native-macos:
+#     if: ${{ always() }}
+    needs: [prepare]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -107,6 +134,7 @@ jobs:
           retention-days: 7
 
   compress-native:
+#     if: ${{ always() }}
     runs-on: ubuntu-latest
     needs: [build-native-linux, build-native-windows, build-native-macos]
     steps:
@@ -140,6 +168,7 @@ jobs:
           retention-days: 7
 
   build-java:
+#     if: ${{ always() }}
     runs-on: ubuntu-latest
     needs: [compress-native]
     steps:
@@ -167,6 +196,7 @@ jobs:
           retention-days: 7
 
   build-dotnet:
+#     if: ${{ always() }}
     runs-on: windows-latest
     needs: [compress-native]
     steps:
@@ -196,6 +226,7 @@ jobs:
           retention-days: 7
 
   test-java:
+#     if: ${{ always() }}
     runs-on: ubuntu-latest
     needs: [compress-native]
     steps:
@@ -211,6 +242,7 @@ jobs:
           ./gradlew check
 
   test-dotnet:
+#     if: ${{ always() }}
     runs-on: windows-latest
     needs: [compress-native]
     steps:
@@ -232,28 +264,81 @@ jobs:
           cd csharp
           ./build -Target Run-Unit-Tests
 
-#   prepare:
-#     if: ${{ !contains(github.event.head_commit.message, '[skip-ci]') && startsWith(github.ref, 'refs/heads/release-') }}
-#     runs-on: ubuntu-latest
-#     steps:
-#       - name: Checkout
-#         uses: actions/checkout@v2
-#       - name: Prepare
-#         run: |
-#           git config user.name github-actions
-#           git config user.email github-actions@github.com
-#           git checkout -b workflow-$GITHUB_RUN_ID
-#           versionSnapshot=`grep 'version=' gradle.properties | sed 's/version=\([^-]*\)/\1/'`
-#           versionRelease=`echo $versionSnapshot | sed 's/\([^-]*\)-SNAPSHOT/\1/'`
-#           versionSnapshotNext=`echo $versionSnapshot | perl -pe 's/^((\d+\.)*)(\d+)(.*)$/$1.($3+1).$4/e'`
-#           echo "$versionSnapshot -> $versionRelease  -> $versionSnapshotNext"
-#           sed -i "s/version=$versionSnapshot/version=$versionRelease/" gradle.properties
-#           git commit -am "[skip-ci] Generate release version"
-#           sed -i "s/version=$versionRelease/version=$versionSnapshotNext/" gradle.properties
-#           git commit -am "[skip-ci] Generate next snapshot version"
-#           git push origin HEAD
+  release:
+#     if: ${{ startsWith(github.ref, 'refs/heads/release*') }}
+    needs: [build-java, test-java, build-dotnet, test-dotnet]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Release
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git fetch
+          git checkout -b workflow-$GITHUB_RUN_ID origin/workflow-$GITHUB_RUN_ID~1
+          versionRelease=`grep 'version=' gradle.properties | sed 's/version=\([^-]*\)/\1/'`
+          echo $versionRelease
+          git tag $versionRelease
+          git push origin origin/workflow-$GITHUB_RUN_ID:$GITHUB_REF
 
+  publish_java:
+#     if: ${{ startsWith(github.ref, 'refs/heads/release*') }}
+    needs: [release]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/download-artifact@v2
+      with:
+        name: java-jars
+    - uses: actions/setup-java@v2
+      with:
+        distribution: 'adopt'
+        java-version: '8'
+#     - run: ./gradlew publish
+#       env:
+#         MAVEN_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+#         MAVEN_PASSWORD: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+#         MAVEN_SNAPSHOT_URL: https://oss.sonatype.org/content/repositories/snapshots
+#         MAVEN_RELEASE_URL:  https://oss.sonatype.org/service/local/staging/deploy/maven2
 
+  publish_csharp:
+#     if: ${{ startsWith(github.ref, 'refs/heads/release*') }}
+    needs: [release]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v1
+    - name: Download dotnet
+      uses: actions/download-artifact@v2
+      with:
+        name: dotnet-build
+#         path: native/bin
+    - name: Setup dotnet
+      uses: actions/setup-dotnet@v1.8.1
+      with:
+        dotnet-version: '3.1.x'
+    - uses: cake-build/cake-action@v1.3.0
+      with:
+        target: Pack
+        script-path: csharp/build.cake
+        arguments: |
+          configuration: Release
+#     - run: dotnet nuget push csharp/artifacts/Zstandard.*.nupkg -k ${{ secrets.NUGET_API_KEY }} -s ${{ secrets.NUGET_URL }}
+
+  cleanup:
+#     if: ${{ startsWith(github.ref, 'refs/heads/release*') }}
+    needs: [publish_java, publish_csharp]
+    runs-on: ubuntu-latest
+#     continue-on-error: ${{ !startsWith(github.ref, 'refs/heads/release*') }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Cleanup
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git push origin --delete workflow-$GITHUB_RUN_ID || true
 
 #   build_native_windows:
 #     if: ${{ always() && !contains(github.event.head_commit.message, '[skip-ci]') }}
@@ -417,79 +502,3 @@ jobs:
 #             csharp/Deltix.DFP/bin/*
 #             csharp/*.txt
 #             csharp/*.xml
-
-#   release:
-#     if: ${{ !contains(github.event.head_commit.message, '[skip-ci]') && startsWith(github.ref, 'refs/heads/release-') }}
-#     needs:
-#         - test_java_linux
-#         - test_java_windows
-#         - test_dotnet_linux
-#         - test_dotnet_windows
-#     runs-on: ubuntu-latest
-#     steps:
-#       - name: Checkout
-#         uses: actions/checkout@v2
-#       - name: Release
-#         run: |
-#           git config user.name github-actions
-#           git config user.email github-actions@github.com
-#           git fetch
-#           git checkout -b workflow-$GITHUB_RUN_ID origin/workflow-$GITHUB_RUN_ID~1
-#           versionRelease=`grep 'version=' gradle.properties | sed 's/version=\([^-]*\)/\1/'`
-#           echo $versionRelease
-#           git tag $versionRelease
-#           git push origin origin/workflow-$GITHUB_RUN_ID:$GITHUB_REF
-
-#   publish_java:
-#     if: ${{ !contains(github.event.head_commit.message, '[skip-ci]') && startsWith(github.ref, 'refs/heads/release-') }}
-#     needs: release
-#     runs-on: ubuntu-latest
-#     steps:
-#     - uses: actions/checkout@v2
-#     - uses: actions/download-artifact@v2
-#     - uses: actions/setup-java@v1.4.3
-#       with:
-#         java-version: 1.8
-#     - run: ./gradlew publish
-#       env:
-#         MAVEN_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
-#         MAVEN_PASSWORD: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
-#         MAVEN_SNAPSHOT_URL: https://oss.sonatype.org/content/repositories/snapshots
-#         MAVEN_RELEASE_URL:  https://oss.sonatype.org/service/local/staging/deploy/maven2
-
-#   publish_csharp:
-#     if: ${{ !contains(github.event.head_commit.message, '[skip-ci]') && startsWith(github.ref, 'refs/heads/release-') }}
-#     needs: release
-#     runs-on: ubuntu-latest
-#     steps:
-#     - uses: actions/checkout@v1
-#     - uses: actions/download-artifact@v2
-#       with:
-#         name: compressed
-#         path: native/bin
-#     - uses: actions/setup-dotnet@v1.7.2
-#       with:
-#         dotnet-version: 2.1.607
-#     - uses: cake-build/cake-action@v1.2.0
-#       with:
-#         target: Pack
-#         script-path: csharp/build.cake
-#         arguments: |
-#           configuration: Release
-#     - run: dotnet nuget push csharp/artifacts/Zstandard.*.nupkg -k ${{ secrets.NUGET_API_KEY }} -s ${{ secrets.NUGET_URL }}
-
-#   cleanup:
-#     if: ${{ always() && !contains(github.event.head_commit.message, '[skip-ci]') }}
-#     needs:
-#       - publish_java
-#       - publish_csharp
-#     runs-on: ubuntu-latest
-#     continue-on-error: ${{ !startsWith(github.ref, 'refs/heads/release-') }}
-#     steps:
-#       - name: Checkout
-#         uses: actions/checkout@v2
-#       - name: Cleanup
-#         run: |
-#           git config user.name github-actions
-#           git config user.email github-actions@github.com
-#           git push origin --delete workflow-$GITHUB_RUN_ID || true
