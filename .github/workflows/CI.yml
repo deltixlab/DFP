@@ -268,10 +268,10 @@ jobs:
         java-version: '8'
     - run: ./gradlew publish
       env:
-        MAVEN_REPOSITORY: ${{ secrets.MAVEN_REPOSITORY }}
-        MAVEN_USERNAME:   ${{ secrets.MAVEN_USERNAME }}
-        MAVEN_PASSWORD:   ${{ secrets.MAVEN_PASSWORD }}
-        SIGNING_KEY:      ${{ secrets.SIGNING_KEY }}
+        MAVEN_REPOSITORY: ${{ secrets.SONATYPE_REPOSITORY }}
+        MAVEN_USERNAME:   ${{ secrets.SONATYPE_NEXUS_USERNAME }}
+        MAVEN_PASSWORD:   ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
+        SIGNING_KEY:      ${{ secrets.SIGNING_PRIVATE_KEY }}
         SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
 
   publish-dotnet:
@@ -297,7 +297,7 @@ jobs:
         script-path: csharp/build.cake
         arguments: |
           configuration: Release
-    - run: dotnet nuget push csharp\artifacts\*.nupkg -k ${{ secrets.NUGET_API_KEY }} -s ${{ secrets.NUGET_URL }}
+#     - run: dotnet nuget push csharp\artifacts\*.nupkg -k ${{ secrets.NUGET_API_KEY }} -s ${{ secrets.NUGET_URL }}
 
   cleanup:
     if: ${{ startsWith(github.ref, 'refs/heads/release') }}
