@@ -31,8 +31,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-        with:
-          submodules: 'recursive'
       - name: Prepare
         run: |
           git config user.name github-actions
@@ -269,8 +267,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-        with:
-          submodules: 'recursive'
       - name: Release
         run: |
           git config user.name github-actions
@@ -340,8 +336,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-        with:
-          submodules: 'recursive'
       - name: Cleanup
         run: |
           git config user.name github-actions
