@@ -1,4 +1,4 @@
-using RTMath.Utilities;
+using EPAM.Deltix.Utilities;
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
