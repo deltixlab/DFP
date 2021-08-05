@@ -1,6 +1,8 @@
 include(':javaSystemInfo')
 include(':nativeWrappers')
+include(':javaDecimalDemo')
 include(':native')
 include(':java')
+
 project(':java').name = 'dfp'
-include(':javaDecimalDemo')
+
