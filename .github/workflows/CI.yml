@@ -2,6 +2,9 @@ name: Release CI
 
 on: push
 
+env:
+  GRADLE_OPTS: "-Dorg.gradle.daemon=false"
+
 jobs:
 
   prepare:
@@ -268,11 +271,11 @@ jobs:
         java-version: '8'
     - run: ./gradlew publish
       env:
-        SONATYPE_REPOSITORY: ${{ secrets.SONATYPE_REPOSITORY }}
+        SONATYPE_REPOSITORY:       ${{ secrets.SONATYPE_REPOSITORY }}
         SONATYPE_NEXUS_USERNAME:   ${{ secrets.SONATYPE_NEXUS_USERNAME }}
         SONATYPE_NEXUS_PASSWORD:   ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
-        SIGNING_PRIVATE_KEY:      ${{ secrets.SIGNING_PRIVATE_KEY }}
-        SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
+        SIGNING_PRIVATE_KEY:       ${{ secrets.SIGNING_PRIVATE_KEY }}
+        SIGNING_PASSWORD:          ${{ secrets.SIGNING_PASSWORD }}
 
   publish-dotnet:
     if: ${{ startsWith(github.ref, 'refs/heads/release') }}
