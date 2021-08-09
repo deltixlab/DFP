@@ -253,35 +253,35 @@ jobs:
           git push origin $versionRelease
           git push origin origin/workflow-$GITHUB_RUN_ID:$GITHUB_REF
 
-#   publish-java:
-#     if: ${{ startsWith(github.ref, 'refs/heads/release') }}
-#     needs: [release]
-#     runs-on: ubuntu-latest
-#     steps:
-#     - uses: actions/checkout@v2
-#     - name: Checkout branch
-#       run: |
-#         git config user.name github-actions
-#         git config user.email github-actions@github.com
-#         git fetch
-#         git checkout -b workflow-$GITHUB_RUN_ID origin/workflow-$GITHUB_RUN_ID~1
-#         git submodule sync --recursive
-#         git submodule update --init --recursive
-#     - name: Download compress-native artifacts
-#       uses: actions/download-artifact@v2
-#       with:
-#         name: compress-native
-#     - uses: actions/setup-java@v2
-#       with:
-#         distribution: 'adopt'
-#         java-version: '8'
-#     - run: ./gradlew publish
-#       env:
-#         SONATYPE_REPOSITORY:       ${{ secrets.SONATYPE_REPOSITORY }}
-#         SONATYPE_NEXUS_USERNAME:   ${{ secrets.SONATYPE_NEXUS_USERNAME }}
-#         SONATYPE_NEXUS_PASSWORD:   ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
-#         SIGNING_PRIVATE_KEY:       ${{ secrets.SIGNING_PRIVATE_KEY }}
-#         SIGNING_PASSWORD:          ${{ secrets.SIGNING_PASSWORD }}
+  publish-java:
+    if: ${{ startsWith(github.ref, 'refs/heads/release') }}
+    needs: [release]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Checkout branch
+      run: |
+        git config user.name github-actions
+        git config user.email github-actions@github.com
+        git fetch
+        git checkout -b workflow-$GITHUB_RUN_ID origin/workflow-$GITHUB_RUN_ID~1
+        git submodule sync --recursive
+        git submodule update --init --recursive
+    - name: Download compress-native artifacts
+      uses: actions/download-artifact@v2
+      with:
+        name: compress-native
+    - uses: actions/setup-java@v2
+      with:
+        distribution: 'adopt'
+        java-version: '8'
+    - run: ./gradlew publish
+      env:
+        SONATYPE_REPOSITORY:       ${{ secrets.SONATYPE_REPOSITORY }}
+        SONATYPE_NEXUS_USERNAME:   ${{ secrets.SONATYPE_NEXUS_USERNAME }}
+        SONATYPE_NEXUS_PASSWORD:   ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
+        SIGNING_PRIVATE_KEY:       ${{ secrets.SIGNING_PRIVATE_KEY }}
+        SIGNING_PASSWORD:          ${{ secrets.SIGNING_PASSWORD }}
 
   publish-dotnet:
     if: ${{ startsWith(github.ref, 'refs/heads/release') }}
@@ -310,10 +310,8 @@ jobs:
 
   cleanup:
     if: ${{ startsWith(github.ref, 'refs/heads/release') }}
-#     needs: [publish-java, publish-dotnet]
-    needs: [publish-dotnet]
+    needs: [publish-java, publish-dotnet]
     runs-on: ubuntu-latest
-#     continue-on-error: ${{ !startsWith(github.ref, 'refs/heads/release') }}
     continue-on-error: true
     steps:
       - name: Checkout
