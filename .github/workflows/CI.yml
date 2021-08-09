@@ -259,8 +259,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-      with:
-        submodules: 'recursive'
+#       with:
+#         submodules: 'recursive'
     - name: Checkout branch
       run: |
         git config user.name github-actions
