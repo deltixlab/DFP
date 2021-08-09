@@ -24,7 +24,7 @@ DFP uses Java long to represent base-10 floating point numbers. DFP is based on 
 
 ## What is under the hood?
 
-DFP relies on [Intel Decimal Floating-Point Math Library](https://software.intel.com/content/www/us/en/develop/articles/intel-decimal-floating-point-math-library.html) that provides implementation for IEEE 754-2008. Some operations are duplicated in Java to avoid JNI calls.
+DFP relies on [Intel Decimal Floating-Point Math Library](https://software.intel.com/content/www/us/en/develop/articles/intel-decimal-floating-point-math-library.html) that is written in C and provides implementation for IEEE 754-2008. Some operations are re-written in Java to avoid JNI calls.
 
 ## Credits
 
