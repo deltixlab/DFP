@@ -259,14 +259,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-      with:
-        submodules: 'recursive'
     - name: Checkout branch
       run: |
         git config user.name github-actions
         git config user.email github-actions@github.com
         git fetch
         git checkout -b workflow-$GITHUB_RUN_ID origin/workflow-$GITHUB_RUN_ID~1
+        git submodule sync --recursive
+        git submodule update --init --recursive
     - name: Download compress-native artifacts
       uses: actions/download-artifact@v2
       with:
