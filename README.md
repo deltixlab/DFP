@@ -20,16 +20,17 @@ DFP uses Java long to represent base-10 floating point numbers. DFP is based on 
 * [Quick Start Guide](docs/quickstart.md)
 * [Tips and Trick](docs/TipsNTricks.md)
 * [FAQ](docs/FAQ.md) 
+* [How to build this project](docs/build.md)
 
+## What is under the hood?
 
-
-## Building
-
-[How to build this project](docs/build.md)
+DFP relies on [Intel Decimal Floating-Point Math Library](https://software.intel.com/content/www/us/en/develop/articles/intel-decimal-floating-point-math-library.html) that provides implementation for IEEE 754-2008. Some operations are duplicated in Java to avoid JNI calls.
 
 ## Credits
 
 This project was developed by **Vitali Haravy**. Special thanks to **Boris Chuprin** for helping with native code and testing of this library
+
+This software uses Intel Decimal Floating Point Math Library.
 
 ## License
 This library is released under Apache 2.0 license. See ([license](LICENSE))
