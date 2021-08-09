@@ -23,6 +23,18 @@ java {
 }
 
 sourceSets {
+    licenseMain {
+        resources {
+            srcDir "$rootDir"
+            include 'LICENSE'
+        }
+    }
+    licenseIntel {
+        resources {
+            srcDir "$rootDir"
+            include 'intel-eula.txt'
+        }
+    }
     main {
         java {
             srcDir "$rootDir/java/src/main/java"
@@ -31,7 +43,7 @@ sourceSets {
             srcDir "$rootDir/NativeUtils/Zstandard/java/src/main/java"
 
             resources {
-                srcDirs = ["$rootDir/native/bin/Release/"]
+                srcDirs = ["$rootDir/native/bin/Release/", licenseMain.resources, licenseIntel.resources]
                 include '**/*.zst'
             }
         }
