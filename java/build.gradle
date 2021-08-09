@@ -1,29 +1,38 @@
 plugins {
     id "me.champeau.gradle.jmh" version "0.5.0" apply false
-    id "com.github.johnrengelman.shadow" version "5.2.0"
 }
 
 apply plugin: 'java-library'
 apply plugin: 'maven-publish'
 apply plugin: 'me.champeau.gradle.jmh'
+apply plugin: 'signing'
 
-sourceCompatibility = 1.8
+group = 'com.epam.deltix'
+
+sourceCompatibility = 1.7
 
 repositories {
     mavenCentral()
 }
 
+ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
+
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
+
 sourceSets {
     main {
         java {
-            // In this version we include NativeUtils & Zstandard libs via submodules & srcDirs
-            srcDirs += ["$rootDir/NativeUtils/java/main/src/main/java", "$rootDir/NativeUtils/Zstandard/java/src/main/java"]
+            srcDir "$rootDir/java/src/main/java"
+            srcDir "$rootDir/java/build/generated/sources/nativeWrappers"
+            srcDir "$rootDir/NativeUtils/java/main/src/main/java"
+            srcDir "$rootDir/NativeUtils/Zstandard/java/src/main/java"
+
             resources {
                 srcDirs = ["$rootDir/native/bin/Release/"]
-                include '**/*_so.zst'
-                include '**/*.so.zst'
-                include '**/*.dylib.zst'
-                include '**/*.dll.zst'
+                include '**/*.zst'
             }
         }
     }
@@ -44,62 +53,79 @@ configurations {
 }
 
 dependencies {
-    // Temporarily removed in this version
-    //implementation group: 'rtmath', name: 'rtmath-native-utils', version: native_utils_version
     testImplementation 'junit:junit:4.+'
     integrationTestCompile 'junit:junit:4.+'
 }
 
-task versionJava {
-    doLast {
-        new File("$projectDir/src/main/java/deltix/dfp/Version.java").text =
-"""
-package deltix.dfp;
-
-class  Version {
-    public static final String version = \"$version\";
-}
-"""
-    }
-}
-
-compileJava.dependsOn versionJava
-
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    from javadoc.destinationDir
-}
-
-task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
-}
+def rUser = findProperty('SONATYPE_NEXUS_USERNAME') ?:  System.getenv('SONATYPE_NEXUS_USERNAME') ?: "FakeUser"
+def rPass = findProperty('SONATYPE_NEXUS_PASSWORD') ?:  System.getenv('SONATYPE_NEXUS_PASSWORD') ?: "FakePass"
 
 publishing {
-    publications {
-        shadow(MavenPublication) { publication ->
-            artifactId project.name
-            project.shadow.component(publication)
-            artifact javadocJar
-            artifact sourcesJar
+    repositories {
+        maven {
+            url = findProperty('SONATYPE_REPOSITORY') ?:  System.getenv('SONATYPE_REPOSITORY') ?: "FakeRepo"
+
+            credentials {
+                username rUser
+                password rPass
+            }
         }
     }
+
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+
+            pom {
+                name = 'dfp'
+                packaging = 'jar'
+                description = 'Deltix Decimal Floating-Point Arithmetic Library.'
+                url = 'https://github.com/epam/DFP'
+
+                scm {
+                    connection = 'scm:git:https://github.com/epam/DFP.git'
+                    developerConnection = 'scm:git:https://github.com/epam/DFP.git'
+                    url = 'https://github.com/epam/DFP.git'
+                }
+
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'https://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id = 'AndreiDavydov'
+                        name = 'Andrei Davydov'
+                        email = 'agdavydov81@gmail.com'
+                        url = 'https://github.com/agdavydov81'
+                        organization = 'EPAM Systems'
+                        organizationUrl = 'https://www.epam.com/'
+                    }
+                }
+            }
+        }
+    }
+}
+
+signing {
+    def signingKey = findProperty('SIGNING_PRIVATE_KEY') ?: System.getenv('SIGNING_PRIVATE_KEY') ?: "FakeUser"
+    def signingPassword = findProperty('SIGNING_PASSWORD') ?: System.getenv('SIGNING_PASSWORD') ?: "FakePass"
+
+    useInMemoryPgpKeys(signingKey, signingPassword)
+    sign publishing.publications.mavenJava
+
+    required { isReleaseVersion }
 }
 
 jar {
     manifest {
         attributes 'Implementation-Title': 'Deltix Decimal Floating-Point Arithmetic Library',
-            'Implementation-Version': version
+        'Implementation-Version': archiveVersion
     }
     setEntryCompression ZipEntryCompression.STORED
-}
-
-shadowJar {
-    classifier = null
-    relocate('rtmath.utilities', 'deltix.dfp.private') {
-    }
-    relocate('rtmath.zstd', 'deltix.dfp.private') {
-    }
 }
 
 jmh {
@@ -110,7 +136,7 @@ test.outputs.upToDateWhen { false }
 
 task integrationTest(type: Test) {
     group = 'verification'
-    systemProperty "deltix.dfp.dataFiles.parsingAndFormatting", "$projectDir/data/Decimal64.FormattingAndParsing.txt"
+    systemProperty "com.epam.deltix.dfp.dataFiles.parsingAndFormatting", "$projectDir/data/Decimal64.FormattingAndParsing.txt"
     testClassesDirs = sourceSets.integrationTest.output.classesDirs
     classpath = sourceSets.integrationTest.runtimeClasspath
 

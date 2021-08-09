@@ -1,3 +1,6 @@
 [submodule "NativeUtils"]
 	path = NativeUtils
-	url = https://github.com/deltixlab/NativeUtils.git
+	url = https://github.com/epam/NativeUtils.git
+[submodule "osxcross"]
+	path = osxcross
+	url = https://github.com/tpoechtrager/osxcross.git

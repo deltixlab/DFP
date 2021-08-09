@@ -1,0 +1,279 @@
+name: Build CI
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, gcc-build]
+  pull_request:
+    types: [opened, synchronize]
+    branches: [main]
+
+env:
+  GRADLE_OPTS: "-Dorg.gradle.daemon=false"
+
+jobs:
+
+  build-native:
+    name: Build native ${{ matrix.bits }} libraries (${{ matrix.os }}) with Java ${{ matrix.java }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        java: [ '8' ]
+        os: [ 'ubuntu-latest', 'windows-latest' ]
+        bits: [ '32', '64' ]
+        include:
+          - bits: 32
+            package: mingw-w64-i686-toolchain
+          - bits: 64
+            package: mingw-w64-x86_64-toolchain
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'        
+      - name: Cache gradle dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-caches-${{ hashFiles('**/*.gradle') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-caches-
+      - name: Cache gradle wrapper
+        uses: actions/cache@v2
+        with:
+          path: ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
+      - name: Setup java
+        uses: actions/setup-java@v1
+        with:
+          java-version: ${{ matrix.java }}
+      - name: Install build tools (Linux)
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.bits == '32' }}
+        run: sudo apt install gcc-multilib 
+      - name: Install build tools (macOS)
+        if: ${{ matrix.os == 'macos-latest' }}
+        run: brew install make
+      - name: Install build tools (Windows)
+        if: ${{ matrix.os == 'windows-latest' }}
+        uses: msys2/setup-msys2@v2
+        with:
+          install: git ${{ matrix.package }}
+      - name: Build native libraries with gradle (Linux)
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        run: ./gradlew makeNative${{ matrix.bits }}
+      - name: Build native libraries with gradle (macOS)
+        if: ${{ matrix.os == 'macos-latest' }}
+        env: 
+          CC: gcc-10
+        run: ./gradlew makeNative${{ matrix.bits }}
+      - name: Build native libraries with gradle (Windows)
+        if: ${{ matrix.os == 'windows-latest' }}
+        shell: msys2 {0}
+        env:
+          MSYSTEM: MINGW${{ matrix.bits }}
+        run: ./gradlew makeNative${{ matrix.bits }}
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          path: |
+            native-gcc/bin/Release/Linux/32/*.so
+            native-gcc/bin/Release/Linux/64/*.so
+            native-gcc/bin/Release/OSX/32/*.so
+            native-gcc/bin/Release/OSX/64/*.so
+            native-gcc/bin/Release/Windows/32/*.dll
+            native-gcc/bin/Release/Windows/64/*.dll
+          name: NativeLibs
+
+  build-native-wrappers:
+    name: Build wrappers for native libraries
+    runs-on: windows-latest
+    needs: build-native
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'        
+      - name: Cache gradle dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-caches-${{ hashFiles('**/*.gradle') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-caches-
+      - name: Cache gradle wrapper
+        uses: actions/cache@v2
+        with:
+          path: ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
+      - name: Download Linux native artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: NativeLibs
+          path: native-gcc/bin/Release/
+      - name: Setup java
+        uses: actions/setup-java@v1
+        with:
+          java-version: 8
+      - name: Build 64bit libraries with gradle
+        run:  ./gradlew makeNativeWrappers
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          path: |
+            native-gcc/bin/Release/Linux/32/*.so
+            native-gcc/bin/Release/Linux/64/*.so
+            native-gcc/bin/Release/OSX/32/*.so
+            native-gcc/bin/Release/OSX/64/*.so
+            native-gcc/bin/Release/Windows/32/*.dll
+            native-gcc/bin/Release/Windows/64/*.dll
+            csharp/EPAM.Deltix.DFP/NativeImpl.cs
+            csharp/EPAM.Deltix.DFP/Version.targets
+            java/src/main/java/com/epam/deltix/dfp/NativeImpl.java
+            java/src/main/java/com/epam/deltix/dfp/Version.java
+          name: NativeLibs
+
+  compress:
+    name: Compress native libraries
+    runs-on: ubuntu-latest
+    needs: build-native-wrappers
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2      
+      - name: Download artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: NativeLibs
+      - name: Install zstd
+        run: sudo apt-get install -y zstd
+      - name: Compress native libraries with zstd
+        run: zstd -19 --rm -r ./native-gcc/bin
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          path: |
+            native-gcc/bin
+            csharp/EPAM.Deltix.DFP/NativeImpl.cs
+            csharp/EPAM.Deltix.DFP/Version.targets
+            java/src/main/java/com/epam/deltix/dfp/NativeImpl.java
+            java/src/main/java/com/epam/deltix/dfp/Version.java
+          name: CompressedNativeLibs
+
+  build-jar:
+    name: Build JAR on Linux
+    runs-on: ubuntu-latest
+    needs: compress
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2    
+        with:
+          submodules: 'recursive'      
+      - name: Cache gradle dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-caches-${{ hashFiles('**/*.gradle') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-caches-
+      - name: Cache gradle wrapper
+        uses: actions/cache@v2
+        with:
+          path: ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
+      - name: Download artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: CompressedNativeLibs
+      - name: Setup java
+        uses: actions/setup-java@v1
+        with:
+          java-version: 8
+      - name: Build JAR with gradle
+        run: ./gradlew epam-deltix-dfp:jar
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          path: |
+            java/build/libs/*
+          name: JavaBuild
+
+  test-dotnet:
+    name: Run .NET$ {{ matrix.dotnet }} Tests (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    needs: compress
+    strategy:
+      fail-fast: false
+      matrix:
+        dotnet: [ '2.1' ]
+        os: [ 'ubuntu-latest', 'windows-latest' ]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2    
+        with:
+          submodules: 'recursive'    
+      - name: Download compressed libs
+        uses: actions/download-artifact@v2
+        with:
+          name: CompressedNativeLibs
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v1
+        with:
+          java-version: ${{ matrix.dotnet }}
+      - name: Run tests with cake
+        uses: cake-build/cake-action@v1
+        with:
+          script-path: csharp/build.cake
+          target: Run-Unit-Tests
+      - name: Upload test results on failure
+        uses: actions/upload-artifact@v2
+        if: ${{ failure() }}
+        with:
+          path: |
+            csharp/Deltix.DFP/bin/*
+            csharp/*.txt
+            csharp/*.xml
+          name: Dotnet${{ matrix.dotnet }}-${{ runner.os }}-TestReports
+
+  test-java:
+    name: Run Java ${{ matrix.java }} Tests (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    needs: compress
+    strategy:
+      fail-fast: false
+      matrix:
+        java: [ '8' ]
+        os: [ 'ubuntu-latest', 'windows-latest' ]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2    
+        with:
+          submodules: 'recursive'    
+      - name: Cache gradle dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-caches-${{ hashFiles('**/*.gradle') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-caches-
+      - name: Cache gradle wrapper
+        uses: actions/cache@v2
+        with:
+          path: ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
+      - name: Download compressed libs
+        uses: actions/download-artifact@v2
+        with:
+          name: CompressedNativeLibs
+      - name: Setup java
+        uses: actions/setup-java@v1
+        with:
+          java-version: ${{ matrix.java }}
+      - name: Run tests with gradle
+        run: ./gradlew check
+      - name: Upload test results on failure
+        uses: actions/upload-artifact@v2
+        if: ${{ failure() }}
+        with:
+          path: |
+            java/build/reports/*
+          name: Java${{ matrix.java }}-${{ runner.os }}-TestReports

@@ -7,6 +7,10 @@ build/
 out/
 bin/
 obj/
+
+/java/**/build/
+/java/**/out/
+
 csharp/tools
 !csharp/tools/packages.config
 artifacts/
