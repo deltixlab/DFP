@@ -238,13 +238,10 @@ jobs:
     if: ${{ startsWith(github.ref, 'refs/heads/release') }}
     needs: [build-java, test-java, build-dotnet, test-dotnet]
     runs-on: ubuntu-latest
-    outputs:
-      version: ${{ steps.version.outputs.version }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Release
-        id: version
         run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
@@ -252,7 +249,6 @@ jobs:
           git checkout -b workflow-$GITHUB_RUN_ID origin/workflow-$GITHUB_RUN_ID~1
           versionRelease=`grep 'version=' gradle.properties | sed 's/version=\([^-]*\)/\1/'`
           echo $versionRelease
-          echo ::set-output name=version::$versionRelease
           git tag $versionRelease
           git push origin $versionRelease
           git push origin origin/workflow-$GITHUB_RUN_ID:$GITHUB_REF
@@ -294,8 +290,14 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
-      with:
-        submodules: 'recursive'
+    - name: Checkout branch
+      run: |
+        git config user.name github-actions
+        git config user.email github-actions@github.com
+        git fetch
+        git checkout -b workflow-$GITHUB_RUN_ID origin/workflow-$GITHUB_RUN_ID~1
+        git submodule sync --recursive
+        git submodule update --init --recursive
     - name: Download compress-native artifacts
       uses: actions/download-artifact@v2
       with:
@@ -309,7 +311,6 @@ jobs:
         target: Pack
         script-path: csharp/build.cake
         arguments: |
-          name: ${{ needs.release.outputs.version }}
           configuration: Release
     - run: dotnet nuget push csharp\artifacts\*.nupkg -k ${{ secrets.NUGET_API_KEY }} -s ${{ secrets.NUGET_URL }}
 
