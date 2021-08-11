@@ -21,8 +21,8 @@ public class NativeImplLoader {
                 osName = "Windows";
             if (osName.toLowerCase(Locale.ROOT).contains("mac")) {
                 osName = "Darwin";
-                if (osArch.toLowerCase(Locale.ROOT).contains("aarch64"))
-                    osArch = "arm64";
+                if (osArch.toLowerCase(Locale.ROOT).contains("arm64"))
+                    osArch = "aarch64";
             }
 
             ResourceLoader
