@@ -309,7 +309,7 @@ jobs:
         target: Pack
         script-path: csharp/build.cake
         arguments: |
-          name: ${{ needs.release.outputs.version }}
+          version: ${{ needs.release.outputs.version }}
           configuration: Release
     - run: dotnet nuget push csharp\artifacts\*.nupkg -k ${{ secrets.NUGET_API_KEY }} -s ${{ secrets.NUGET_URL }}
 
