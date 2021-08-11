@@ -65,6 +65,7 @@ jobs:
           name: build-native-linux
           path: |
             ./*native/bin*
+            ./*native/binDemo*
             ./*java/build/generated/sources/nativeWrappers/com/epam/deltix/dfp*
             ./csharp/EPAM.Deltix.DFP/NativeImpl.cs
             ./csharp/EPAM.Deltix.DFP/Version.targets
@@ -109,7 +110,9 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: build-native-macos
-          path: ./*native/bin*
+          path: |
+            ./*native/bin*
+            ./*native/binDemo*
           retention-days: 7
 
   compress-native:

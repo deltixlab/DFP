@@ -24,6 +24,8 @@ OSXCROSS_HOST=$CROSS_HOST-$OSXCROSS_HOST_SUFFIX \
 	OSXCROSS_TARGET=$OSXCROSS_TARGET \
 	cmake -G "Unix Makefiles" -DAPI_PREFIX=$1 -DCMAKE_VERBOSE_MAKEFILE=$VERBOSE -DCMAKE_TOOLCHAIN_FILE=$OSXCROSS_TARGET_DIR/toolchain.cmake -DCMAKE_INSTALL_PREFIX=../bin/Release/Darwin/$CROSS_HOST -DAPPLE=TRUE ../
 make install
+mkdir -p ../binDemo/Release/Darwin/$CROSS_HOST
+cp ./EXAMPLES/demo ../binDemo/Release/Darwin/$CROSS_HOST
 
 rm -rf ./*
 CROSS_HOST=aarch64
@@ -33,6 +35,8 @@ OSXCROSS_HOST=$CROSS_HOST-$OSXCROSS_HOST_SUFFIX \
 	OSXCROSS_TARGET=$OSXCROSS_TARGET \
 	cmake -G "Unix Makefiles" -DAPI_PREFIX=$1 -DCMAKE_VERBOSE_MAKEFILE=$VERBOSE -DCMAKE_TOOLCHAIN_FILE=$OSXCROSS_TARGET_DIR/toolchain.cmake -DCMAKE_INSTALL_PREFIX=../bin/Release/Darwin/$CROSS_HOST -DAPPLE=TRUE ../
 make install
+mkdir -p ../binDemo/Release/Darwin/$CROSS_HOST
+cp ./EXAMPLES/demo ../binDemo/Release/Darwin/$CROSS_HOST
 
 cd ..
 rm -rf ./build
