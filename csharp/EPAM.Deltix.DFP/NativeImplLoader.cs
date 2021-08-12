@@ -100,7 +100,7 @@ namespace EPAM.Deltix.DFP
 					case Architecture.X64:
 						return "x86_64";
 					case Architecture.Arm64:
-						return "arm64";
+						return "aarch64";
 					default:
 						throw new SystemException("Unsupported architecture (=" + RuntimeInformation.ProcessArchitecture + ").");
 				}

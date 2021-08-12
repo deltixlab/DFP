@@ -33,10 +33,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-        with:
-          submodules: 'recursive'
       - name: build
         run: |
+          git checkout workflow-$GITHUB_RUN_ID~1 || true
+          git submodule update --init --recursive
+
           sudo apt install -yqq g++-9-arm-linux-gnueabihf \
                                 g++-9-aarch64-linux-gnu \
                                 g++-9-i686-linux-gnu \
@@ -65,6 +66,7 @@ jobs:
           name: build-native-linux
           path: |
             ./*native/bin*
+            ./*native/binDemo*
             ./*java/build/generated/sources/nativeWrappers/com/epam/deltix/dfp*
             ./csharp/EPAM.Deltix.DFP/NativeImpl.cs
             ./csharp/EPAM.Deltix.DFP/Version.targets
@@ -76,12 +78,12 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v2
-        with:
-          submodules: 'recursive'
       - name: Use MSBuild
         uses: microsoft/setup-msbuild@v1.0.2
       - name: build
         run: |
+          git checkout workflow-$GITHUB_RUN_ID~1 || true
+          git submodule update --init --recursive
           ./gradlew makeNativeWindows
       - uses: actions/upload-artifact@v2
         with:
@@ -95,10 +97,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-        with:
-          submodules: 'recursive'
       - name: build
         run: |
+          git checkout workflow-$GITHUB_RUN_ID~1 || true
+          git submodule update --init --recursive
           sudo apt install clang make libssl-dev liblzma-dev libxml2-dev fuse
           cd ./osxcross/tarballs/
           wget https://github.com/phracker/MacOSX-SDKs/releases/download/11.3/MacOSX11.3.sdk.tar.xz
@@ -109,7 +111,9 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: build-native-macos
-          path: ./*native/bin*
+          path: |
+            ./*native/bin*
+            ./*native/binDemo*
           retention-days: 7
 
   compress-native:
@@ -117,8 +121,6 @@ jobs:
     needs: [build-native-linux, build-native-windows, build-native-macos]
     steps:
       - uses: actions/checkout@v2
-        with:
-          submodules: 'recursive'
       - name: Download native-linux artifacts
         uses: actions/download-artifact@v2
         with:
@@ -150,8 +152,6 @@ jobs:
     needs: [compress-native]
     steps:
       - uses: actions/checkout@v2
-        with:
-          submodules: 'recursive'
       - name: Download compress-native artifacts
         uses: actions/download-artifact@v2
         with:
@@ -163,6 +163,8 @@ jobs:
           java-version: '8'
       - name: build
         run: |
+          git checkout workflow-$GITHUB_RUN_ID~1 || true
+          git submodule update --init --recursive
           ./gradlew jar
       - uses: actions/upload-artifact@v2
         with:
@@ -177,8 +179,6 @@ jobs:
     needs: [compress-native]
     steps:
       - uses: actions/checkout@v2
-        with:
-          submodules: 'recursive'
       - name: Download compress-native artifacts
         uses: actions/download-artifact@v2
         with:
@@ -189,6 +189,8 @@ jobs:
           dotnet-version: '3.1.x'
       - name: build
         run: |
+          git checkout workflow-$GITHUB_RUN_ID~1 || true
+          git submodule update --init --recursive
           cd csharp
           ./build -Target Build
       - uses: actions/upload-artifact@v2
@@ -204,14 +206,14 @@ jobs:
     needs: [compress-native]
     steps:
       - uses: actions/checkout@v2
-        with:
-          submodules: 'recursive'
       - name: Download compress-native artifacts
         uses: actions/download-artifact@v2
         with:
           name: compress-native
       - name: test
         run: |
+          git checkout workflow-$GITHUB_RUN_ID~1 || true
+          git submodule update --init --recursive
           ./gradlew check
 
   test-dotnet:
@@ -219,8 +221,6 @@ jobs:
     needs: [compress-native]
     steps:
       - uses: actions/checkout@v2
-        with:
-          submodules: 'recursive'
       - name: Download compress-native artifacts
         uses: actions/download-artifact@v2
         with:
@@ -231,6 +231,8 @@ jobs:
           dotnet-version: '3.1.x'
       - name: test
         run: |
+          git checkout workflow-$GITHUB_RUN_ID~1 || true
+          git submodule update --init --recursive
           cd csharp
           ./build -Target Run-Unit-Tests
 
@@ -238,17 +240,20 @@ jobs:
     if: ${{ startsWith(github.ref, 'refs/heads/release') }}
     needs: [build-java, test-java, build-dotnet, test-dotnet]
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Release
+        id: version
         run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
-          git fetch
           git checkout -b workflow-$GITHUB_RUN_ID origin/workflow-$GITHUB_RUN_ID~1
           versionRelease=`grep 'version=' gradle.properties | sed 's/version=\([^-]*\)/\1/'`
           echo $versionRelease
+          echo ::set-output name=version::$versionRelease
           git tag $versionRelease
           git push origin $versionRelease
           git push origin origin/workflow-$GITHUB_RUN_ID:$GITHUB_REF
@@ -258,61 +263,50 @@ jobs:
     needs: [release]
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Checkout branch
-      run: |
-        git config user.name github-actions
-        git config user.email github-actions@github.com
-        git fetch
-        git checkout -b workflow-$GITHUB_RUN_ID origin/workflow-$GITHUB_RUN_ID~1
-        git submodule sync --recursive
-        git submodule update --init --recursive
-    - name: Download compress-native artifacts
-      uses: actions/download-artifact@v2
-      with:
-        name: compress-native
-    - uses: actions/setup-java@v2
-      with:
-        distribution: 'adopt'
-        java-version: '8'
-    - run: ./gradlew publish
-      env:
-        SONATYPE_REPOSITORY:       ${{ secrets.SONATYPE_REPOSITORY }}
-        SONATYPE_NEXUS_USERNAME:   ${{ secrets.SONATYPE_NEXUS_USERNAME }}
-        SONATYPE_NEXUS_PASSWORD:   ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
-        SIGNING_PRIVATE_KEY:       ${{ secrets.SIGNING_PRIVATE_KEY }}
-        SIGNING_PASSWORD:          ${{ secrets.SIGNING_PASSWORD }}
+      - uses: actions/checkout@v2
+      - name: Checkout branch
+        run: |
+          git checkout -b workflow-$GITHUB_RUN_ID origin/workflow-$GITHUB_RUN_ID~1
+          git submodule update --init --recursive
+      - name: Download compress-native artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: compress-native
+      - uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: '8'
+      - run: ./gradlew publish
+        env:
+          SONATYPE_REPOSITORY:       ${{ secrets.SONATYPE_REPOSITORY }}
+          SONATYPE_NEXUS_USERNAME:   ${{ secrets.SONATYPE_NEXUS_USERNAME }}
+          SONATYPE_NEXUS_PASSWORD:   ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
+          SIGNING_PRIVATE_KEY:       ${{ secrets.SIGNING_PRIVATE_KEY }}
+          SIGNING_PASSWORD:          ${{ secrets.SIGNING_PASSWORD }}
 
   publish-dotnet:
     if: ${{ startsWith(github.ref, 'refs/heads/release') }}
     needs: [release]
     runs-on: windows-latest
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-    - name: Checkout branch
-      run: |
-        git config user.name github-actions
-        git config user.email github-actions@github.com
-        git fetch
-        git checkout -b workflow-$GITHUB_RUN_ID origin/workflow-$GITHUB_RUN_ID~1
-        git submodule sync --recursive
-        git submodule update --init --recursive
-    - name: Download compress-native artifacts
-      uses: actions/download-artifact@v2
-      with:
-        name: compress-native
-    - name: Setup dotnet
-      uses: actions/setup-dotnet@v1.8.1
-      with:
-        dotnet-version: '3.1.x'
-    - uses: cake-build/cake-action@v1.3.0
-      with:
-        target: Pack
-        script-path: csharp/build.cake
-        arguments: |
-          configuration: Release
-    - run: dotnet nuget push csharp\artifacts\*.nupkg -k ${{ secrets.NUGET_API_KEY }} -s ${{ secrets.NUGET_URL }}
+      - uses: actions/checkout@v2
+      - name: Checkout branch
+        run: |
+          git checkout -b workflow-$GITHUB_RUN_ID origin/workflow-$GITHUB_RUN_ID~1
+          git submodule update --init --recursive
+      - name: Download compress-native artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: compress-native
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v1.8.1
+        with:
+          dotnet-version: '3.1.x'
+      - name: build
+        run: |
+          cd csharp
+          ./build -Target Pack
+          dotnet nuget push artifacts\*.nupkg -k ${{ secrets.NUGET_API_KEY }} -s ${{ secrets.NUGET_URL }}
 
   cleanup:
     if: ${{ startsWith(github.ref, 'refs/heads/release') }}
