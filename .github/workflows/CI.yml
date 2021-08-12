@@ -35,7 +35,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: build
         run: |
-          git checkout workflow-$GITHUB_RUN_ID~1 || true
+          git checkout -b workflow-$GITHUB_RUN_ID origin/workflow-$GITHUB_RUN_ID~1 || true
           git submodule update --init --recursive
 
           sudo apt install -yqq g++-9-arm-linux-gnueabihf \
@@ -81,7 +81,7 @@ jobs:
         uses: microsoft/setup-msbuild@v1.0.2
       - name: build
         run: |
-          git checkout workflow-$GITHUB_RUN_ID~1 || true
+          git checkout -b workflow-$GITHUB_RUN_ID origin/workflow-$GITHUB_RUN_ID~1; if (-not $?) { cmd.exe /c "exit 0" }
           git submodule update --init --recursive
           ./gradlew makeNativeWindows
       - uses: actions/upload-artifact@v2
@@ -99,7 +99,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: build
         run: |
-          git checkout workflow-$GITHUB_RUN_ID~1 || true
+          git checkout -b workflow-$GITHUB_RUN_ID origin/workflow-$GITHUB_RUN_ID~1 || true
           git submodule update --init --recursive
           sudo apt install clang make libssl-dev liblzma-dev libxml2-dev fuse
           cd ./osxcross/tarballs/
@@ -163,7 +163,7 @@ jobs:
           java-version: '8'
       - name: build
         run: |
-          git checkout workflow-$GITHUB_RUN_ID~1 || true
+          git checkout -b workflow-$GITHUB_RUN_ID origin/workflow-$GITHUB_RUN_ID~1 || true
           git submodule update --init --recursive
           ./gradlew jar
       - uses: actions/upload-artifact@v2
@@ -189,7 +189,7 @@ jobs:
           dotnet-version: '3.1.x'
       - name: build
         run: |
-          git checkout workflow-$GITHUB_RUN_ID~1 || true
+          git checkout -b workflow-$GITHUB_RUN_ID origin/workflow-$GITHUB_RUN_ID~1 || true
           git submodule update --init --recursive
           cd csharp
           ./build -Target Build
@@ -212,7 +212,7 @@ jobs:
           name: compress-native
       - name: test
         run: |
-          git checkout workflow-$GITHUB_RUN_ID~1 || true
+          git checkout -b workflow-$GITHUB_RUN_ID origin/workflow-$GITHUB_RUN_ID~1 || true
           git submodule update --init --recursive
           ./gradlew check
 
@@ -231,7 +231,7 @@ jobs:
           dotnet-version: '3.1.x'
       - name: test
         run: |
-          git checkout workflow-$GITHUB_RUN_ID~1 || true
+          git checkout -b workflow-$GITHUB_RUN_ID origin/workflow-$GITHUB_RUN_ID~1 || true
           git submodule update --init --recursive
           cd csharp
           ./build -Target Run-Unit-Tests
