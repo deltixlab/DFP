@@ -88,7 +88,9 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: build-native-windows
-          path: ./*native/bin*
+          path: |
+            ./*native/bin*
+            ./*native/binDemo*
           retention-days: 7
 
 
@@ -115,6 +117,7 @@ jobs:
             ./*native/bin*
             ./*native/binDemo*
           retention-days: 7
+
 
   compress-native:
     runs-on: ubuntu-latest
