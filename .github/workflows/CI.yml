@@ -66,7 +66,6 @@ jobs:
           name: build-native-linux
           path: |
             ./*native/bin*
-            ./*native/binDemo*
             ./*java/build/generated/sources/nativeWrappers/com/epam/deltix/dfp*
             ./csharp/EPAM.Deltix.DFP/NativeImpl.cs
             ./csharp/EPAM.Deltix.DFP/Version.targets
@@ -90,7 +89,6 @@ jobs:
           name: build-native-windows
           path: |
             ./*native/bin*
-            ./*native/binDemo*
           retention-days: 7
 
 
@@ -115,7 +113,6 @@ jobs:
           name: build-native-macos
           path: |
             ./*native/bin*
-            ./*native/binDemo*
           retention-days: 7
 
 
