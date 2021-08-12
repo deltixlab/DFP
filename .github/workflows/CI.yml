@@ -40,7 +40,7 @@ jobs:
 
           sudo apt install -yqq g++-9-arm-linux-gnueabihf \
                                 g++-9-aarch64-linux-gnu \
-                                g++-9-i686-linux-gnu \
+                                g++-9-i686-linux-gnu
 
           cd ..
           mkdir llvm
