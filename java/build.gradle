@@ -23,18 +23,6 @@ java {
 }
 
 sourceSets {
-    licenseMain {
-        resources {
-            srcDir "$rootDir"
-            include 'LICENSE'
-        }
-    }
-    licenseIntel {
-        resources {
-            srcDir "$rootDir"
-            include 'intel-eula.txt'
-        }
-    }
     main {
         java {
             srcDir "$rootDir/java/src/main/java"
@@ -43,7 +31,7 @@ sourceSets {
             srcDir "$rootDir/NativeUtils/Zstandard/java/src/main/java"
 
             resources {
-                srcDirs = ["$rootDir/native/bin/Release/", licenseMain.resources, licenseIntel.resources]
+                srcDirs = ["$rootDir/native/bin/Release/"]
                 include '**/*.zst'
             }
         }
@@ -136,6 +124,12 @@ jar {
     manifest {
         attributes 'Implementation-Title': 'Deltix Decimal Floating-Point Arithmetic Library',
         'Implementation-Version': archiveVersion
+    }
+    from("$rootDir") {
+        include 'LICENSE'
+    }
+    from("$rootDir") {
+        include 'intel-eula.txt'
     }
     setEntryCompression ZipEntryCompression.STORED
 }
