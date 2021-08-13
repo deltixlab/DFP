@@ -265,13 +265,10 @@ jobs:
     if: ${{ startsWith(github.ref, 'refs/heads/release') }}
     needs: [build-java, test-java, build-dotnet, test-dotnet]
     runs-on: ubuntu-latest
-    outputs:
-      version: ${{ steps.version.outputs.version }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Release
-        id: version
         run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
@@ -283,7 +280,6 @@ jobs:
           git commit -am "[skip-ci] Generate release version"
           git push origin HEAD
 
-          echo ::set-output name=version::$versionRelease
           git tag $versionRelease
           git push origin $versionRelease
 
