@@ -3,277 +3,238 @@ name: Build CI
 on:
   workflow_dispatch:
   push:
-    branches: [master, gcc-build]
-  pull_request:
-    types: [opened, synchronize]
-    branches: [master]
+    branches:
+      - master
 
 env:
   GRADLE_OPTS: "-Dorg.gradle.daemon=false"
 
 jobs:
 
-  build-native:
-    name: Build native ${{ matrix.bits }} libraries (${{ matrix.os }}) with Java ${{ matrix.java }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        java: [ '8' ]
-        os: [ 'ubuntu-latest', 'windows-latest' ]
-        bits: [ '32', '64' ]
-        include:
-          - bits: 32
-            package: mingw-w64-i686-toolchain
-          - bits: 64
-            package: mingw-w64-x86_64-toolchain
+  build-native-linux:
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
         with:
-          submodules: 'recursive'        
-      - name: Cache gradle dependencies
-        uses: actions/cache@v2
+          submodules: 'recursive'
+      - name: Download prepare-version artifacts
+        uses: actions/download-artifact@v2
         with:
-          path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-caches-${{ hashFiles('**/*.gradle') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-caches-
-      - name: Cache gradle wrapper
-        uses: actions/cache@v2
+          name: prepare-version
+      - name: build
+        run: |
+          sudo apt install -yqq g++-9-arm-linux-gnueabihf \
+                                g++-9-aarch64-linux-gnu \
+                                g++-9-i686-linux-gnu
+          cd ..
+          mkdir llvm
+          cd llvm
+          curl -OL https://github.com/llvm/llvm-project/releases/download/llvmorg-12.0.0/clang+llvm-12.0.0-armv7a-linux-gnueabihf.tar.xz
+          curl -OL https://github.com/llvm/llvm-project/releases/download/llvmorg-12.0.0/clang+llvm-12.0.0-aarch64-linux-gnu.tar.xz
+          curl -OL https://github.com/llvm/llvm-project/releases/download/llvmorg-12.0.0/clang+llvm-12.0.0-i386-unknown-freebsd12.tar.xz
+          tar -xf clang+llvm-12.0.0-armv7a-linux-gnueabihf.tar.xz
+          tar -xf clang+llvm-12.0.0-aarch64-linux-gnu.tar.xz
+          tar -xf clang+llvm-12.0.0-i386-unknown-freebsd12.tar.xz
+          ls -al
+          cd ../DFP/
+          ls -al
+          ./gradlew makeNativeLinux
+          ./gradlew makeNativeWrappers
+      - uses: actions/upload-artifact@v2
         with:
-          path: ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
-      - name: Setup java
-        uses: actions/setup-java@v1
-        with:
-          java-version: ${{ matrix.java }}
-      - name: Install build tools (Linux)
-        if: ${{ matrix.os == 'ubuntu-latest' && matrix.bits == '32' }}
-        run: sudo apt install gcc-multilib 
-      - name: Install build tools (macOS)
-        if: ${{ matrix.os == 'macos-latest' }}
-        run: brew install make
-      - name: Install build tools (Windows)
-        if: ${{ matrix.os == 'windows-latest' }}
-        uses: msys2/setup-msys2@v2
-        with:
-          install: git ${{ matrix.package }}
-      - name: Build native libraries with gradle (Linux)
-        if: ${{ matrix.os == 'ubuntu-latest' }}
-        run: ./gradlew makeNative${{ matrix.bits }}
-      - name: Build native libraries with gradle (macOS)
-        if: ${{ matrix.os == 'macos-latest' }}
-        env: 
-          CC: gcc-10
-        run: ./gradlew makeNative${{ matrix.bits }}
-      - name: Build native libraries with gradle (Windows)
-        if: ${{ matrix.os == 'windows-latest' }}
-        shell: msys2 {0}
-        env:
-          MSYSTEM: MINGW${{ matrix.bits }}
-        run: ./gradlew makeNative${{ matrix.bits }}
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v2
-        with:
+          name: build-native-linux
           path: |
-            native-gcc/bin/Release/Linux/32/*.so
-            native-gcc/bin/Release/Linux/64/*.so
-            native-gcc/bin/Release/OSX/32/*.so
-            native-gcc/bin/Release/OSX/64/*.so
-            native-gcc/bin/Release/Windows/32/*.dll
-            native-gcc/bin/Release/Windows/64/*.dll
-          name: NativeLibs
+            ./*native/bin*
+            ./*java/build/generated/sources/nativeWrappers/com/epam/deltix/dfp*
+            ./csharp/EPAM.Deltix.DFP/NativeImpl.cs
+            ./csharp/EPAM.Deltix.DFP/Version.targets
+          retention-days: 7
 
-  build-native-wrappers:
-    name: Build wrappers for native libraries
+  build-native-windows:
     runs-on: windows-latest
-    needs: build-native
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
         with:
-          submodules: 'recursive'        
-      - name: Cache gradle dependencies
-        uses: actions/cache@v2
-        with:
-          path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-caches-${{ hashFiles('**/*.gradle') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-caches-
-      - name: Cache gradle wrapper
-        uses: actions/cache@v2
-        with:
-          path: ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
-      - name: Download Linux native artifacts
+          submodules: 'recursive'
+      - name: Download prepare-version artifacts
         uses: actions/download-artifact@v2
         with:
-          name: NativeLibs
-          path: native-gcc/bin/Release/
-      - name: Setup java
-        uses: actions/setup-java@v1
+          name: prepare-version
+      - name: Use MSBuild
+        uses: microsoft/setup-msbuild@v1.0.2
+      - name: build
+        run: |
+          ./gradlew makeNativeWindows
+      - uses: actions/upload-artifact@v2
         with:
-          java-version: 8
-      - name: Build 64bit libraries with gradle
-        run:  ./gradlew makeNativeWrappers
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v2
-        with:
+          name: build-native-windows
           path: |
-            native-gcc/bin/Release/Linux/32/*.so
-            native-gcc/bin/Release/Linux/64/*.so
-            native-gcc/bin/Release/OSX/32/*.so
-            native-gcc/bin/Release/OSX/64/*.so
-            native-gcc/bin/Release/Windows/32/*.dll
-            native-gcc/bin/Release/Windows/64/*.dll
-            csharp/EPAM.Deltix.DFP/NativeImpl.cs
-            csharp/EPAM.Deltix.DFP/Version.targets
-            java/src/main/java/com/epam/deltix/dfp/NativeImpl.java
-            java/src/main/java/com/epam/deltix/dfp/Version.java
-          name: NativeLibs
+            ./*native/bin*
+          retention-days: 7
 
-  compress:
-    name: Compress native libraries
+  build-native-macos:
     runs-on: ubuntu-latest
-    needs: build-native-wrappers
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2      
-      - name: Download artifacts
+      - uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+      - name: Download prepare-version artifacts
         uses: actions/download-artifact@v2
         with:
-          name: NativeLibs
-      - name: Install zstd
-        run: sudo apt-get install -y zstd
-      - name: Compress native libraries with zstd
-        run: zstd -19 --rm -r ./native-gcc/bin
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v2
+          name: prepare-version
+      - name: build
+        run: |
+          sudo apt install clang make libssl-dev liblzma-dev libxml2-dev fuse
+          cd ./osxcross/tarballs/
+          wget https://github.com/phracker/MacOSX-SDKs/releases/download/11.3/MacOSX11.3.sdk.tar.xz
+          cd ..
+          UNATTENDED=yes OSX_VERSION_MIN=10.7 JOBS=4 ./build.sh
+          cd ..
+          ./gradlew makeNativeDarwin
+      - uses: actions/upload-artifact@v2
         with:
+          name: build-native-macos
           path: |
-            native-gcc/bin
-            csharp/EPAM.Deltix.DFP/NativeImpl.cs
-            csharp/EPAM.Deltix.DFP/Version.targets
-            java/src/main/java/com/epam/deltix/dfp/NativeImpl.java
-            java/src/main/java/com/epam/deltix/dfp/Version.java
-          name: CompressedNativeLibs
+            ./*native/bin*
+          retention-days: 7
 
-  build-jar:
-    name: Build JAR on Linux
+  compress-native:
     runs-on: ubuntu-latest
-    needs: compress
+    needs: [build-native-linux, build-native-windows, build-native-macos]
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2    
-        with:
-          submodules: 'recursive'      
-      - name: Cache gradle dependencies
-        uses: actions/cache@v2
-        with:
-          path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-caches-${{ hashFiles('**/*.gradle') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-caches-
-      - name: Cache gradle wrapper
-        uses: actions/cache@v2
-        with:
-          path: ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
-      - name: Download artifacts
+      - uses: actions/checkout@v2
+      - name: Download prepare-version artifacts
         uses: actions/download-artifact@v2
         with:
-          name: CompressedNativeLibs
-      - name: Setup java
-        uses: actions/setup-java@v1
+          name: prepare-version
+      - name: Download native-linux artifacts
+        uses: actions/download-artifact@v2
         with:
-          java-version: 8
-      - name: Build JAR with gradle
-        run: ./gradlew epam-deltix-dfp:jar
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v2
+          name: build-native-linux
+      - name: Download native-windows artifacts
+        uses: actions/download-artifact@v2
         with:
+          name: build-native-windows
+      - name: Download native-macos artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: build-native-macos
+      - name: compress
+        run: |
+          zstd --version
+          zstd -19 --rm -r ./native/bin
+      - uses: actions/upload-artifact@v2
+        with:
+          name: compress-native
           path: |
-            java/build/libs/*
-          name: JavaBuild
+            ./gradle.properties
+            ./*native/bin*
+            ./*java/build/generated/sources/nativeWrappers/com/epam/deltix/dfp*
+            ./csharp/EPAM.Deltix.DFP/NativeImpl.cs
+            ./csharp/EPAM.Deltix.DFP/Version.targets
+          retention-days: 7
 
-  test-dotnet:
-    name: Run .NET$ {{ matrix.dotnet }} Tests (${{ matrix.os }})
-    runs-on: ${{ matrix.os }}
-    needs: compress
-    strategy:
-      fail-fast: false
-      matrix:
-        dotnet: [ '2.1' ]
-        os: [ 'ubuntu-latest', 'windows-latest' ]
+  build-java:
+    runs-on: ubuntu-latest
+    needs: [compress-native]
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2    
+      - uses: actions/checkout@v2
         with:
-          submodules: 'recursive'    
-      - name: Download compressed libs
+          submodules: 'recursive'
+      - name: Download compress-native artifacts
         uses: actions/download-artifact@v2
         with:
-          name: CompressedNativeLibs
+          name: compress-native
+      - name: Setup java
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: '8'
+      - name: build
+        run: |
+          ./gradlew jar
+      - uses: actions/upload-artifact@v2
+        with:
+          name: java-jars
+          path: |
+            ./*java/build/libs/*
+            ./*javaDecimalDemo/build/libs/*
+          retention-days: 7
+
+  build-dotnet:
+    runs-on: windows-latest
+    needs: [compress-native]
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+      - name: Download compress-native artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: compress-native
       - name: Setup dotnet
-        uses: actions/setup-dotnet@v1
+        uses: actions/setup-dotnet@v1.8.1
         with:
-          java-version: ${{ matrix.dotnet }}
-      - name: Run tests with cake
-        uses: cake-build/cake-action@v1
+          dotnet-version: '3.1.x'
+      - name: build
+        run: |
+          cd csharp
+          ./build -Target Build
+      - uses: actions/upload-artifact@v2
         with:
-          script-path: csharp/build.cake
-          target: Run-Unit-Tests
-      - name: Upload test results on failure
-        uses: actions/upload-artifact@v2
-        if: ${{ failure() }}
-        with:
+          name: dotnet-build
           path: |
-            csharp/Deltix.DFP/bin/*
-            csharp/*.txt
-            csharp/*.xml
-          name: Dotnet${{ matrix.dotnet }}-${{ runner.os }}-TestReports
+            ./*csharp/EPAM.Deltix.DFP/bin/Release/*
+            ./*csharp/EPAM.Deltix.DFP.Demo/bin/Release/*
+          retention-days: 7
 
   test-java:
-    name: Run Java ${{ matrix.java }} Tests (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
-    needs: compress
+    needs: [compress-native]
     strategy:
       fail-fast: false
       matrix:
-        java: [ '8' ]
-        os: [ 'ubuntu-latest', 'windows-latest', 'macos-11']
+        os: [ 'ubuntu-latest', 'windows-latest', 'macos-latest', 'macos-11']
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2    
+      - uses: actions/checkout@v2
         with:
-          submodules: 'recursive'    
-      - name: Cache gradle dependencies
-        uses: actions/cache@v2
-        with:
-          path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-caches-${{ hashFiles('**/*.gradle') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-caches-
-      - name: Cache gradle wrapper
-        uses: actions/cache@v2
-        with:
-          path: ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
-      - name: Download compressed libs
+          submodules: 'recursive'
+      - name: Download compress-native artifacts
         uses: actions/download-artifact@v2
         with:
-          name: CompressedNativeLibs
+          name: compress-native
       - name: Setup java
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v2
         with:
-          java-version: ${{ matrix.java }}
-      - name: Run tests with gradle
-        run: ./gradlew check
+          distribution: 'adopt'
+          java-version: '8'
+      - name: test
+        run: |
+          ./gradlew check
       - name: Upload test results on failure
         uses: actions/upload-artifact@v2
         if: ${{ failure() }}
         with:
           path: |
             java/build/reports/*
-          name: Java${{ matrix.java }}-${{ runner.os }}-TestReports
+          name: Java-8-${{ matrix.os }}-TestReports
+
+  test-dotnet:
+    runs-on: windows-latest
+    needs: [compress-native]
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+      - name: Download compress-native artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: compress-native
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v1.8.1
+        with:
+          dotnet-version: '3.1.x'
+      - name: test
+        run: |
+          cd csharp
+          ./build -Target Run-Unit-Tests
