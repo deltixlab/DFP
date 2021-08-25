@@ -1,6 +1,9 @@
 name: Release CI
 
-on: push
+on:
+  push:
+    branches:
+      - release
 
 env:
   GRADLE_OPTS: "-Dorg.gradle.daemon=false"
