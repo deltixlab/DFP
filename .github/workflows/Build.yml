@@ -17,10 +17,6 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: 'recursive'
-      - name: Download prepare-version artifacts
-        uses: actions/download-artifact@v2
-        with:
-          name: prepare-version
       - name: build
         run: |
           sudo apt install -yqq g++-9-arm-linux-gnueabihf \
@@ -56,10 +52,6 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: 'recursive'
-      - name: Download prepare-version artifacts
-        uses: actions/download-artifact@v2
-        with:
-          name: prepare-version
       - name: Use MSBuild
         uses: microsoft/setup-msbuild@v1.0.2
       - name: build
@@ -78,10 +70,6 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: 'recursive'
-      - name: Download prepare-version artifacts
-        uses: actions/download-artifact@v2
-        with:
-          name: prepare-version
       - name: build
         run: |
           sudo apt install clang make libssl-dev liblzma-dev libxml2-dev fuse
@@ -103,10 +91,6 @@ jobs:
     needs: [build-native-linux, build-native-windows, build-native-macos]
     steps:
       - uses: actions/checkout@v2
-      - name: Download prepare-version artifacts
-        uses: actions/download-artifact@v2
-        with:
-          name: prepare-version
       - name: Download native-linux artifacts
         uses: actions/download-artifact@v2
         with:
