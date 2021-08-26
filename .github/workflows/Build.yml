@@ -243,18 +243,16 @@ jobs:
         if: ${{ failure() && matrix.os == 'windows-latest'}}
         with:
           path: |
-            EPAM.Deltix.DFP/bin/*
-            *.txt
-            *.xml
-            !intel-eula.txt
+            csharp/EPAM.Deltix.DFP/bin/*
+            csharp/*.txt
+            csharp/*.xml
           name: Dotnet-3.1-${{ matrix.os }}-TestReports
       - name: Upload test results on failure nix
         uses: actions/upload-artifact@v2
         if: ${{ failure() && matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'}}
         with:
           path: |
-            EPAM.Deltix.DFP/bin/*
-            *.txt
-            *.xml
-            !intel-eula.txt
+            csharp/EPAM.Deltix.DFP/bin/*
+            csharp/*.txt
+            csharp/*.xml
           name: Dotnet-2.0-${{ matrix.os }}-TestReports
