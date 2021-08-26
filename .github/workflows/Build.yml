@@ -194,7 +194,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ 'ubuntu-latest', 'windows-latest', 'macos-latest', 'macos-11']
+        os: [ 'ubuntu-latest', 'windows-latest', 'macos-latest']
     steps:
       - uses: actions/checkout@v2
         with:
@@ -220,8 +220,12 @@ jobs:
           name: Java-8-${{ matrix.os }}-TestReports
 
   test-dotnet:
-    runs-on: windows-latest
+    runs-on: ${{ matrix.os }}
     needs: [compress-native]
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ 'ubuntu-latest', 'windows-latest', 'macos-latest']
     steps:
       - uses: actions/checkout@v2
         with:
@@ -238,3 +242,12 @@ jobs:
         run: |
           cd csharp
           ./build -Target Run-Unit-Tests
+      - name: Upload test results on failure
+        uses: actions/upload-artifact@v2
+        if: ${{ failure() }}
+        with:
+          path: |
+            EPAM.Deltix.DFP/bin/*
+            *.txt
+            *.xml
+          name: Dotnet-3.1-${{ runner.os }}-TestReports
