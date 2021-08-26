@@ -222,10 +222,16 @@ jobs:
         uses: actions/setup-dotnet@v1.8.1
         with:
           dotnet-version: '3.1.x'
-      - name: test
+      - name: test windows
+        if: ${{ matrix.os == 'windows-latest' }}
         run: |
           cd csharp
           ./build -Target Run-Unit-Tests
+      - name: test nix
+        if: ${{ matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest' }}
+        run: |
+          cd csharp
+          ./build.sh -Target Run-Unit-Tests
       - name: Upload test results on failure
         uses: actions/upload-artifact@v2
         if: ${{ failure() }}
@@ -234,4 +240,5 @@ jobs:
             EPAM.Deltix.DFP/bin/*
             *.txt
             *.xml
+            !intel-eula.txt
           name: Dotnet-3.1-${{ runner.os }}-TestReports
