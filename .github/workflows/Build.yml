@@ -218,16 +218,10 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: compress-native
-      - name: Setup dotnet win
-        if: ${{ matrix.os == 'windows-latest' }}
+      - name: Setup dotnet
         uses: actions/setup-dotnet@v1.8.1
         with:
           dotnet-version: '3.1.x'
-      - name: Setup dotnet nix
-        if: ${{ matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest' }}
-        uses: actions/setup-dotnet@v1.8.1
-        with:
-          dotnet-version: '2.0.x'
       - name: test windows
         if: ${{ matrix.os == 'windows-latest' }}
         run: |
@@ -238,21 +232,12 @@ jobs:
         run: |
           cd csharp
           ./build.sh --target=Run-Unit-Tests
-      - name: Upload test results on failure win
+      - name: Upload test results on failure
         uses: actions/upload-artifact@v2
-        if: ${{ failure() && matrix.os == 'windows-latest'}}
+        if: ${{ failure() }}
         with:
           path: |
             csharp/EPAM.Deltix.DFP/bin/*
             csharp/*.txt
             csharp/*.xml
           name: Dotnet-3.1-${{ matrix.os }}-TestReports
-      - name: Upload test results on failure nix
-        uses: actions/upload-artifact@v2
-        if: ${{ failure() && matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'}}
-        with:
-          path: |
-            csharp/EPAM.Deltix.DFP/bin/*
-            csharp/*.txt
-            csharp/*.xml
-          name: Dotnet-2.0-${{ matrix.os }}-TestReports
