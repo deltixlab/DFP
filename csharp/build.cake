@@ -41,10 +41,6 @@ Task("Build")
     .IsDependentOn("Native-Rename")
     .Does(() =>
 {
-    DotNetCoreBuild("./EPAM.Deltix.DFP.sln", new DotNetCoreBuildSettings {
-        Configuration = configuration
-    });
-
     var buildSettings = new DotNetCoreBuildSettings {
         Configuration = configuration,
         NoRestore = true,
