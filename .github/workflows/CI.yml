@@ -261,7 +261,7 @@ jobs:
       - name: test
         run: |
           cd csharp
-          ./build -Target Run-Unit-Tests
+          ./build --target=Run-Unit-Tests
 
 
   release:

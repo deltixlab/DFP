@@ -232,12 +232,12 @@ jobs:
         if: ${{ matrix.os == 'windows-latest' }}
         run: |
           cd csharp
-          ./build -Target Run-Unit-Tests
+          ./build --target=Run-Unit-Tests
       - name: test nix
         if: ${{ matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest' }}
         run: |
           cd csharp
-          ./build.sh -Target Run-Unit-Tests
+          ./build.sh --target=Run-Unit-Tests
       - name: Upload test results on failure win
         uses: actions/upload-artifact@v2
         if: ${{ failure() && matrix.os == 'windows-latest'}}
