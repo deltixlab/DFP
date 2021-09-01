@@ -28,7 +28,7 @@ DFP relies on [Intel Decimal Floating-Point Math Library](https://software.intel
 
 ## Credits
 
-This project was developed by **Vitali Haravy**. Special thanks to **Boris Chuprin** for helping with native code and testing of this library
+This project was developed by [Deltix](https://www.deltixlab.com) developers **Vitali Haravy** and **Boris Chuprin**. 
 
 This software uses Intel Decimal Floating Point Math Library.
 
