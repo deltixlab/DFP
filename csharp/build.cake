@@ -41,10 +41,6 @@ Task("Build")
     .IsDependentOn("Native-Rename")
     .Does(() =>
 {
-    DotNetCoreBuild("./EPAM.Deltix.DFP.sln", new DotNetCoreBuildSettings {
-        Configuration = configuration
-    });
-
     var buildSettings = new DotNetCoreBuildSettings {
         Configuration = configuration,
         NoRestore = true,
@@ -57,7 +53,7 @@ Task("Build")
     DotNetCoreBuild("./EPAM.Deltix.DFP/EPAM.Deltix.DFP.csproj", buildSettings);
 
     if (!IsRunningOnWindows())
-        buildSettings.Framework = "netcoreapp2.0";
+        buildSettings.Framework = "netcoreapp3.1";
 
     DotNetCoreBuild("./EPAM.Deltix.DFP.Benchmark/EPAM.Deltix.DFP.Benchmark.csproj", buildSettings);
     DotNetCoreBuild("./EPAM.Deltix.DFP.Demo/EPAM.Deltix.DFP.Demo.csproj", buildSettings);
@@ -77,9 +73,9 @@ Task("Run-Unit-Tests")
 
     //settings.NoBuild = true;
     if (!IsRunningOnWindows())
-         buildSettings.Framework = "netcoreapp2.0";
+         buildSettings.Framework = "netcoreapp3.1";
 
-	Information("Running tests with .NET Core 2.0");
+	Information("Running tests with .NET Core");
 	DotNetCoreTest("./EPAM.Deltix.DFP.Test/EPAM.Deltix.DFP.Test.csproj", buildSettings);
 
     // Prevent NUnit tests from running on platforms without .NET 4.0
