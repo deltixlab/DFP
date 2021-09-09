@@ -3,8 +3,10 @@ name: Build CI
 on:
   workflow_dispatch:
   push:
-    branches:
-      - master
+    branches: [master, gcc-build]
+  pull_request:
+    types: [opened, synchronize]
+    branches: [master]
 
 env:
   GRADLE_OPTS: "-Dorg.gradle.daemon=false"
