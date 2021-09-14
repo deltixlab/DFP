@@ -289,7 +289,7 @@ OPNR(bid64_class, int32, bid64_class(x), BID_UINT64 x)
 OPN_BOOL(bid64_sameQuantum, bid64_sameQuantum(x, y), BID_UINT64 x, BID_UINT64 y)
 OPN_BOOL(bid64_totalOrder, bid64_totalOrder(x, y), BID_UINT64 x, BID_UINT64 y)
 OPN_BOOL(bid64_totalOrderMag, bid64_totalOrderMag(x, y), BID_UINT64 x, BID_UINT64 y)
-OPNR(bid64_radix, int, bid64_radix(x), BID_UINT64 x)
+OPNR(bid64_radix, int32, bid64_radix(x), BID_UINT64 x)
 
 OPN(bid64_rem, bid64_rem(x, y), BID_UINT64 x, BID_UINT64 y)
 OPNR(bid64_ilogb, int32, bid64_ilogb(x), BID_UINT64 x)
@@ -312,7 +312,7 @@ OPNR(bid64_llrint, int64, bid64_llrint(x), BID_UINT64 x)
 OPNR(bid64_llround, int64, bid64_llround(x), BID_UINT64 x)
 //BID_EXTERN_C BID_UINT64 bid64_nan (const char *tagp);
 OPN(bid64_fdim, bid64_fdim(x, y), BID_UINT64 x, BID_UINT64 y)
-OPNR(bid64_quantexp, int, bid64_quantexp(x), BID_UINT64 x)
+OPNR(bid64_quantexp, int32, bid64_quantexp(x), BID_UINT64 x)
 OPN(bid64_quantum, bid64_quantum(x), BID_UINT64 x)
 OPNR(bid64_llquantexp, int64, bid64_llquantexp(x), BID_UINT64 x)
 //BID_EXTERN_C BID_UINT64 bid64_inf (void);
