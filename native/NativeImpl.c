@@ -267,8 +267,8 @@ OPN(bid64_maxnum_mag, bid64_maxnum_mag(x, y), BID_UINT64 x, BID_UINT64 y)
 
 OPN(bid64_from_int32, bid64_from_int32(x), int32 x)
 OPN(bid64_from_uint32, bid64_from_uint32(x), uint32 x)
-OPN(bid64_from_int64, bid64_from_int64(x), BID_SINT64 x)
-OPN(bid64_from_uint64, bid64_from_uint64(x), BID_UINT64 x)
+OPN(bid64_from_int64, bid64_from_int64(x), int64 x)
+OPN(bid64_from_uint64, bid64_from_uint64(x), uint64 x)
 
 OPN_BOOL(bid64_isSigned, bid64_isSigned(x), BID_UINT64 x)
 OPN_BOOL(bid64_isNormal, bid64_isNormal(x), BID_UINT64 x)
