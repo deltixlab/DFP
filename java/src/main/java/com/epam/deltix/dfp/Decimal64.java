@@ -116,7 +116,7 @@ public class Decimal64 extends Number implements Comparable<Decimal64> {
 
     final long value;
 
-    private Decimal64(final long value) {
+    Decimal64(final long value) {
         this.value = value;
     }
 
@@ -722,12 +722,10 @@ public class Decimal64 extends Number implements Comparable<Decimal64> {
 
     /// region Special
 
-    @Decimal
     public Decimal64 nextUp() {
         return new Decimal64(Decimal64Utils.nextUp(value));
     }
 
-    @Decimal
     public Decimal64 nextDown() {
         return new Decimal64(Decimal64Utils.nextDown(value));
     }
@@ -790,7 +788,6 @@ public class Decimal64 extends Number implements Comparable<Decimal64> {
      * @return 64-bit dfp floating-point.
      * @throws NumberFormatException if {@code text} does not contain valid dfp floating value.
      */
-    @Decimal
     public static Decimal64 parse(final CharSequence text, final int startIndex, final int stopIndex) {
         return Decimal64.fromUnderlying(Decimal64Utils.parse(text, startIndex, stopIndex));
     }
@@ -813,7 +810,6 @@ public class Decimal64 extends Number implements Comparable<Decimal64> {
      * @return 64-bit dfp floating-point.
      * @throws NumberFormatException if {@code text} does not contain valid dfp floating value.
      */
-    @Decimal
     public static Decimal64 parse(final CharSequence text, final int startIndex) {
         return Decimal64.fromUnderlying(Decimal64Utils.parse(text, startIndex, text.length()));
     }
@@ -835,7 +831,6 @@ public class Decimal64 extends Number implements Comparable<Decimal64> {
      * @return 64-bit dfp floating-point.
      * @throws NumberFormatException if {@code text} does not contain valid dfp floating value.
      */
-    @Decimal
     public static Decimal64 parse(final CharSequence text) {
         return Decimal64.fromUnderlying(Decimal64Utils.parse(text, 0, text.length()));
     }
@@ -850,7 +845,6 @@ public class Decimal64 extends Number implements Comparable<Decimal64> {
      * @param defaultValue Default value in case of fail.
      * @return 64-bit dfp floating-point.
      */
-    @Decimal
     public static Decimal64 tryParse(final CharSequence text, final int startIndex, final int endIndex,
                                      final Decimal64 defaultValue) {
         try {
@@ -869,7 +863,6 @@ public class Decimal64 extends Number implements Comparable<Decimal64> {
      * @param defaultValue Default value in case of fail.
      * @return 64-bit dfp floating-point.
      */
-    @Decimal
     public static Decimal64 tryParse(final CharSequence text, final int startIndex, final Decimal64 defaultValue) {
         return tryParse(text, startIndex, text.length(), defaultValue);
     }
@@ -882,7 +875,6 @@ public class Decimal64 extends Number implements Comparable<Decimal64> {
      * @param defaultValue Default value in case of fail.
      * @return 64-bit dfp floating-point.
      */
-    @Decimal
     public static Decimal64 tryParse(final CharSequence text, final Decimal64 defaultValue) {
         return tryParse(text, 0, text.length(), defaultValue);
     }
@@ -966,6 +958,136 @@ public class Decimal64 extends Number implements Comparable<Decimal64> {
     @Override
     public int compareTo(final Decimal64 o) {
         return Decimal64Utils.compareTo(value, o.value);
+    }
+
+    /// endregion
+
+    /// region Math functions
+
+    /**
+     * Compare 64-bit decimal floating-point numbers for specified relation.
+     *
+     * @param y Second decimal number.
+     * @return The comparison sign.
+     */
+    public boolean isGreaterUnordered(final Decimal64 y) {
+        return Decimal64Utils.isGreaterUnordered(value, y.value);
+    }
+
+    /**
+     * Compare 64-bit decimal floating-point numbers for specified relation.
+     *
+     * @param y Second decimal number.
+     * @return The comparison sign.
+     */
+    public boolean isLessUnordered(final Decimal64 y) {
+        return Decimal64Utils.isLessUnordered(value, y.value);
+    }
+
+    /**
+     * Compare 64-bit decimal floating-point numbers for specified relation.
+     *
+     * @param y Second decimal number.
+     * @return The comparison sign.
+     */
+    public boolean isNotGreater(final Decimal64 y) {
+        return Decimal64Utils.isNotGreater(value, y.value);
+    }
+
+    /**
+     * Compare 64-bit decimal floating-point numbers for specified relation.
+     *
+     * @param y Second decimal number.
+     * @return The comparison sign.
+     */
+    public boolean isNotLess(final Decimal64 y) {
+        return Decimal64Utils.isNotLess(value, y.value);
+    }
+
+    /**
+     * These function return a {@code true} value if both arguments are not NaN, otherwise  {@code false}.
+     *
+     * @param y Second decimal number.
+     * @return {@code true} if both arguments are not NaN.
+     */
+    public boolean isOrdered(final Decimal64 y) {
+        return Decimal64Utils.isOrdered(value, y.value);
+    }
+
+    /**
+     * These function return a {@code true} value if either argument is NaN, otherwise {@code false}.
+     *
+     * @param y Second decimal number.
+     * @return {@code true} if either argument is NaN.
+     */
+    public boolean isUnordered(final Decimal64 y) {
+        return Decimal64Utils.isUnordered(value, y.value);
+    }
+
+    /**
+     * Return {@code true} if and only if x has negative sign.
+     *
+     * @return The sign.
+     */
+    public boolean isSigned() {
+        return Decimal64Utils.isSigned(value);
+    }
+
+    /**
+     * Return {@code true} if and only if x is subnormal.
+     *
+     * @return The check flag.
+     */
+    public boolean isSubnormal() {
+        return Decimal64Utils.isSubnormal(value);
+    }
+
+    /**
+     * Return {@code true} if and only if x is infinite.
+     *
+     * @return The check flag.
+     */
+    public boolean isInf() {
+        return Decimal64Utils.isInf(value);
+    }
+
+    /**
+     * Return true if and only if x is a signaling NaN.
+     *
+     * @return The check flag.
+     */
+    public boolean isSignaling() {
+        return Decimal64Utils.isSignaling(value);
+    }
+
+    /**
+     * Return true if and only if x is a finite number, infinity, or
+     * NaN that is canonical.
+     *
+     * @return The check flag.
+     */
+    public boolean isCanonical() {
+        return Decimal64Utils.isCanonical(value);
+    }
+
+    /**
+     * Convert 64-bit decimal floating-point value (binary encoding)
+     * to 32-bit binary floating-point format.
+     *
+     * @return The converted value.
+     */
+    public float toBinary32() {
+        return Decimal64Utils.toBinary32(value);
+    }
+
+    /**
+     * Convert 64-bit decimal floating-point value (binary encoding)
+     * to 64-bit binary floating-point format.
+     *
+     * @return The converted value.
+     */
+    public double toBinary64() {
+        return Decimal64Utils.toBinary64(value);
     }
 
     /// endregion
