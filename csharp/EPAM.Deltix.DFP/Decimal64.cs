@@ -37,7 +37,7 @@ namespace EPAM.Deltix.DFP
 
 		public UInt64 Bits { get; }
 
-		private Decimal64(UInt64 value)
+		internal Decimal64(UInt64 value)
 		{
 			Bits = value;
 		}
