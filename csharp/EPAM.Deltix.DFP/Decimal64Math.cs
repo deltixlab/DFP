@@ -593,15 +593,6 @@ namespace EPAM.Deltix.DFP
 		}
 
 		/// <summary>
-		/// Return <c>true</c> if and only if x is infinite.
-		/// </summary>
-		/// <returns>The check flag.</returns>
-		public static bool IsInf(this Decimal64 x)
-		{
-			return NativeImpl.bid64_isInf(x.Bits);
-		}
-
-		/// <summary>
 		/// Return true if and only if x is a signaling NaN.
 		/// </summary>
 		/// <returns>The check flag.</returns>
@@ -623,6 +614,11 @@ namespace EPAM.Deltix.DFP
 		public static bool IsNaN(Decimal64 x)
 		{
 			return NativeImpl.bid64_isNaN(x.Bits);
+		}
+
+		public static bool IsInf(Decimal64 x)
+		{
+			return NativeImpl.bid64_isInf(x.Bits);
 		}
 
 		public static Decimal64 Abs(Decimal64 x)
