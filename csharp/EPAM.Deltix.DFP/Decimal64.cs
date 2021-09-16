@@ -37,7 +37,7 @@ namespace EPAM.Deltix.DFP
 
 		public UInt64 Bits { get; }
 
-		private Decimal64(UInt64 value)
+		internal Decimal64(UInt64 value)
 		{
 			Bits = value;
 		}
@@ -803,5 +803,14 @@ namespace EPAM.Deltix.DFP
 		}
 
 		#endregion
+
+		/// <summary>
+		/// Return <c>true</c> if and only if x is infinite.
+		/// </summary>
+		/// <returns>The check flag.</returns>
+		public bool IsInf()
+		{
+			return NativeImpl.bid64_isInf(Bits);
+		}
 	}
 }

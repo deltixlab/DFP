@@ -5,7 +5,7 @@ import com.epam.deltix.utilities.ResourceLoader;
 import java.nio.file.Paths;
 import java.util.Locale;
 
-public class NativeImplLoader {
+class NativeImplLoader {
     public static void load() {
         try {
             String version = NativeImpl.version;
