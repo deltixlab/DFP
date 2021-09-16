@@ -2482,16 +2482,7 @@ public class Decimal64Utils {
 
     //public static boolean isGreater(@Decimal final long x, @Decimal final long y) { return NativeImpl.bid64_quiet_greater(x, y) ; }
 
-    /**
-     * Compare 64-bit decimal floating-point numbers for specified relation.
-     *
-     * @param x First decimal number.
-     * @param y Second decimal number.
-     * @return The comparison sign.
-     */
-    public static boolean isGreaterEqual(@Decimal final long x, @Decimal final long y) {
-        return NativeImpl.bid64_quiet_greater_equal(x, y);
-    }
+    //public static boolean isGreaterEqual(@Decimal final long x, @Decimal final long y) { return NativeImpl.bid64_quiet_greater_equal(x, y); }
 
     /**
      * Compare 64-bit decimal floating-point numbers for specified relation.
@@ -2506,16 +2497,7 @@ public class Decimal64Utils {
 
     //public static boolean isLess(@Decimal final long x, @Decimal final long y) { return NativeImpl.bid64_quiet_less(x, y) ; }
 
-    /**
-     * Compare 64-bit decimal floating-point numbers for specified relation.
-     *
-     * @param x First decimal number.
-     * @param y Second decimal number.
-     * @return The comparison sign.
-     */
-    public static boolean isLessEqual(@Decimal final long x, @Decimal final long y) {
-        return NativeImpl.bid64_quiet_less_equal(x, y);
-    }
+    //public static boolean isLessEqual(@Decimal final long x, @Decimal final long y) { return NativeImpl.bid64_quiet_less_equal(x, y); }
 
     /**
      * Compare 64-bit decimal floating-point numbers for specified relation.
@@ -2725,7 +2707,7 @@ public class Decimal64Utils {
      * @return The converted value.
      */
     @Decimal
-    public static long fromInt32(int x) {
+    public static long fromInt32(final int x) {
         return NativeImpl.bid64_from_int32(x);
     }
 
@@ -2736,7 +2718,7 @@ public class Decimal64Utils {
      * @return The converted value.
      */
     @Decimal
-    public static long fromUInt32(int x) {
+    public static long fromUInt32(final int x) {
         return NativeImpl.bid64_from_uint32(x);
     }
 
@@ -2747,7 +2729,7 @@ public class Decimal64Utils {
      * @return The converted value.
      */
     @Decimal
-    public static long fromInt64(long x) {
+    public static long fromInt64(final long x) {
         return NativeImpl.bid64_from_int64(x);
     }
 
@@ -2758,7 +2740,7 @@ public class Decimal64Utils {
      * @return The converted value.
      */
     @Decimal
-    public static long fromUInt64(long x) {
+    public static long fromUInt64(final long x) {
         return NativeImpl.bid64_from_uint64(x);
     }
 
