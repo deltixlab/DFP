@@ -810,7 +810,7 @@ namespace EPAM.Deltix.DFP
 		/// <returns>The check flag.</returns>
 		public bool IsInf()
 		{
-			return NativeImpl.bid64_isInf(Bits);
+			return NativeImpl.bid64IsInf(Bits);
 		}
 	}
 }
