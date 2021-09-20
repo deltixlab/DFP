@@ -2801,7 +2801,7 @@ public class Decimal64Utils {
     }
 
     /**
-     * Return true if and only if x is a signaling NaN.
+     * Return {@code true} if and only if x is a signaling NaN.
      *
      * @param x Test value.
      * @return The check flag.
@@ -2811,7 +2811,7 @@ public class Decimal64Utils {
     }
 
     /**
-     * Return true if and only if x is a finite number, infinity, or
+     * Return {@code true} if and only if x is a finite number, infinity, or
      * NaN that is canonical.
      *
      * @param x Test value.
@@ -2869,30 +2869,30 @@ public class Decimal64Utils {
      * @param y Second decimal value.
      * @return Comparison flag.
      */
-    public static boolean sameQuantum(@Decimal final long x, @Decimal final long y) {
+    public static boolean isSameQuantum(@Decimal final long x, @Decimal final long y) {
         return NativeImpl.bid64SameQuantum(x, y);
     }
 
     /**
-     * Return true if x and y are ordered (see the IEEE Standard 754-2008).
+     * Return {@code true} if x and y are ordered (see the IEEE Standard 754-2008).
      *
      * @param x First decimal value.
      * @param y Second decimal value.
      * @return Comparison flag.
      */
-    public static boolean totalOrder(@Decimal final long x, @Decimal final long y) {
+    public static boolean isTotalOrder(@Decimal final long x, @Decimal final long y) {
         return NativeImpl.bid64TotalOrder(x, y);
     }
 
     /**
-     * Return true if the absolute values of x and y are ordered
+     * Return {@code true} if the absolute values of x and y are ordered
      * (see the IEEE Standard 754-2008)
      *
      * @param x First decimal value.
      * @param y Second decimal value.
      * @return Comparison flag.
      */
-    public static boolean totalOrderMag(@Decimal final long x, @Decimal final long y) {
+    public static boolean isTotalOrderMag(@Decimal final long x, @Decimal final long y) {
         return NativeImpl.bid64TotalOrderMag(x, y);
     }
 
@@ -2942,11 +2942,11 @@ public class Decimal64Utils {
     }
 
     /**
-     * Returns the result of multiplying x (the significand) by 2 raised to the power of exp (the exponent).
+     * Returns the result of multiplying x (the significand) by 10 raised to the power of exp (the exponent).
      *
      * @param x Floating point value representing the significand.
      * @param n Value of the exponent.
-     * @return The x*2^exp value.
+     * @return The x*10^exp value.
      */
     @Decimal
     public static long ldexp(@Decimal final long x, final int n) {
@@ -2998,10 +2998,10 @@ public class Decimal64Utils {
     }
 
     /**
-     * Returns the logarithm of |x|.
+     * Returns the adjusted exponent of the absolute value.
      *
      * @param x Value whose logarithm is calculated.
-     * @return The logarithm of x.
+     * @return The adjusted logarithm of |x|.
      */
     @Decimal
     public static long logb(@Decimal final long x) {
@@ -3029,27 +3029,6 @@ public class Decimal64Utils {
     @Decimal
     public static long nearByInt(@Decimal final long x) {
         return NativeImpl.bid64Nearbyint(x);
-    }
-
-    /**
-     * Rounds the floating-point argument arg to an integer value in floating-point format, using the current rounding mode.
-     *
-     * @param x Value to round.
-     * @return The rounded value.
-     */
-    public static long llrint(@Decimal final long x) {
-        return NativeImpl.bid64Llrint(x);
-    }
-
-    /**
-     * Computes the nearest integer value to arg (in floating-point format), rounding halfway cases away from zero,
-     * regardless of the current rounding mode.
-     *
-     * @param x Value to round.
-     * @return The rounded value.
-     */
-    public static long llround(@Decimal final long x) {
-        return NativeImpl.bid64Llround(x);
     }
 
     /**
@@ -3089,19 +3068,6 @@ public class Decimal64Utils {
     @Decimal
     public static long quantum(@Decimal final long x) {
         return NativeImpl.bid64Quantum(x);
-    }
-
-    /**
-     * The function compute the quantum exponent of a finite argument. The numerical value of a finite number
-     * is given by: (-1)^sign x coefficient x 10^exponent. The quantum of a finite number is given by
-     * 1 x 10^exponent and represents the value of a unit in the least significant position of the coefficient
-     * of a finite number. The quantum exponent is the exponent of the quantum (represented by exponent above).
-     *
-     * @param x The value for operation.
-     * @return The quantum exponent.
-     */
-    public static long llQuantExp(@Decimal final long x) {
-        return NativeImpl.bid64Llquantexp(x);
     }
 
     /// endregion

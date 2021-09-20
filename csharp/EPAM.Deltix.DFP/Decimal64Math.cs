@@ -593,7 +593,7 @@ namespace EPAM.Deltix.DFP
 		}
 
 		/// <summary>
-		/// Return true if and only if x is a signaling NaN.
+		/// Return <c>true</c> if and only if x is a signaling NaN.
 		/// </summary>
 		/// <returns>The check flag.</returns>
 		public static bool IsSignaling(this Decimal64 x)
@@ -602,7 +602,7 @@ namespace EPAM.Deltix.DFP
 		}
 
 		/// <summary>
-		/// Return true if and only if x is a finite number, infinity, or
+		/// Return <c>true</c> if and only if x is a finite number, infinity, or
 		/// NaN that is canonical.
 		/// </summary>
 		/// <returns>The check flag.</returns>
@@ -660,30 +660,30 @@ namespace EPAM.Deltix.DFP
 		/// <param name="x">First decimal value.</param>
 		/// <param name="y">Second decimal value.</param>
 		/// <returns>Comparison flag.</returns>
-		public static bool SameQuantum(Decimal64 x, Decimal64 y)
+		public static bool IsSameQuantum(Decimal64 x, Decimal64 y)
 		{
 			return NativeImpl.bid64SameQuantum(x.Bits, y.Bits);
 		}
 
 		/// <summary>
-		/// Return true if x and y are ordered (see the IEEE Standard 754-2008).
+		/// Return <c>true</c> if x and y are ordered (see the IEEE Standard 754-2008).
 		/// </summary>
 		/// <param name="x">First decimal value.</param>
 		/// <param name="y">Second decimal value.</param>
 		/// <returns>Comparison flag.</returns>
-		public static bool TotalOrder(Decimal64 x, Decimal64 y)
+		public static bool IsTotalOrder(Decimal64 x, Decimal64 y)
 		{
 			return NativeImpl.bid64TotalOrder(x.Bits, y.Bits);
 		}
 
 		/// <summary>
-		/// Return true if the absolute values of x and y are ordered
+		/// Return <c>true</c> if the absolute values of x and y are ordered
 		/// (see the IEEE Standard 754-2008)
 		/// </summary>
 		/// <param name="x">First decimal value.</param>
 		/// <param name="y">Second decimal value.</param>
 		/// <returns>Comparison flag.</returns>
-		public static bool TotalOrderMag(Decimal64 x, Decimal64 y)
+		public static bool IsTotalOrderMag(Decimal64 x, Decimal64 y)
 		{
 			return NativeImpl.bid64TotalOrderMag(x.Bits, y.Bits);
 		}
@@ -732,11 +732,11 @@ namespace EPAM.Deltix.DFP
 		}
 
 		/// <summary>
-		/// Returns the result of multiplying x (the significand) by 2 raised to the power of exp (the exponent).
+		/// Returns the result of multiplying x (the significand) by 10 raised to the power of exp (the exponent).
 		/// </summary>
 		/// <param name="x">Floating point value representing the significand.</param>
 		/// <param name="n">Value of the exponent.</param>
-		/// <returns>The x*2^exp value.</returns>
+		/// <returns>The x*10^exp value.</returns>
 		public static Decimal64 Ldexp(Decimal64 x, int n)
 		{
 			return new Decimal64(NativeImpl.bid64Ldexp(x.Bits, n));
@@ -784,10 +784,10 @@ namespace EPAM.Deltix.DFP
 		}
 
 		/// <summary>
-		/// Returns the logarithm of |x|.
+		/// Returns the adjusted exponent of the absolute value.
 		/// </summary>
 		/// <param name="x">Value whose logarithm is calculated.</param>
-		/// <returns>The logarithm of x.</returns>
+		/// <returns>The adjusted logarithm of |x|.</returns>
 		public static Decimal64 Logb(Decimal64 x)
 		{
 			return new Decimal64(NativeImpl.bid64Logb(x.Bits));
@@ -812,27 +812,6 @@ namespace EPAM.Deltix.DFP
 		public static Decimal64 NearByInt(Decimal64 x)
 		{
 			return new Decimal64(NativeImpl.bid64Nearbyint(x.Bits));
-		}
-
-		/// <summary>
-		/// Rounds the floating-point argument arg to an integer value in floating-point format, using the current rounding mode.
-		/// </summary>
-		/// <param name="x">Value to round.</param>
-		/// <returns>The rounded value.</returns>
-		public static long Llrint(Decimal64 x)
-		{
-			return NativeImpl.bid64Llrint(x.Bits);
-		}
-
-		/// <summary>
-		/// Computes the nearest integer value to arg (in floating-point format), rounding halfway cases away from zero,
-		/// regardless of the current rounding mode.
-		/// </summary>
-		/// <param name="x">Value to round.</param>
-		/// <returns>The rounded value.</returns>
-		public static long Llround(Decimal64 x)
-		{
-			return NativeImpl.bid64Llround(x.Bits);
 		}
 
 		/// <summary>
@@ -870,19 +849,6 @@ namespace EPAM.Deltix.DFP
 		public static Decimal64 Quantum(Decimal64 x)
 		{
 			return new Decimal64(NativeImpl.bid64Quantum(x.Bits));
-		}
-
-		/// <summary>
-		/// The function compute the quantum exponent of a finite argument. The numerical value of a finite number
-		/// is given by: (-1)^sign x coefficient x 10^exponent. The quantum of a finite number is given by
-		/// 1 x 10^exponent and represents the value of a unit in the least significant position of the coefficient
-		/// of a finite number. The quantum exponent is the exponent of the quantum (represented by exponent above).
-		/// </summary>
-		/// <param name="x">The value for operation.</param>
-		/// <returns>The quantum exponent.</returns>
-		public static long LlQuantExp(Decimal64 x)
-		{
-			return NativeImpl.bid64Llquantexp(x.Bits);
 		}
 	}
 }
