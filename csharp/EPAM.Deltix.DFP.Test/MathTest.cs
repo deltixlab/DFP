@@ -991,7 +991,7 @@ namespace EPAM.Deltix.DFP.Test
 				var e = random.Next(-200, 200);
 				var rv = double.Parse(m + "e" + e);
 				var testValue = FromDouble(rv).ToBinary64();
-				Assert.AreEqual(testValue, rv, rv * 1e-12);
+				Assert.AreEqual(testValue, rv, Math.Abs(rv * 1e-12));
 			}
 		}
 
