@@ -54,7 +54,9 @@ configurations {
 
 dependencies {
     testImplementation 'junit:junit:4.+'
+    testImplementation 'org.apache.commons:commons-math3:3.6.1'
     integrationTestCompile 'junit:junit:4.+'
+    integrationTestCompile 'org.apache.commons:commons-math3:3.6.1'
 }
 
 def rUser = findProperty('SONATYPE_NEXUS_USERNAME') ?:  System.getenv('SONATYPE_NEXUS_USERNAME') ?: "FakeUser"

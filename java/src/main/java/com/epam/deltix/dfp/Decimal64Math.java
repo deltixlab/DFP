@@ -554,31 +554,31 @@ public class Decimal64Math {
      * @param y Second decimal value.
      * @return Comparison flag.
      */
-    public static boolean sameQuantum(final Decimal64 x, final Decimal64 y) {
-        return Decimal64Utils.sameQuantum(x.value, y.value);
+    public static boolean isSameQuantum(final Decimal64 x, final Decimal64 y) {
+        return Decimal64Utils.isSameQuantum(x.value, y.value);
     }
 
     /**
-     * Return true if x and y are ordered (see the IEEE Standard 754-2008).
+     * Return {@code true} if x and y are ordered (see the IEEE Standard 754-2008).
      *
      * @param x First decimal value.
      * @param y Second decimal value.
      * @return Comparison flag.
      */
-    public static boolean totalOrder(final Decimal64 x, final Decimal64 y) {
-        return Decimal64Utils.totalOrder(x.value, y.value);
+    public static boolean isTotalOrder(final Decimal64 x, final Decimal64 y) {
+        return Decimal64Utils.isTotalOrder(x.value, y.value);
     }
 
     /**
-     * Return true if the absolute values of x and y are ordered
+     * Return {@code true} if the absolute values of x and y are ordered
      * (see the IEEE Standard 754-2008)
      *
      * @param x First decimal value.
      * @param y Second decimal value.
      * @return Comparison flag.
      */
-    public static boolean totalOrderMag(final Decimal64 x, final Decimal64 y) {
-        return Decimal64Utils.totalOrderMag(x.value, y.value);
+    public static boolean isTotalOrderMag(final Decimal64 x, final Decimal64 y) {
+        return Decimal64Utils.isTotalOrderMag(x.value, y.value);
     }
 
     /**
@@ -688,27 +688,6 @@ public class Decimal64Math {
     }
 
     /**
-     * Rounds the floating-point argument arg to an integer value in floating-point format, using the current rounding mode.
-     *
-     * @param x Value to round.
-     * @return The rounded value.
-     */
-    public static long llrint(final Decimal64 x) {
-        return Decimal64Utils.llrint(x.value);
-    }
-
-    /**
-     * Computes the nearest integer value to arg (in floating-point format), rounding halfway cases away from zero,
-     * regardless of the current rounding mode.
-     *
-     * @param x Value to round.
-     * @return The rounded value.
-     */
-    public static long llround(final Decimal64 x) {
-        return Decimal64Utils.llround(x.value);
-    }
-
-    /**
      * Returns the positive difference between x and y, that is, if x &gt; y, returns x-y, otherwise (if x &le; y), returns +0.
      *
      * @param x Minuend value.
@@ -743,18 +722,5 @@ public class Decimal64Math {
      */
     public static Decimal64 quantum(final Decimal64 x) {
         return new Decimal64(Decimal64Utils.quantum(x.value));
-    }
-
-    /**
-     * The function compute the quantum exponent of a finite argument. The numerical value of a finite number
-     * is given by: (-1)^sign x coefficient x 10^exponent. The quantum of a finite number is given by
-     * 1 x 10^exponent and represents the value of a unit in the least significant position of the coefficient
-     * of a finite number. The quantum exponent is the exponent of the quantum (represented by exponent above).
-     *
-     * @param x The value for operation.
-     * @return The quantum exponent.
-     */
-    public static long llQuantExp(final Decimal64 x) {
-        return Decimal64Utils.llQuantExp(x.value);
     }
 }
