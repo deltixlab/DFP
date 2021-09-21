@@ -14,6 +14,10 @@ import static com.epam.deltix.dfp.Decimal64Utils.*;
 public class MathTest {
     private static final int N = 10_000;
 
+    private static int getRandomSeed() {
+        return 42; // new SecureRandom().nextLong();
+    }
+
     static final double log2 = Math.log(2.0);
 
     static double doubleDiff(final double refValue, final double testValue) {
@@ -32,7 +36,7 @@ public class MathTest {
         if (N < 0)
             throw new IllegalArgumentException("The N(=" + N + ") must be positive.");
 
-        final long randomSeed = 42; // new SecureRandom().nextLong();
+        final long randomSeed = getRandomSeed();
         final Random random = new Random(randomSeed);
 
         double maxError = Double.NEGATIVE_INFINITY;
@@ -758,7 +762,7 @@ public class MathTest {
 
     @Test
     public void testFromInt32() {
-        final Random random = new SecureRandom();
+        final Random random = new Random(getRandomSeed());
         for (int i = 0; i < N; ++i) {
             final int rv = random.nextInt();
             assertDecimalEqual(parse(Integer.toString(rv)), fromInt32(rv), "RandomValue=" + rv);
@@ -767,7 +771,7 @@ public class MathTest {
 
     @Test
     public void testFromUInt32() {
-        final Random random = new SecureRandom();
+        final Random random = new Random(getRandomSeed());
         for (int i = 0; i < N; ++i) {
             final int rv = Math.abs(random.nextInt());
             assertDecimalEqual(parse(Integer.toString(rv)), fromUInt32(rv), "RandomValue=" + rv);
@@ -776,7 +780,7 @@ public class MathTest {
 
     @Test
     public void testFromInt64() {
-        final Random random = new SecureRandom();
+        final Random random = new Random(getRandomSeed());
         for (int i = 0; i < N; ++i) {
             final long rv = (long) ((random.nextDouble() - 0.5) * 2 * 9999999999999999L);
             assertDecimalEqual(parse(Long.toString(rv)), fromInt64(rv), "RandomValue=" + rv);
@@ -785,7 +789,7 @@ public class MathTest {
 
     @Test
     public void testFromUInt64() {
-        final Random random = new SecureRandom();
+        final Random random = new Random(getRandomSeed());
         for (int i = 0; i < N; ++i) {
             final long rv = (long) (random.nextDouble() * 9999999999999999L);
             assertDecimalEqual(parse(Long.toString(rv)), fromUInt64(rv), "RandomValue=" + rv);
@@ -794,7 +798,7 @@ public class MathTest {
 
     @Test
     public void testIsSigned() {
-        final Random random = new SecureRandom();
+        final Random random = new Random(getRandomSeed());
         for (int i = -100; i < 100; ++i) {
             final int rv = random.nextInt();
             Assert.assertEquals(isSigned(fromInt32(rv)), rv < 0);
@@ -851,7 +855,7 @@ public class MathTest {
 
     @Test
     public void testCopySign() {
-        final Random random = new SecureRandom();
+        final Random random = new Random(getRandomSeed());
         for (int i = 0; i < N; ++i) {
             final long x = random.nextInt();
             final long y = random.nextInt();
@@ -934,7 +938,7 @@ public class MathTest {
 
     @Test
     public void testScalbn() {
-        final Random random = new SecureRandom();
+        final Random random = new Random(getRandomSeed());
         for (int i = 0; i < N; ++i) {
             final int x = random.nextInt();
             final int y = random.nextInt(200) - 100;
@@ -944,7 +948,7 @@ public class MathTest {
 
     @Test
     public void testLdexp() {
-        final Random random = new SecureRandom();
+        final Random random = new Random(getRandomSeed());
         for (int i = 0; i < N; ++i) {
             final int x = random.nextInt();
             final int y = random.nextInt(200) - 100;
@@ -968,7 +972,7 @@ public class MathTest {
 
     @Test
     public void testToBinary32() {
-        final Random random = new SecureRandom();
+        final Random random = new Random(getRandomSeed());
         for (int i = 0; i < N; ++i) {
             final int m = random.nextInt(2 * 10_000_000) - 10_000_000;
             final int e = random.nextInt(2 * 30) - 30;
@@ -980,7 +984,7 @@ public class MathTest {
 
     @Test
     public void testToBinary64() {
-        final Random random = new SecureRandom();
+        final Random random = new Random(getRandomSeed());
         for (int i = 0; i < N; ++i) {
             long m = (Math.abs(random.nextLong()) % 1000_000_000_000_000L) * (random.nextInt(2) > 0 ? 1 : -1);
             final int e = random.nextInt(2 * 300) - 300;
@@ -1000,7 +1004,7 @@ public class MathTest {
 
     @Test
     public void testScalbln() {
-        final Random random = new SecureRandom();
+        final Random random = new Random(getRandomSeed());
         for (int i = 0; i < N; ++i) {
             final int x = random.nextInt();
             final int y = random.nextInt(200) - 100;
@@ -1029,7 +1033,7 @@ public class MathTest {
 
     @Test
     public void testFdim() {
-        final Random random = new SecureRandom();
+        final Random random = new Random(getRandomSeed());
         for (int i = 0; i < N; ++i) {
             final long x = scalbn(fromInt32(random.nextInt()), random.nextInt(200) - 100);
             final long y = scalbn(fromInt32(random.nextInt()), random.nextInt(200) - 100);

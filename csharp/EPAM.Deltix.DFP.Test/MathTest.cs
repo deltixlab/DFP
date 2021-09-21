@@ -1,4 +1,4 @@
-﻿using MathNet.Numerics;
+using MathNet.Numerics;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -14,6 +14,11 @@ namespace EPAM.Deltix.DFP.Test
 	class MathTest
 	{
 		private static readonly int N = 10000;
+
+		private static int GetRandomSeed()
+		{
+			return 42;
+		}
 
 #if NET40
 		static readonly double log2 = Math.Log(2.0);
@@ -56,7 +61,7 @@ namespace EPAM.Deltix.DFP.Test
 			if (N < 0)
 				throw new ArgumentException($"The N(={N}) must be positive.");
 
-			var randomSeed = 42; // new Random().NextLong();
+			var randomSeed = GetRandomSeed();
 			var random = new Random(randomSeed);
 
 			double maxError = Double.NegativeInfinity;
@@ -729,7 +734,7 @@ namespace EPAM.Deltix.DFP.Test
 		[Test]
 		public void TestFromInt32()
 		{
-			var random = new Random();
+			var random = new Random(GetRandomSeed());
 			for (int i = 0; i < N; ++i)
 			{
 				var rv = random.Next(int.MinValue, int.MaxValue);
@@ -740,7 +745,7 @@ namespace EPAM.Deltix.DFP.Test
 		[Test]
 		public void TestFromUInt32()
 		{
-			var random = new Random();
+			var random = new Random(GetRandomSeed());
 			for (int i = 0; i < N; ++i)
 			{
 				var rv = (uint)random.Next();
@@ -751,7 +756,7 @@ namespace EPAM.Deltix.DFP.Test
 		[Test]
 		public void TestFromInt64()
 		{
-			var random = new Random();
+			var random = new Random(GetRandomSeed());
 			for (int i = 0; i < N; ++i)
 			{
 				var rv = (long)((random.NextDouble() - 0.5) * 2 * 1000000000000000L);
@@ -762,7 +767,7 @@ namespace EPAM.Deltix.DFP.Test
 		[Test]
 		public void TestFromUInt64()
 		{
-			var random = new Random();
+			var random = new Random(GetRandomSeed());
 			for (int i = 0; i < N; ++i)
 			{
 				var rv = (ulong)(random.NextDouble() * 1000000000000000L);
@@ -774,7 +779,7 @@ namespace EPAM.Deltix.DFP.Test
 		[Obsolete]
 		public void TestIsSigned()
 		{
-			var random = new Random();
+			var random = new Random(GetRandomSeed());
 			for (int i = -100; i < 100; ++i)
 			{
 				var rv = random.Next(int.MinValue, int.MaxValue);
@@ -837,7 +842,7 @@ namespace EPAM.Deltix.DFP.Test
 		[Test]
 		public void TestCopySign()
 		{
-			var random = new Random();
+			var random = new Random(GetRandomSeed());
 			for (int i = 0; i < N; ++i)
 			{
 				var x = random.Next(int.MinValue, int.MaxValue);
@@ -930,7 +935,7 @@ namespace EPAM.Deltix.DFP.Test
 		[Test]
 		public void TestScalbn()
 		{
-			var random = new Random();
+			var random = new Random(GetRandomSeed());
 			for (int i = 0; i < N; ++i)
 			{
 				var x = random.Next(int.MinValue, int.MaxValue);
@@ -942,7 +947,7 @@ namespace EPAM.Deltix.DFP.Test
 		[Test]
 		public void TestLdexp()
 		{
-			var random = new Random();
+			var random = new Random(GetRandomSeed());
 			for (int i = 0; i < N; ++i)
 			{
 				var x = random.Next(int.MinValue, int.MaxValue);
@@ -965,7 +970,7 @@ namespace EPAM.Deltix.DFP.Test
 		[Test]
 		public void TestToBinary32()
 		{
-			var random = new Random();
+			var random = new Random(GetRandomSeed());
 			for (int i = 0; i < N; ++i)
 			{
 				var m = random.Next(-10000000, 10000000);
@@ -979,7 +984,7 @@ namespace EPAM.Deltix.DFP.Test
 		[Test]
 		public void TestToBinary64()
 		{
-			var random = new Random();
+			var random = new Random(GetRandomSeed());
 			for (int i = 0; i < N; ++i)
 			{
 				long m = (long)((random.NextDouble() - 0.5) * 2 * 1000000000000000L);
@@ -1002,7 +1007,7 @@ namespace EPAM.Deltix.DFP.Test
 		[Test]
 		public void TestScalbln()
 		{
-			var random = new Random();
+			var random = new Random(GetRandomSeed());
 			for (int i = 0; i < N; ++i)
 			{
 				var x = random.Next(int.MinValue, int.MaxValue);
@@ -1029,7 +1034,7 @@ namespace EPAM.Deltix.DFP.Test
 		[Test]
 		public void TestFdim()
 		{
-			var random = new Random();
+			var random = new Random(GetRandomSeed());
 			for (int i = 0; i < N; ++i)
 			{
 				var x = Scalbn(FromInt32(random.Next(int.MinValue, int.MaxValue)), random.Next(-100, 100));
