@@ -694,7 +694,7 @@ namespace EPAM.Deltix.DFP.Test
 		[Test]
 		public void TestNextAfter()
 		{
-			var x = Parse("3.14");
+			var x = Scalbn(FromInt32(314), -2);
 			AssertDecimalEqual(NextUp(x), NextAfter(x, Million));
 			AssertDecimalEqual(NextDown(x), NextAfter(x, -Million));
 		}
@@ -702,32 +702,32 @@ namespace EPAM.Deltix.DFP.Test
 		[Test]
 		public void TestMinNum()
 		{
-			var a = Parse("5");
-			var b = Parse("-10");
+			var a = FromInt32(5);
+			var b = FromInt32(-10);
 			AssertDecimalEqual(b, MinNum(a, b));
 		}
 
 		[Test]
 		public void TestMinNumMag()
 		{
-			var a = Parse("5");
-			var b = Parse("-10");
+			var a = FromInt32(5);
+			var b = FromInt32(-10);
 			AssertDecimalEqual(a, MinNumMag(a, b));
 		}
 
 		[Test]
 		public void TestMaxNum()
 		{
-			var a = Parse("5");
-			var b = Parse("-10");
+			var a = FromInt32(5);
+			var b = FromInt32(-10);
 			AssertDecimalEqual(a, MaxNum(a, b));
 		}
 
 		[Test]
 		public void TestMaxNumMag()
 		{
-			var a = Parse("5");
-			var b = Parse("-10");
+			var a = FromInt32(5);
+			var b = FromInt32(-10);
 			AssertDecimalEqual(b, MaxNumMag(a, b));
 		}
 
@@ -790,8 +790,8 @@ namespace EPAM.Deltix.DFP.Test
 		[Test]
 		public void TestIsNormal()
 		{
-			Assert.True(Parse("3.14").IsNormal());
-			Assert.True(Parse("-3.14").IsNormal());
+			Assert.True(Scalbn(FromInt32(314), -2).IsNormal());
+			Assert.True(Scalbn(FromInt32(-314), -2).IsNormal());
 
 			Assert.False(Zero.IsNormal());
 
@@ -803,8 +803,8 @@ namespace EPAM.Deltix.DFP.Test
 		[Test]
 		public void TestIsSubnormal()
 		{
-			Assert.False(Parse("3.14").IsSubnormal());
-			Assert.False(Parse("-3.14").IsSubnormal());
+			Assert.False(Scalbn(FromInt32(314), -2).IsSubnormal());
+			Assert.False(Scalbn(FromInt32(-314), -2).IsSubnormal());
 
 			Assert.False(Zero.IsSubnormal());
 
@@ -816,8 +816,8 @@ namespace EPAM.Deltix.DFP.Test
 		[Test]
 		public void TestIsInf()
 		{
-			Assert.False(Parse("3.14").IsInf());
-			Assert.False(Parse("-3.14").IsInf());
+			Assert.False(Scalbn(FromInt32(314), -2).IsInf());
+			Assert.False(Scalbn(FromInt32(-314), -2).IsInf());
 
 			Assert.False(Zero.IsInf());
 
@@ -829,8 +829,8 @@ namespace EPAM.Deltix.DFP.Test
 		[Test]
 		public void TestIsCanonical()
 		{
-			Assert.True(Parse("3.14").IsCanonical());
-			Assert.True(Parse("-3.14").IsCanonical());
+			Assert.True(Scalbn(FromInt32(314), -2).IsCanonical());
+			Assert.True(Scalbn(FromInt32(-314), -2).IsCanonical());
 
 			Assert.True(Zero.IsCanonical());
 
@@ -857,8 +857,8 @@ namespace EPAM.Deltix.DFP.Test
 		[Test]
 		public void TestClassOfValue()
 		{
-			Assert.AreEqual(ClassOfValue(Parse("3.14")), 8);
-			Assert.AreEqual(ClassOfValue(Parse("-3.14")), 3);
+			Assert.AreEqual(ClassOfValue(Scalbn(FromInt32(314), -2)), 8);
+			Assert.AreEqual(ClassOfValue(Scalbn(FromInt32(-314), -2)), 3);
 
 			Assert.AreEqual(ClassOfValue(Zero), 6);
 
@@ -871,7 +871,7 @@ namespace EPAM.Deltix.DFP.Test
 		public void TestIsSameQuantum()
 		{
 			Assert.True(IsSameQuantum(FromInt32(10), FromInt32(100)));
-			Assert.False(IsSameQuantum(FromInt32(10), Parse("1e+1")));
+			Assert.False(IsSameQuantum(FromInt32(10), Scalbn(FromInt32(1), 1)));
 		}
 
 		[Test]
@@ -926,10 +926,10 @@ namespace EPAM.Deltix.DFP.Test
 		public void TestIlogb()
 		{
 			Assert.AreEqual(3, Ilogb(FromInt32(5432)));
-			Assert.AreEqual(2, Ilogb(Parse("8e+2")));
+			Assert.AreEqual(2, Ilogb(Scalbn(FromInt32(8), 2)));
 			Assert.AreEqual(0, Ilogb(FromDouble(Math.PI)));
 			Assert.AreEqual(-6, Ilogb(FromDouble(3.34034e-6)));
-			Assert.AreEqual(-4, Ilogb(Parse("6e-4")));
+			Assert.AreEqual(-4, Ilogb(Scalbn(FromInt32(6), -4)));
 		}
 
 		[Test]
@@ -940,7 +940,7 @@ namespace EPAM.Deltix.DFP.Test
 			{
 				var x = random.Next(int.MinValue, int.MaxValue);
 				var y = random.Next(-100, 100);
-				AssertDecimalEqual(Parse(x + "e" + y), Scalbn(FromInt32(x), y), "x=" + x + "; y=" + y);
+				AssertDecimalEqual(FromInt32(x) * Exp10(FromInt32(y)), Scalbn(FromInt32(x), y), "x=" + x + "; y=" + y);
 			}
 		}
 
@@ -953,7 +953,6 @@ namespace EPAM.Deltix.DFP.Test
 				var x = random.Next(int.MinValue, int.MaxValue);
 				var y = random.Next(-100, 100);
 				var testValue = Ldexp(FromInt32(x), y);
-				AssertDecimalEqual(Parse(x + "e" + y), testValue, "x=" + x + "; y=" + y);
 				AssertDecimalEqual(Scalbn(FromInt32(x), y), testValue, "x=" + x + "; y=" + y);
 			}
 		}
@@ -998,10 +997,10 @@ namespace EPAM.Deltix.DFP.Test
 		[Test]
 		public void TestLogb()
 		{
-			AssertDecimalEqual(Parse("0"), Logb(Parse("3.14")));
-			AssertDecimalEqual(Parse("7"), Logb(Parse("3.14e+7")));
-			AssertDecimalEqual(Parse("-3"), Logb(Parse("314e-5")));
-			AssertDecimalEqual(Parse("-3"), Logb(Parse("-314e-5")));
+			AssertDecimalEqual(FromInt32(0), Logb(Scalbn(FromInt32(314), -2)));
+			AssertDecimalEqual(FromInt32(7), Logb(Scalbn(FromInt32(314), 5)));
+			AssertDecimalEqual(FromInt32(-3), Logb(Scalbn(FromInt32(314), -5)));
+			AssertDecimalEqual(FromInt32(-3), Logb(Scalbn(FromInt32(-314), -5)));
 		}
 
 		[Test]
@@ -1012,7 +1011,7 @@ namespace EPAM.Deltix.DFP.Test
 			{
 				var x = random.Next(int.MinValue, int.MaxValue);
 				var y = random.Next(-100, 100);
-				AssertDecimalEqual(Parse(x + "e" + y), Scalbln(FromInt64(x), y), "x=" + x + "; y=" + y);
+				AssertDecimalEqual(Scalbn(FromInt32(x), y), Scalbln(FromInt64(x), y), "x=" + x + "; y=" + y);
 			}
 		}
 
@@ -1059,9 +1058,8 @@ namespace EPAM.Deltix.DFP.Test
 			var x = Scalbn(FromInt32(1234), 5);
 			var y = Scalbn(FromInt32(56789), -2);
 
-			AssertDecimalEqual(Parse("1e+5"), Quantum(x));
-			AssertDecimalEqual(Parse("1e-2"), Quantum(y));
+			AssertDecimalEqual(Scalbn(FromInt32(1), 5), Quantum(x));
+			AssertDecimalEqual(Scalbn(FromInt32(1), -2), Quantum(y));
 		}
-
 	}
 }
