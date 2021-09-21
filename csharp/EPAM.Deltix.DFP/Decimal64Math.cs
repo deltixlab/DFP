@@ -768,7 +768,7 @@ namespace EPAM.Deltix.DFP
 		/// to 32-bit binary floating-point format.
 		/// </summary>
 		/// <returns>The converted value.</returns>
-		public static float toBinary32(this Decimal64 x)
+		public static float ToBinary32(this Decimal64 x)
 		{
 			return NativeImpl.bid64ToBinary32(x.Bits);
 		}
@@ -778,7 +778,7 @@ namespace EPAM.Deltix.DFP
 		/// to 64-bit binary floating-point format.
 		/// </summary>
 		/// <returns>The converted value.</returns>
-		public static double toBinary64(this Decimal64 x)
+		public static double ToBinary64(this Decimal64 x)
 		{
 			return NativeImpl.bid64ToBinary64(x.Bits);
 		}
