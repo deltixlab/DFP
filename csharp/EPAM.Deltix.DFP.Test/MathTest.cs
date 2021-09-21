@@ -986,9 +986,9 @@ namespace EPAM.Deltix.DFP.Test
 			var random = new Random(GetRandomSeed());
 			for (int i = 0; i < N; ++i)
 			{
-				long m = (long)((random.NextDouble() - 0.5) * 2 * 1000000000000000L);
-				var e = random.Next(-300, 300);
-				var rv = Double.Parse(m + "e" + e);
+				long m = (long)((random.NextDouble() - 0.5) * 2 * 1000000000000L);
+				var e = random.Next(-200, 200);
+				var rv = double.Parse(m + "e" + e);
 				var testValue = FromDouble(rv).ToBinary64();
 				Assert.AreEqual(testValue, rv);
 			}
