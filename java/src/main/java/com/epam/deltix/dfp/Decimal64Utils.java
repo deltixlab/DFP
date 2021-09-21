@@ -2099,7 +2099,7 @@ public class Decimal64Utils {
      */
     @Decimal
     public static long exp(@Decimal final long x) {
-        return NativeImpl.bid64_exp(x);
+        return NativeImpl.bid64Exp(x);
     }
 
     /**
@@ -2110,7 +2110,7 @@ public class Decimal64Utils {
      */
     @Decimal
     public static long exp2(@Decimal final long x) {
-        return NativeImpl.bid64_exp2(x);
+        return NativeImpl.bid64Exp2(x);
     }
 
     /**
@@ -2121,7 +2121,7 @@ public class Decimal64Utils {
      */
     @Decimal
     public static long exp10(@Decimal final long x) {
-        return NativeImpl.bid64_exp10(x);
+        return NativeImpl.bid64Exp10(x);
     }
 
     /**
@@ -2132,7 +2132,7 @@ public class Decimal64Utils {
      */
     @Decimal
     public static long expm1(@Decimal final long x) {
-        return NativeImpl.bid64_expm1(x);
+        return NativeImpl.bid64Expm1(x);
     }
 
     /**
@@ -2143,7 +2143,7 @@ public class Decimal64Utils {
      */
     @Decimal
     public static long log(@Decimal final long x) {
-        return NativeImpl.bid64_log(x);
+        return NativeImpl.bid64Log(x);
     }
 
     /**
@@ -2154,7 +2154,7 @@ public class Decimal64Utils {
      */
     @Decimal
     public static long log2(@Decimal final long x) {
-        return NativeImpl.bid64_log2(x);
+        return NativeImpl.bid64Log2(x);
     }
 
     /**
@@ -2165,7 +2165,7 @@ public class Decimal64Utils {
      */
     @Decimal
     public static long log10(@Decimal final long x) {
-        return NativeImpl.bid64_log10(x);
+        return NativeImpl.bid64Log10(x);
     }
 
     /**
@@ -2176,7 +2176,7 @@ public class Decimal64Utils {
      */
     @Decimal
     public static long log1p(@Decimal final long x) {
-        return NativeImpl.bid64_log1p(x);
+        return NativeImpl.bid64Log1p(x);
     }
 
     /**
@@ -2188,7 +2188,7 @@ public class Decimal64Utils {
      */
     @Decimal
     public static long pow(@Decimal final long x, @Decimal final long y) {
-        return NativeImpl.bid64_pow(x, y);
+        return NativeImpl.bid64Pow(x, y);
     }
 
     /**
@@ -2200,7 +2200,7 @@ public class Decimal64Utils {
      */
     @Decimal
     public static long fmod(@Decimal final long x, @Decimal final long y) {
-        return NativeImpl.bid64_fmod(x, y);
+        return NativeImpl.bid64Fmod(x, y);
     }
 
     //OPN(bid64_modf, bid64_modf(x, iptr), BID_UINT64 x, BID_UINT64 *iptr)
@@ -2214,7 +2214,7 @@ public class Decimal64Utils {
      */
     @Decimal
     public static long hypot(@Decimal final long x, @Decimal final long y) {
-        return NativeImpl.bid64_hypot(x, y);
+        return NativeImpl.bid64Hypot(x, y);
     }
 
     /**
@@ -2225,7 +2225,7 @@ public class Decimal64Utils {
      */
     @Decimal
     public static long sin(@Decimal final long x) {
-        return NativeImpl.bid64_sin(x);
+        return NativeImpl.bid64Sin(x);
     }
 
     /**
@@ -2236,7 +2236,7 @@ public class Decimal64Utils {
      */
     @Decimal
     public static long cos(@Decimal final long x) {
-        return NativeImpl.bid64_cos(x);
+        return NativeImpl.bid64Cos(x);
     }
 
     /**
@@ -2247,7 +2247,7 @@ public class Decimal64Utils {
      */
     @Decimal
     public static long tan(@Decimal final long x) {
-        return NativeImpl.bid64_tan(x);
+        return NativeImpl.bid64Tan(x);
     }
 
     /**
@@ -2258,7 +2258,7 @@ public class Decimal64Utils {
      */
     @Decimal
     public static long asin(@Decimal final long x) {
-        return NativeImpl.bid64_asin(x);
+        return NativeImpl.bid64Asin(x);
     }
 
     /**
@@ -2269,7 +2269,7 @@ public class Decimal64Utils {
      */
     @Decimal
     public static long acos(@Decimal final long x) {
-        return NativeImpl.bid64_acos(x);
+        return NativeImpl.bid64Acos(x);
     }
 
     /**
@@ -2280,7 +2280,7 @@ public class Decimal64Utils {
      */
     @Decimal
     public static long atan(@Decimal final long x) {
-        return NativeImpl.bid64_atan(x);
+        return NativeImpl.bid64Atan(x);
     }
 
     /**
@@ -2292,7 +2292,7 @@ public class Decimal64Utils {
      */
     @Decimal
     public static long atan2(@Decimal final long y, @Decimal final long x) {
-        return NativeImpl.bid64_atan2(y, x);
+        return NativeImpl.bid64Atan2(y, x);
     }
 
     /**
@@ -2303,7 +2303,7 @@ public class Decimal64Utils {
      */
     @Decimal
     public static long sinh(@Decimal final long x) {
-        return NativeImpl.bid64_sinh(x);
+        return NativeImpl.bid64Sinh(x);
     }
 
     /**
@@ -2314,7 +2314,7 @@ public class Decimal64Utils {
      */
     @Decimal
     public static long cosh(@Decimal final long x) {
-        return NativeImpl.bid64_cosh(x);
+        return NativeImpl.bid64Cosh(x);
     }
 
     /**
@@ -2325,7 +2325,7 @@ public class Decimal64Utils {
      */
     @Decimal
     public static long tanh(@Decimal final long x) {
-        return NativeImpl.bid64_tanh(x);
+        return NativeImpl.bid64Tanh(x);
     }
 
     /**
@@ -2336,7 +2336,7 @@ public class Decimal64Utils {
      */
     @Decimal
     public static long asinh(@Decimal final long x) {
-        return NativeImpl.bid64_asinh(x);
+        return NativeImpl.bid64Asinh(x);
     }
 
     /**
@@ -2347,7 +2347,7 @@ public class Decimal64Utils {
      */
     @Decimal
     public static long acosh(@Decimal final long x) {
-        return NativeImpl.bid64_acosh(x);
+        return NativeImpl.bid64Acosh(x);
     }
 
     /**
@@ -2358,7 +2358,7 @@ public class Decimal64Utils {
      */
     @Decimal
     public static long atanh(@Decimal final long x) {
-        return NativeImpl.bid64_atanh(x);
+        return NativeImpl.bid64Atanh(x);
     }
 
     /**
@@ -2369,7 +2369,7 @@ public class Decimal64Utils {
      */
     @Decimal
     public static long erf(@Decimal final long x) {
-        return NativeImpl.bid64_erf(x);
+        return NativeImpl.bid64Erf(x);
     }
 
     /**
@@ -2380,7 +2380,7 @@ public class Decimal64Utils {
      */
     @Decimal
     public static long erfc(@Decimal final long x) {
-        return NativeImpl.bid64_erfc(x);
+        return NativeImpl.bid64Erfc(x);
     }
 
     /**
@@ -2391,7 +2391,7 @@ public class Decimal64Utils {
      */
     @Decimal
     public static long tgamma(@Decimal final long x) {
-        return NativeImpl.bid64_tgamma(x);
+        return NativeImpl.bid64Tgamma(x);
     }
 
     /**
@@ -2402,10 +2402,10 @@ public class Decimal64Utils {
      */
     @Decimal
     public static long lgamma(@Decimal final long x) {
-        return NativeImpl.bid64_lgamma(x);
+        return NativeImpl.bid64Lgamma(x);
     }
 
-    //@Decimal public static long add(@Decimal final long x, @Decimal final long y) { return NativeImpl.bid64_add(x, y); }
+    //@Decimal public static long add(@Decimal final long x, @Decimal final long y) { return NativeImpl.bid64Add(x, y); }
 
     /**
      * Decimal floating-point subtraction.
@@ -2416,7 +2416,7 @@ public class Decimal64Utils {
      */
     @Decimal
     public static long sub(@Decimal final long x, @Decimal final long y) {
-        return NativeImpl.bid64_sub(x, y);
+        return NativeImpl.bid64Sub(x, y);
     }
 
     /**
@@ -2428,7 +2428,7 @@ public class Decimal64Utils {
      */
     @Decimal
     public static long mul(@Decimal final long x, @Decimal final long y) {
-        return NativeImpl.bid64_mul(x, y);
+        return NativeImpl.bid64Mul(x, y);
     }
 
     /**
@@ -2440,7 +2440,7 @@ public class Decimal64Utils {
      */
     @Decimal
     public static long div(@Decimal final long x, @Decimal final long y) {
-        return NativeImpl.bid64_div(x, y);
+        return NativeImpl.bid64Div(x, y);
     }
 
     /**
@@ -2453,7 +2453,7 @@ public class Decimal64Utils {
      */
     @Decimal
     public static long fma(@Decimal final long x, @Decimal final long y, @Decimal final long z) {
-        return NativeImpl.bid64_fma(x, y, z);
+        return NativeImpl.bid64Fma(x, y, z);
     }
 
     /**
@@ -2464,7 +2464,7 @@ public class Decimal64Utils {
      */
     @Decimal
     public static long sqrt(@Decimal final long x) {
-        return NativeImpl.bid64_sqrt(x);
+        return NativeImpl.bid64Sqrt(x);
     }
 
     /**
@@ -2475,14 +2475,14 @@ public class Decimal64Utils {
      */
     @Decimal
     public static long cbrt(@Decimal final long x) {
-        return NativeImpl.bid64_cbrt(x);
+        return NativeImpl.bid64Cbrt(x);
     }
 
-    //public static boolean isEqual(@Decimal final long x, @Decimal final long y) { return NativeImpl.bid64_quiet_equal(x, y) ; }
+    //public static boolean isEqual(@Decimal final long x, @Decimal final long y) { return NativeImpl.bid64QuietEqual(x, y) ; }
 
-    //public static boolean isGreater(@Decimal final long x, @Decimal final long y) { return NativeImpl.bid64_quiet_greater(x, y) ; }
+    //public static boolean isGreater(@Decimal final long x, @Decimal final long y) { return NativeImpl.bid64QuietGreater(x, y) ; }
 
-    //public static boolean isGreaterEqual(@Decimal final long x, @Decimal final long y) { return NativeImpl.bid64_quiet_greater_equal(x, y); }
+    //public static boolean isGreaterEqual(@Decimal final long x, @Decimal final long y) { return NativeImpl.bid64QuietGreaterEqual(x, y); }
 
     /**
      * Compare 64-bit decimal floating-point numbers for specified relation.
@@ -2492,12 +2492,12 @@ public class Decimal64Utils {
      * @return The comparison sign.
      */
     public static boolean isGreaterUnordered(@Decimal final long x, @Decimal final long y) {
-        return NativeImpl.bid64_quiet_greater_unordered(x, y);
+        return NativeImpl.bid64QuietGreaterUnordered(x, y);
     }
 
-    //public static boolean isLess(@Decimal final long x, @Decimal final long y) { return NativeImpl.bid64_quiet_less(x, y) ; }
+    //public static boolean isLess(@Decimal final long x, @Decimal final long y) { return NativeImpl.bid64QuietLess(x, y) ; }
 
-    //public static boolean isLessEqual(@Decimal final long x, @Decimal final long y) { return NativeImpl.bid64_quiet_less_equal(x, y); }
+    //public static boolean isLessEqual(@Decimal final long x, @Decimal final long y) { return NativeImpl.bid64QuietLessEqual(x, y); }
 
     /**
      * Compare 64-bit decimal floating-point numbers for specified relation.
@@ -2507,10 +2507,10 @@ public class Decimal64Utils {
      * @return The comparison sign.
      */
     public static boolean isLessUnordered(@Decimal final long x, @Decimal final long y) {
-        return NativeImpl.bid64_quiet_less_unordered(x, y);
+        return NativeImpl.bid64QuietLessUnordered(x, y);
     }
 
-    //public static boolean isNotEqual(@Decimal final long x, @Decimal final long y) { return NativeImpl.bid64_quiet_not_equal(x, y) ; }
+    //public static boolean isNotEqual(@Decimal final long x, @Decimal final long y) { return NativeImpl.bid64QuietNotEqual(x, y) ; }
 
     /**
      * Compare 64-bit decimal floating-point numbers for specified relation.
@@ -2520,7 +2520,7 @@ public class Decimal64Utils {
      * @return The comparison sign.
      */
     public static boolean isNotGreater(@Decimal final long x, @Decimal final long y) {
-        return NativeImpl.bid64_quiet_not_greater(x, y);
+        return NativeImpl.bid64QuietNotGreater(x, y);
     }
 
     /**
@@ -2531,7 +2531,7 @@ public class Decimal64Utils {
      * @return The comparison sign.
      */
     public static boolean isNotLess(@Decimal final long x, @Decimal final long y) {
-        return NativeImpl.bid64_quiet_not_less(x, y);
+        return NativeImpl.bid64QuietNotLess(x, y);
     }
 
     /**
@@ -2542,7 +2542,7 @@ public class Decimal64Utils {
      * @return {@code true} if both arguments are not NaN.
      */
     public static boolean isOrdered(@Decimal final long x, @Decimal final long y) {
-        return NativeImpl.bid64_quiet_ordered(x, y);
+        return NativeImpl.bid64QuietOrdered(x, y);
     }
 
     /**
@@ -2553,7 +2553,7 @@ public class Decimal64Utils {
      * @return {@code true} if either argument is NaN.
      */
     public static boolean isUnordered(@Decimal final long x, @Decimal final long y) {
-        return NativeImpl.bid64_quiet_unordered(x, y);
+        return NativeImpl.bid64QuietUnordered(x, y);
     }
 
     /**
@@ -2565,7 +2565,7 @@ public class Decimal64Utils {
      */
     @Decimal
     public static long roundIntegralExact(@Decimal final long x) {
-        return NativeImpl.bid64_round_integral_exact(x);
+        return NativeImpl.bid64RoundIntegralExact(x);
     }
 
     /**
@@ -2577,7 +2577,7 @@ public class Decimal64Utils {
      */
     @Decimal
     public static long roundIntegralNearestEven(@Decimal final long x) {
-        return NativeImpl.bid64_round_integral_nearest_even(x);
+        return NativeImpl.bid64RoundIntegralNearestEven(x);
     }
 
     /**
@@ -2589,7 +2589,7 @@ public class Decimal64Utils {
      */
     @Decimal
     public static long roundIntegralNegative(@Decimal final long x) {
-        return NativeImpl.bid64_round_integral_negative(x);
+        return NativeImpl.bid64RoundIntegralNegative(x);
     }
 
     /**
@@ -2601,7 +2601,7 @@ public class Decimal64Utils {
      */
     @Decimal
     public static long roundIntegralPositive(@Decimal final long x) {
-        return NativeImpl.bid64_round_integral_positive(x);
+        return NativeImpl.bid64RoundIntegralPositive(x);
     }
 
     /**
@@ -2613,7 +2613,7 @@ public class Decimal64Utils {
      */
     @Decimal
     public static long roundIntegralZero(@Decimal final long x) {
-        return NativeImpl.bid64_round_integral_zero(x);
+        return NativeImpl.bid64RoundIntegralZero(x);
     }
 
     /**
@@ -2625,12 +2625,12 @@ public class Decimal64Utils {
      */
     @Decimal
     public static long roundIntegralNearestAway(@Decimal final long x) {
-        return NativeImpl.bid64_round_integral_nearest_away(x);
+        return NativeImpl.bid64RoundIntegralNearestAway(x);
     }
 
-    //@Decimal public static long nextUp(@Decimal final long x) { return NativeImpl.bid64_nextup(x); }
+    //@Decimal public static long nextUp(@Decimal final long x) { return NativeImpl.bid64Nextup(x); }
 
-    //@Decimal public static long nextDown(@Decimal final long x) { return NativeImpl.bid64_nextdown(x); }
+    //@Decimal public static long nextDown(@Decimal final long x) { return NativeImpl.bid64Nextdown(x); }
 
     /**
      * Returns the next 64-bit decimal floating-point number that neighbors
@@ -2642,7 +2642,7 @@ public class Decimal64Utils {
      */
     @Decimal
     public static long nextAfter(@Decimal final long x, @Decimal final long y) {
-        return NativeImpl.bid64_nextafter(x, y);
+        return NativeImpl.bid64Nextafter(x, y);
     }
 
     /**
@@ -2656,7 +2656,7 @@ public class Decimal64Utils {
      */
     @Decimal
     public static long minNum(@Decimal final long x, @Decimal final long y) {
-        return NativeImpl.bid64_minnum(x, y);
+        return NativeImpl.bid64Minnum(x, y);
     }
 
     /**
@@ -2669,7 +2669,7 @@ public class Decimal64Utils {
      */
     @Decimal
     public static long minNumMag(@Decimal final long x, @Decimal final long y) {
-        return NativeImpl.bid64_minnum_mag(x, y);
+        return NativeImpl.bid64MinnumMag(x, y);
     }
 
     /**
@@ -2684,7 +2684,7 @@ public class Decimal64Utils {
      */
     @Decimal
     public static long maxNum(@Decimal final long x, @Decimal final long y) {
-        return NativeImpl.bid64_maxnum(x, y);
+        return NativeImpl.bid64Maxnum(x, y);
     }
 
     /**
@@ -2697,7 +2697,7 @@ public class Decimal64Utils {
      */
     @Decimal
     public static long maxNumMag(@Decimal final long x, @Decimal final long y) {
-        return NativeImpl.bid64_maxnum_mag(x, y);
+        return NativeImpl.bid64MaxnumMag(x, y);
     }
 
     /**
@@ -2708,7 +2708,7 @@ public class Decimal64Utils {
      */
     @Decimal
     public static long fromInt32(final int x) {
-        return NativeImpl.bid64_from_int32(x);
+        return NativeImpl.bid64FromInt32(x);
     }
 
     /**
@@ -2719,7 +2719,7 @@ public class Decimal64Utils {
      */
     @Decimal
     public static long fromUInt32(final int x) {
-        return NativeImpl.bid64_from_uint32(x);
+        return NativeImpl.bid64FromUint32(x);
     }
 
     /**
@@ -2730,7 +2730,7 @@ public class Decimal64Utils {
      */
     @Decimal
     public static long fromInt64(final long x) {
-        return NativeImpl.bid64_from_int64(x);
+        return NativeImpl.bid64FromInt64(x);
     }
 
     /**
@@ -2741,7 +2741,7 @@ public class Decimal64Utils {
      */
     @Decimal
     public static long fromUInt64(final long x) {
-        return NativeImpl.bid64_from_uint64(x);
+        return NativeImpl.bid64FromUint64(x);
     }
 
     /**
@@ -2751,7 +2751,7 @@ public class Decimal64Utils {
      * @return The sign.
      */
     public static boolean isSigned(@Decimal final long x) {
-        return NativeImpl.bid64_isSigned(x);
+        return NativeImpl.bid64IsSigned(x);
     }
 
     /**
@@ -2761,7 +2761,7 @@ public class Decimal64Utils {
      * @return The check flag.
      */
     public static boolean isNormal(@Decimal final long x) {
-        return NativeImpl.bid64_isNormal(x);
+        return NativeImpl.bid64IsNormal(x);
     }
 
     /**
@@ -2771,7 +2771,7 @@ public class Decimal64Utils {
      * @return The check flag.
      */
     public static boolean isSubnormal(@Decimal final long x) {
-        return NativeImpl.bid64_isSubnormal(x);
+        return NativeImpl.bid64IsSubnormal(x);
     }
 
 //    /**
@@ -2780,7 +2780,7 @@ public class Decimal64Utils {
 //     * @param x Test value.
 //     * @return The check flag.
 //     */
-//    public static boolean isFinite(@Decimal final long x) { return NativeImpl.bid64_isFinite(x) ; }
+//    public static boolean isFinite(@Decimal final long x) { return NativeImpl.bid64IsFinite(x) ; }
 
 //    /**
 //     * Return {@code true} if and only if x is +0 or -0.
@@ -2788,7 +2788,7 @@ public class Decimal64Utils {
 //     * @param x Test value.
 //     * @return The check flag.
 //     */
-//    public static boolean isZero(@Decimal final long x) { return NativeImpl.bid64_isZero(x) ; }
+//    public static boolean isZero(@Decimal final long x) { return NativeImpl.bid64IsZero(x) ; }
 
     /**
      * Return {@code true} if and only if x is infinite.
@@ -2797,28 +2797,28 @@ public class Decimal64Utils {
      * @return The check flag.
      */
     public static boolean isInf(@Decimal final long x) {
-        return NativeImpl.bid64_isInf(x);
+        return NativeImpl.bid64IsInf(x);
     }
 
     /**
-     * Return true if and only if x is a signaling NaN.
+     * Return {@code true} if and only if x is a signaling NaN.
      *
      * @param x Test value.
      * @return The check flag.
      */
     public static boolean isSignaling(@Decimal final long x) {
-        return NativeImpl.bid64_isSignaling(x);
+        return NativeImpl.bid64IsSignaling(x);
     }
 
     /**
-     * Return true if and only if x is a finite number, infinity, or
+     * Return {@code true} if and only if x is a finite number, infinity, or
      * NaN that is canonical.
      *
      * @param x Test value.
      * @return The check flag.
      */
     public static boolean isCanonical(@Decimal final long x) {
-        return NativeImpl.bid64_isCanonical(x);
+        return NativeImpl.bid64IsCanonical(x);
     }
 
 //    /**
@@ -2827,11 +2827,11 @@ public class Decimal64Utils {
 //     * @param x Test value.
 //     * @return The check flag.
 //     */
-//    public static boolean isNaN(@Decimal final long x) { return NativeImpl.bid64_isNaN(x) ; }
+//    public static boolean isNaN(@Decimal final long x) { return NativeImpl.bid64IsNaN(x) ; }
 
-    //@Decimal public static long copy(@Decimal final long x) { return NativeImpl.bid64_copy(x); }
-    //@Decimal public static long negate(@Decimal final long x) { return NativeImpl.bid64_negate(x); }
-    //@Decimal public static long abs(@Decimal final long x) { return NativeImpl.bid64_abs(x); }
+    //@Decimal public static long copy(@Decimal final long x) { return NativeImpl.bid64Copy(x); }
+    //@Decimal public static long negate(@Decimal final long x) { return NativeImpl.bid64Negate(x); }
+    //@Decimal public static long abs(@Decimal final long x) { return NativeImpl.bid64Abs(x); }
 
     /**
      * Copies a 64-bit decimal floating-point operand x to a destination
@@ -2843,7 +2843,7 @@ public class Decimal64Utils {
      */
     @Decimal
     public static long copySign(@Decimal final long x, @Decimal final long y) {
-        return NativeImpl.bid64_copySign(x, y);
+        return NativeImpl.bid64CopySign(x, y);
     }
 
     /**
@@ -2856,7 +2856,7 @@ public class Decimal64Utils {
      * @return The value class.
      */
     public static int classOfValue(@Decimal final long x) {
-        return NativeImpl.bid64_class(x);
+        return NativeImpl.bid64Class(x);
     }
 
     /**
@@ -2869,31 +2869,31 @@ public class Decimal64Utils {
      * @param y Second decimal value.
      * @return Comparison flag.
      */
-    public static boolean sameQuantum(@Decimal final long x, @Decimal final long y) {
-        return NativeImpl.bid64_sameQuantum(x, y);
+    public static boolean isSameQuantum(@Decimal final long x, @Decimal final long y) {
+        return NativeImpl.bid64SameQuantum(x, y);
     }
 
     /**
-     * Return true if x and y are ordered (see the IEEE Standard 754-2008).
+     * Return {@code true} if x and y are ordered (see the IEEE Standard 754-2008).
      *
      * @param x First decimal value.
      * @param y Second decimal value.
      * @return Comparison flag.
      */
-    public static boolean totalOrder(@Decimal final long x, @Decimal final long y) {
-        return NativeImpl.bid64_totalOrder(x, y);
+    public static boolean isTotalOrder(@Decimal final long x, @Decimal final long y) {
+        return NativeImpl.bid64TotalOrder(x, y);
     }
 
     /**
-     * Return true if the absolute values of x and y are ordered
+     * Return {@code true} if the absolute values of x and y are ordered
      * (see the IEEE Standard 754-2008)
      *
      * @param x First decimal value.
      * @param y Second decimal value.
      * @return Comparison flag.
      */
-    public static boolean totalOrderMag(@Decimal final long x, @Decimal final long y) {
-        return NativeImpl.bid64_totalOrderMag(x, y);
+    public static boolean isTotalOrderMag(@Decimal final long x, @Decimal final long y) {
+        return NativeImpl.bid64TotalOrderMag(x, y);
     }
 
     /**
@@ -2903,7 +2903,7 @@ public class Decimal64Utils {
      * @return The value radix.
      */
     public static int radix(@Decimal final long x) {
-        return NativeImpl.bid64_radix(x);
+        return NativeImpl.bid64Radix(x);
     }
 
     /**
@@ -2915,7 +2915,7 @@ public class Decimal64Utils {
      */
     @Decimal
     public static long rem(@Decimal final long x, @Decimal final long y) {
-        return NativeImpl.bid64_rem(x, y);
+        return NativeImpl.bid64Rem(x, y);
     }
 
     /**
@@ -2926,7 +2926,7 @@ public class Decimal64Utils {
      * @return The integral part of the logarithm of |x|.
      */
     public static int ilogb(@Decimal final long x) {
-        return NativeImpl.bid64_ilogb(x);
+        return NativeImpl.bid64Ilogb(x);
     }
 
     /**
@@ -2938,19 +2938,19 @@ public class Decimal64Utils {
      */
     @Decimal
     public static long scalbn(@Decimal final long x, final int n) {
-        return NativeImpl.bid64_scalbn(x, n);
+        return NativeImpl.bid64Scalbn(x, n);
     }
 
     /**
-     * Returns the result of multiplying x (the significand) by 2 raised to the power of exp (the exponent).
+     * Returns the result of multiplying x (the significand) by 10 raised to the power of exp (the exponent).
      *
      * @param x Floating point value representing the significand.
      * @param n Value of the exponent.
-     * @return The x*2^exp value.
+     * @return The x*10^exp value.
      */
     @Decimal
     public static long ldexp(@Decimal final long x, final int n) {
-        return NativeImpl.bid64_ldexp(x, n);
+        return NativeImpl.bid64Ldexp(x, n);
     }
 
     /**
@@ -2972,7 +2972,7 @@ public class Decimal64Utils {
      */
     @Decimal
     public static long quantize(@Decimal final long x, @Decimal final long y) {
-        return NativeImpl.bid64_quantize(x, y);
+        return NativeImpl.bid64Quantize(x, y);
     }
 
     /**
@@ -2983,7 +2983,7 @@ public class Decimal64Utils {
      * @return The converted value.
      */
     public static float toBinary32(@Decimal final long x) {
-        return NativeImpl.bid64_to_binary32(x);
+        return NativeImpl.bid64ToBinary32(x);
     }
 
     /**
@@ -2994,18 +2994,18 @@ public class Decimal64Utils {
      * @return The converted value.
      */
     public static double toBinary64(@Decimal final long x) {
-        return NativeImpl.bid64_to_binary64(x);
+        return NativeImpl.bid64ToBinary64(x);
     }
 
     /**
-     * Returns the logarithm of |x|.
+     * Returns the adjusted exponent of the absolute value.
      *
      * @param x Value whose logarithm is calculated.
-     * @return The logarithm of x.
+     * @return The adjusted logarithm of |x|.
      */
     @Decimal
     public static long logb(@Decimal final long x) {
-        return NativeImpl.bid64_logb(x);
+        return NativeImpl.bid64Logb(x);
     }
 
     /**
@@ -3017,7 +3017,7 @@ public class Decimal64Utils {
      */
     @Decimal
     public static long scalbln(@Decimal final long x, final long n) {
-        return NativeImpl.bid64_scalbln(x, n);
+        return NativeImpl.bid64Scalbln(x, n);
     }
 
     /**
@@ -3028,28 +3028,7 @@ public class Decimal64Utils {
      */
     @Decimal
     public static long nearByInt(@Decimal final long x) {
-        return NativeImpl.bid64_nearbyint(x);
-    }
-
-    /**
-     * Rounds the floating-point argument arg to an integer value in floating-point format, using the current rounding mode.
-     *
-     * @param x Value to round.
-     * @return The rounded value.
-     */
-    public static long llrint(@Decimal final long x) {
-        return NativeImpl.bid64_llrint(x);
-    }
-
-    /**
-     * Computes the nearest integer value to arg (in floating-point format), rounding halfway cases away from zero,
-     * regardless of the current rounding mode.
-     *
-     * @param x Value to round.
-     * @return The rounded value.
-     */
-    public static long llround(@Decimal final long x) {
-        return NativeImpl.bid64_llround(x);
+        return NativeImpl.bid64Nearbyint(x);
     }
 
     /**
@@ -3061,7 +3040,7 @@ public class Decimal64Utils {
      */
     @Decimal
     public static long fdim(@Decimal final long x, @Decimal final long y) {
-        return NativeImpl.bid64_fdim(x, y);
+        return NativeImpl.bid64Fdim(x, y);
     }
 
     /**
@@ -3074,7 +3053,7 @@ public class Decimal64Utils {
      * @return The quantum exponent.
      */
     public static int quantExp(@Decimal final long x) {
-        return NativeImpl.bid64_quantexp(x);
+        return NativeImpl.bid64Quantexp(x);
     }
 
     /**
@@ -3088,20 +3067,7 @@ public class Decimal64Utils {
      */
     @Decimal
     public static long quantum(@Decimal final long x) {
-        return NativeImpl.bid64_quantum(x);
-    }
-
-    /**
-     * The function compute the quantum exponent of a finite argument. The numerical value of a finite number
-     * is given by: (-1)^sign x coefficient x 10^exponent. The quantum of a finite number is given by
-     * 1 x 10^exponent and represents the value of a unit in the least significant position of the coefficient
-     * of a finite number. The quantum exponent is the exponent of the quantum (represented by exponent above).
-     *
-     * @param x The value for operation.
-     * @return The quantum exponent.
-     */
-    public static long llQuantExp(@Decimal final long x) {
-        return NativeImpl.bid64_llquantexp(x);
+        return NativeImpl.bid64Quantum(x);
     }
 
     /// endregion

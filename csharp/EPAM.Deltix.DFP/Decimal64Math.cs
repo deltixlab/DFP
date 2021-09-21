@@ -13,7 +13,7 @@ namespace EPAM.Deltix.DFP
 		/// <returns>Exponential value of x.</returns>
 		public static Decimal64 Exp(Decimal64 x)
 		{
-			return new Decimal64(NativeImpl.bid64_exp(x.Bits));
+			return new Decimal64(NativeImpl.bid64Exp(x.Bits));
 		}
 
 		/// <summary>
@@ -23,7 +23,7 @@ namespace EPAM.Deltix.DFP
 		/// <returns>2 raised to the power of x.</returns>
 		public static Decimal64 Exp2(Decimal64 x)
 		{
-			return new Decimal64(NativeImpl.bid64_exp2(x.Bits));
+			return new Decimal64(NativeImpl.bid64Exp2(x.Bits));
 		}
 
 		/// <summary>
@@ -33,7 +33,7 @@ namespace EPAM.Deltix.DFP
 		/// <returns>10 raised to the power of x.</returns>
 		public static Decimal64 Exp10(Decimal64 x)
 		{
-			return new Decimal64(NativeImpl.bid64_exp10(x.Bits));
+			return new Decimal64(NativeImpl.bid64Exp10(x.Bits));
 		}
 
 		/// <summary>
@@ -43,7 +43,7 @@ namespace EPAM.Deltix.DFP
 		/// <returns>e raised to the power of x, minus one.</returns>
 		public static Decimal64 Expm1(Decimal64 x)
 		{
-			return new Decimal64(NativeImpl.bid64_expm1(x.Bits));
+			return new Decimal64(NativeImpl.bid64Expm1(x.Bits));
 		}
 
 		/// <summary>
@@ -53,7 +53,7 @@ namespace EPAM.Deltix.DFP
 		/// <returns>Natural logarithm of x.</returns>
 		public static Decimal64 Log(Decimal64 x)
 		{
-			return new Decimal64(NativeImpl.bid64_log(x.Bits));
+			return new Decimal64(NativeImpl.bid64Log(x.Bits));
 		}
 
 		/// <summary>
@@ -63,7 +63,7 @@ namespace EPAM.Deltix.DFP
 		/// <returns>The binary logarithm of x.</returns>
 		public static Decimal64 Log2(Decimal64 x)
 		{
-			return new Decimal64(NativeImpl.bid64_log2(x.Bits));
+			return new Decimal64(NativeImpl.bid64Log2(x.Bits));
 		}
 
 		/// <summary>
@@ -73,7 +73,7 @@ namespace EPAM.Deltix.DFP
 		/// <returns>Common logarithm of x.</returns>
 		public static Decimal64 Log10(Decimal64 x)
 		{
-			return new Decimal64(NativeImpl.bid64_log10(x.Bits));
+			return new Decimal64(NativeImpl.bid64Log10(x.Bits));
 		}
 
 		/// <summary>
@@ -83,7 +83,7 @@ namespace EPAM.Deltix.DFP
 		/// <returns>The natural logarithm of (1+x).</returns>
 		public static Decimal64 Log1p(Decimal64 x)
 		{
-			return new Decimal64(NativeImpl.bid64_log1p(x.Bits));
+			return new Decimal64(NativeImpl.bid64Log1p(x.Bits));
 		}
 
 		/// <summary>
@@ -94,7 +94,7 @@ namespace EPAM.Deltix.DFP
 		/// <returns>The result of raising base to the power exponent.</returns>
 		public static Decimal64 Pow(Decimal64 x, Decimal64 y)
 		{
-			return new Decimal64(NativeImpl.bid64_pow(x.Bits, y.Bits));
+			return new Decimal64(NativeImpl.bid64Pow(x.Bits, y.Bits));
 		}
 
 		/// <summary>
@@ -105,7 +105,7 @@ namespace EPAM.Deltix.DFP
 		/// <returns>The remainder of dividing the arguments.</returns>
 		public static Decimal64 Fmod(Decimal64 x, Decimal64 y)
 		{
-			return new Decimal64(NativeImpl.bid64_fmod(x.Bits, y.Bits));
+			return new Decimal64(NativeImpl.bid64Fmod(x.Bits, y.Bits));
 		}
 
 		//OPN(bid64_modf, bid64_modf(x, iptr), BID_UINT64 x, BID_UINT64 *iptr)
@@ -118,7 +118,7 @@ namespace EPAM.Deltix.DFP
 		/// <returns>The square root of (x*x+y*y).</returns>
 		public static Decimal64 Hypot(Decimal64 x, Decimal64 y)
 		{
-			return new Decimal64(NativeImpl.bid64_hypot(x.Bits, y.Bits));
+			return new Decimal64(NativeImpl.bid64Hypot(x.Bits, y.Bits));
 		}
 
 		/// <summary>
@@ -128,7 +128,7 @@ namespace EPAM.Deltix.DFP
 		/// <returns>Sine of x radians.</returns>
 		public static Decimal64 Sin(Decimal64 x)
 		{
-			return new Decimal64(NativeImpl.bid64_sin(x.Bits));
+			return new Decimal64(NativeImpl.bid64Sin(x.Bits));
 		}
 
 		/// <summary>
@@ -138,7 +138,7 @@ namespace EPAM.Deltix.DFP
 		/// <returns>Cosine of x radians.</returns>
 		public static Decimal64 Cos(Decimal64 x)
 		{
-			return new Decimal64(NativeImpl.bid64_cos(x.Bits));
+			return new Decimal64(NativeImpl.bid64Cos(x.Bits));
 		}
 
 		/// <summary>
@@ -148,7 +148,7 @@ namespace EPAM.Deltix.DFP
 		/// <returns>Tangent of x radians.</returns>
 		public static Decimal64 Tan(Decimal64 x)
 		{
-			return new Decimal64(NativeImpl.bid64_tan(x.Bits));
+			return new Decimal64(NativeImpl.bid64Tan(x.Bits));
 		}
 
 		/// <summary>
@@ -158,7 +158,7 @@ namespace EPAM.Deltix.DFP
 		/// <returns>Principal arc sine of x, in the interval [-pi/2,+pi/2] radians.</returns>
 		public static Decimal64 Asin(Decimal64 x)
 		{
-			return new Decimal64(NativeImpl.bid64_asin(x.Bits));
+			return new Decimal64(NativeImpl.bid64Asin(x.Bits));
 		}
 
 		/// <summary>
@@ -168,7 +168,7 @@ namespace EPAM.Deltix.DFP
 		/// <returns>Principal arc cosine of x, in the interval [0,pi] radians.</returns>
 		public static Decimal64 Acos(Decimal64 x)
 		{
-			return new Decimal64(NativeImpl.bid64_acos(x.Bits));
+			return new Decimal64(NativeImpl.bid64Acos(x.Bits));
 		}
 
 		/// <summary>
@@ -178,7 +178,7 @@ namespace EPAM.Deltix.DFP
 		/// <returns>Principal arc tangent of x, in the interval [-pi/2,+pi/2] radians.</returns>
 		public static Decimal64 Atan(Decimal64 x)
 		{
-			return new Decimal64(NativeImpl.bid64_atan(x.Bits));
+			return new Decimal64(NativeImpl.bid64Atan(x.Bits));
 		}
 
 		/// <summary>
@@ -189,7 +189,7 @@ namespace EPAM.Deltix.DFP
 		/// <returns>Principal arc tangent of y/x, in the interval [-pi,+pi] radians.</returns>
 		public static Decimal64 Atan2(Decimal64 y, Decimal64 x)
 		{
-			return new Decimal64(NativeImpl.bid64_atan2(y.Bits, x.Bits));
+			return new Decimal64(NativeImpl.bid64Atan2(y.Bits, x.Bits));
 		}
 
 		/// <summary>
@@ -199,7 +199,7 @@ namespace EPAM.Deltix.DFP
 		/// <returns>Hyperbolic sine of x.</returns>
 		public static Decimal64 Sinh(Decimal64 x)
 		{
-			return new Decimal64(NativeImpl.bid64_sinh(x.Bits));
+			return new Decimal64(NativeImpl.bid64Sinh(x.Bits));
 		}
 
 		/// <summary>
@@ -209,7 +209,7 @@ namespace EPAM.Deltix.DFP
 		/// <returns>Hyperbolic cosine of x.</returns>
 		public static Decimal64 Cosh(Decimal64 x)
 		{
-			return new Decimal64(NativeImpl.bid64_cosh(x.Bits));
+			return new Decimal64(NativeImpl.bid64Cosh(x.Bits));
 		}
 
 		/// <summary>
@@ -219,7 +219,7 @@ namespace EPAM.Deltix.DFP
 		/// <returns>Hyperbolic tangent of x.</returns>
 		public static Decimal64 Tanh(Decimal64 x)
 		{
-			return new Decimal64(NativeImpl.bid64_tanh(x.Bits));
+			return new Decimal64(NativeImpl.bid64Tanh(x.Bits));
 		}
 
 		/// <summary>
@@ -229,7 +229,7 @@ namespace EPAM.Deltix.DFP
 		/// <returns>Area hyperbolic sine of x.</returns>
 		public static Decimal64 Asinh(Decimal64 x)
 		{
-			return new Decimal64(NativeImpl.bid64_asinh(x.Bits));
+			return new Decimal64(NativeImpl.bid64Asinh(x.Bits));
 		}
 
 		/// <summary>
@@ -239,7 +239,7 @@ namespace EPAM.Deltix.DFP
 		/// <returns>Nonnegative area hyperbolic cosine of x, in the interval [0,+INFINITY].</returns>
 		public static Decimal64 Acosh(Decimal64 x)
 		{
-			return new Decimal64(NativeImpl.bid64_acosh(x.Bits));
+			return new Decimal64(NativeImpl.bid64Acosh(x.Bits));
 		}
 
 		/// <summary>
@@ -249,7 +249,7 @@ namespace EPAM.Deltix.DFP
 		/// <returns>Area hyperbolic tangent of x.</returns>
 		public static Decimal64 Atanh(Decimal64 x)
 		{
-			return new Decimal64(NativeImpl.bid64_atanh(x.Bits));
+			return new Decimal64(NativeImpl.bid64Atanh(x.Bits));
 		}
 
 		/// <summary>
@@ -259,7 +259,7 @@ namespace EPAM.Deltix.DFP
 		/// <returns>Error function value for x.</returns>
 		public static Decimal64 Erf(Decimal64 x)
 		{
-			return new Decimal64(NativeImpl.bid64_erf(x.Bits));
+			return new Decimal64(NativeImpl.bid64Erf(x.Bits));
 		}
 
 		/// <summary>
@@ -269,7 +269,7 @@ namespace EPAM.Deltix.DFP
 		/// <returns>Complementary error function value for x.</returns>
 		public static Decimal64 Erfc(Decimal64 x)
 		{
-			return new Decimal64(NativeImpl.bid64_erfc(x.Bits));
+			return new Decimal64(NativeImpl.bid64Erfc(x.Bits));
 		}
 
 		/// <summary>
@@ -279,7 +279,7 @@ namespace EPAM.Deltix.DFP
 		/// <returns>Gamma function of x.</returns>
 		public static Decimal64 Tgamma(Decimal64 x)
 		{
-			return new Decimal64(NativeImpl.bid64_tgamma(x.Bits));
+			return new Decimal64(NativeImpl.bid64Tgamma(x.Bits));
 		}
 
 		/// <summary>
@@ -289,16 +289,16 @@ namespace EPAM.Deltix.DFP
 		/// <returns>Log-gamma function of x.</returns>
 		public static Decimal64 Lgamma(Decimal64 x)
 		{
-			return new Decimal64(NativeImpl.bid64_lgamma(x.Bits));
+			return new Decimal64(NativeImpl.bid64Lgamma(x.Bits));
 		}
 
-		//public static Decimal64 Add(Decimal64 x, Decimal64 y) { return new Decimal64(NativeImpl.bid64_add(x.Bits, y.Bits)); }
+		//public static Decimal64 Add(Decimal64 x, Decimal64 y) { return new Decimal64(NativeImpl.bid64Add(x.Bits, y.Bits)); }
 
-		//public static Decimal64 Sub(Decimal64 x, Decimal64 y) { return new Decimal64(NativeImpl.bid64_sub(x.Bits, y.Bits)); }
+		//public static Decimal64 Sub(Decimal64 x, Decimal64 y) { return new Decimal64(NativeImpl.bid64Sub(x.Bits, y.Bits)); }
 
-		//public static Decimal64 Mul(Decimal64 x, Decimal64 y) { return new Decimal64(NativeImpl.bid64_mul(x.Bits, y.Bits)); }
+		//public static Decimal64 Mul(Decimal64 x, Decimal64 y) { return new Decimal64(NativeImpl.bid64Mul(x.Bits, y.Bits)); }
 
-		//public static Decimal64 Div(Decimal64 x, Decimal64 y) { return new Decimal64(NativeImpl.bid64_div(x.Bits, y.Bits)); }
+		//public static Decimal64 Div(Decimal64 x, Decimal64 y) { return new Decimal64(NativeImpl.bid64Div(x.Bits, y.Bits)); }
 
 		/// <summary>
 		/// Decimal floating-point fused multiply-add: x*y+z
@@ -309,7 +309,7 @@ namespace EPAM.Deltix.DFP
 		/// <returns>The result of x*y+z</returns>
 		public static Decimal64 Fma(Decimal64 x, Decimal64 y, Decimal64 z)
 		{
-			return new Decimal64(NativeImpl.bid64_fma(x.Bits, y.Bits, z.Bits));
+			return new Decimal64(NativeImpl.bid64Fma(x.Bits, y.Bits, z.Bits));
 		}
 
 		/// <summary>
@@ -319,7 +319,7 @@ namespace EPAM.Deltix.DFP
 		/// <returns>Square root of x.</returns>
 		public static Decimal64 Sqrt(Decimal64 x)
 		{
-			return new Decimal64(NativeImpl.bid64_sqrt(x.Bits));
+			return new Decimal64(NativeImpl.bid64Sqrt(x.Bits));
 		}
 
 		/// <summary>
@@ -329,14 +329,14 @@ namespace EPAM.Deltix.DFP
 		/// <returns>Cubic root of x.</returns>
 		public static Decimal64 Cbrt(Decimal64 x)
 		{
-			return new Decimal64(NativeImpl.bid64_cbrt(x.Bits));
+			return new Decimal64(NativeImpl.bid64Cbrt(x.Bits));
 		}
 
-		//public bool IsEqual(Decimal64 y) { return NativeImpl.bid64_is_equal(Bits, y.Bits); }
+		//public bool IsEqual(Decimal64 y) { return NativeImpl.bid64IsEqual(Bits, y.Bits); }
 
-		//public bool IsGreater(Decimal64 y) { return NativeImpl.bid64_is_greater(Bits, y.Bits); }
+		//public bool IsGreater(Decimal64 y) { return NativeImpl.bid64IsGreater(Bits, y.Bits); }
 
-		//public bool IsGreaterEqual(Decimal64 y) { return NativeImpl.bid64_is_greater_equal(Bits, y.Bits); }
+		//public bool IsGreaterEqual(Decimal64 y) { return NativeImpl.bid64IsGreaterEqual(Bits, y.Bits); }
 
 		/// <summary>
 		/// Compare 64-bit decimal floating-point numbers for specified relation.
@@ -345,12 +345,12 @@ namespace EPAM.Deltix.DFP
 		/// <returns>The comparison sign.</returns>
 		public static bool IsGreaterUnordered(this Decimal64 x, Decimal64 y)
 		{
-			return NativeImpl.bid64_quiet_greater_unordered(x.Bits, y.Bits);
+			return NativeImpl.bid64QuietGreaterUnordered(x.Bits, y.Bits);
 		}
 
-		//public bool IsLess(Decimal64 y) { return NativeImpl.bid64_is_less(Bits, y.Bits); }
+		//public bool IsLess(Decimal64 y) { return NativeImpl.bid64IsLess(Bits, y.Bits); }
 
-		//public bool IsLessEqual(Decimal64 y) { return NativeImpl.bid64_is_less_equal(Bits, y.Bits); }
+		//public bool IsLessEqual(Decimal64 y) { return NativeImpl.bid64IsLessEqual(Bits, y.Bits); }
 
 		/// <summary>
 		/// Compare 64-bit decimal floating-point numbers for specified relation.
@@ -359,10 +359,10 @@ namespace EPAM.Deltix.DFP
 		/// <returns>The comparison sign.</returns>
 		public static bool IsLessUnordered(this Decimal64 x, Decimal64 y)
 		{
-			return NativeImpl.bid64_quiet_less_unordered(x.Bits, y.Bits);
+			return NativeImpl.bid64QuietLessUnordered(x.Bits, y.Bits);
 		}
 
-		//public bool IsNotEqual(Decimal64 y) { return NativeImpl.bid64_is_not_equal(Bits, y.Bits); }
+		//public bool IsNotEqual(Decimal64 y) { return NativeImpl.bid64IsNotEqual(Bits, y.Bits); }
 
 		/// <summary>
 		/// Compare 64-bit decimal floating-point numbers for specified relation.
@@ -371,7 +371,7 @@ namespace EPAM.Deltix.DFP
 		/// <returns>The comparison sign.</returns>
 		public static bool IsNotGreater(this Decimal64 x, Decimal64 y)
 		{
-			return NativeImpl.bid64_quiet_not_greater(x.Bits, y.Bits);
+			return NativeImpl.bid64QuietNotGreater(x.Bits, y.Bits);
 		}
 
 		/// <summary>
@@ -381,7 +381,7 @@ namespace EPAM.Deltix.DFP
 		/// <returns>The comparison sign.</returns>
 		public static bool IsNotLess(this Decimal64 x, Decimal64 y)
 		{
-			return NativeImpl.bid64_quiet_not_less(x.Bits, y.Bits);
+			return NativeImpl.bid64QuietNotLess(x.Bits, y.Bits);
 		}
 
 		/// <summary>
@@ -391,7 +391,7 @@ namespace EPAM.Deltix.DFP
 		/// <returns><c>true</c> if both arguments are not NaN.</returns>
 		public static bool IsOrdered(this Decimal64 x, Decimal64 y)
 		{
-			return NativeImpl.bid64_quiet_ordered(x.Bits, y.Bits);
+			return NativeImpl.bid64QuietOrdered(x.Bits, y.Bits);
 		}
 
 		/// <summary>
@@ -401,7 +401,7 @@ namespace EPAM.Deltix.DFP
 		/// <returns><c>true</c> if either argument is NaN.</returns>
 		public static bool IsUnordered(this Decimal64 x, Decimal64 y)
 		{
-			return NativeImpl.bid64_quiet_unordered(x.Bits, y.Bits);
+			return NativeImpl.bid64QuietUnordered(x.Bits, y.Bits);
 		}
 
 		/// <summary>
@@ -412,7 +412,7 @@ namespace EPAM.Deltix.DFP
 		/// <returns>The rounded value.</returns>
 		public static Decimal64 RoundIntegralExact(Decimal64 x)
 		{
-			return new Decimal64(NativeImpl.bid64_round_integral_exact(x.Bits));
+			return new Decimal64(NativeImpl.bid64RoundIntegralExact(x.Bits));
 		}
 
 		/// <summary>
@@ -423,7 +423,7 @@ namespace EPAM.Deltix.DFP
 		/// <returns>The rounded value.</returns>
 		public static Decimal64 RoundIntegralNearestEven(Decimal64 x)
 		{
-			return new Decimal64(NativeImpl.bid64_round_integral_nearest_even(x.Bits));
+			return new Decimal64(NativeImpl.bid64RoundIntegralNearestEven(x.Bits));
 		}
 
 		/// <summary>
@@ -434,7 +434,7 @@ namespace EPAM.Deltix.DFP
 		/// <returns>The rounded value.</returns>
 		public static Decimal64 RoundIntegralNegative(Decimal64 x)
 		{
-			return new Decimal64(NativeImpl.bid64_round_integral_negative(x.Bits));
+			return new Decimal64(NativeImpl.bid64RoundIntegralNegative(x.Bits));
 		}
 
 		/// <summary>
@@ -445,7 +445,7 @@ namespace EPAM.Deltix.DFP
 		/// <returns>The rounded value.</returns>
 		public static Decimal64 RoundIntegralPositive(Decimal64 x)
 		{
-			return new Decimal64(NativeImpl.bid64_round_integral_positive(x.Bits));
+			return new Decimal64(NativeImpl.bid64RoundIntegralPositive(x.Bits));
 		}
 
 		/// <summary>
@@ -456,7 +456,7 @@ namespace EPAM.Deltix.DFP
 		/// <returns>The rounded value.</returns>
 		public static Decimal64 RoundIntegralZero(Decimal64 x)
 		{
-			return new Decimal64(NativeImpl.bid64_round_integral_zero(x.Bits));
+			return new Decimal64(NativeImpl.bid64RoundIntegralZero(x.Bits));
 		}
 
 		/// <summary>
@@ -467,17 +467,17 @@ namespace EPAM.Deltix.DFP
 		/// <returns>The rounded value.</returns>
 		public static Decimal64 RoundIntegralNearestAway(Decimal64 x)
 		{
-			return new Decimal64(NativeImpl.bid64_round_integral_nearest_away(x.Bits));
+			return new Decimal64(NativeImpl.bid64RoundIntegralNearestAway(x.Bits));
 		}
 
 		public static Decimal64 NextUp(Decimal64 x)
 		{
-			return new Decimal64(NativeImpl.bid64_nextup(x.Bits));
+			return new Decimal64(NativeImpl.bid64Nextup(x.Bits));
 		}
 
 		public static Decimal64 NextDown(Decimal64 x)
 		{
-			return new Decimal64(NativeImpl.bid64_nextdown(x.Bits));
+			return new Decimal64(NativeImpl.bid64Nextdown(x.Bits));
 		}
 
 		/// <summary>
@@ -489,7 +489,7 @@ namespace EPAM.Deltix.DFP
 		/// <returns>Starting point value adjusted in Direction way.</returns>
 		public static Decimal64 NextAfter(Decimal64 x, Decimal64 y)
 		{
-			return new Decimal64(NativeImpl.bid64_nextafter(x.Bits, y.Bits));
+			return new Decimal64(NativeImpl.bid64Nextafter(x.Bits, y.Bits));
 		}
 
 		/// <summary>
@@ -502,7 +502,7 @@ namespace EPAM.Deltix.DFP
 		/// <returns>The minimal value.</returns>
 		public static Decimal64 MinNum(Decimal64 x, Decimal64 y)
 		{
-			return new Decimal64(NativeImpl.bid64_minnum(x.Bits, y.Bits));
+			return new Decimal64(NativeImpl.bid64Minnum(x.Bits, y.Bits));
 		}
 
 		/// <summary>
@@ -514,7 +514,7 @@ namespace EPAM.Deltix.DFP
 		/// <returns>The value with minimal magnitude.</returns>
 		public static Decimal64 MinNumMag(Decimal64 x, Decimal64 y)
 		{
-			return new Decimal64(NativeImpl.bid64_minnum_mag(x.Bits, y.Bits));
+			return new Decimal64(NativeImpl.bid64MinnumMag(x.Bits, y.Bits));
 		}
 
 		/// <summary>
@@ -528,7 +528,7 @@ namespace EPAM.Deltix.DFP
 		/// <returns>The maximal value.</returns>
 		public static Decimal64 MaxNum(Decimal64 x, Decimal64 y)
 		{
-			return new Decimal64(NativeImpl.bid64_maxnum(x.Bits, y.Bits));
+			return new Decimal64(NativeImpl.bid64Maxnum(x.Bits, y.Bits));
 		}
 
 		/// <summary>
@@ -540,7 +540,7 @@ namespace EPAM.Deltix.DFP
 		/// <returns>The value with maximal magnitude.</returns>
 		public static Decimal64 MaxNumMag(Decimal64 x, Decimal64 y)
 		{
-			return new Decimal64(NativeImpl.bid64_maxnum_mag(x.Bits, y.Bits));
+			return new Decimal64(NativeImpl.bid64MaxnumMag(x.Bits, y.Bits));
 		}
 
 		/// <summary>
@@ -550,7 +550,7 @@ namespace EPAM.Deltix.DFP
 		/// <returns>The converted value.</returns>
 		public static Decimal64 FromInt32(int x)
 		{
-			return new Decimal64(NativeImpl.bid64_from_int32(x));
+			return new Decimal64(NativeImpl.bid64FromInt32(x));
 		}
 
 		/// <summary>
@@ -560,7 +560,7 @@ namespace EPAM.Deltix.DFP
 		/// <returns>The converted value.</returns>
 		public static Decimal64 FromUInt32(uint x)
 		{
-			return new Decimal64(NativeImpl.bid64_from_uint32(x));
+			return new Decimal64(NativeImpl.bid64FromUint32(x));
 		}
 
 		/// <summary>
@@ -570,7 +570,7 @@ namespace EPAM.Deltix.DFP
 		/// <returns>The converted value.</returns>
 		public static Decimal64 FromInt64(long x)
 		{
-			return new Decimal64(NativeImpl.bid64_from_int64(x));
+			return new Decimal64(NativeImpl.bid64FromInt64(x));
 		}
 
 		/// <summary>
@@ -580,7 +580,7 @@ namespace EPAM.Deltix.DFP
 		/// <returns>The converted value.</returns>
 		public static Decimal64 FromUInt64(ulong x)
 		{
-			return new Decimal64(NativeImpl.bid64_from_uint64(x));
+			return new Decimal64(NativeImpl.bid64FromUint64(x));
 		}
 
 		/// <summary>
@@ -589,41 +589,41 @@ namespace EPAM.Deltix.DFP
 		/// <returns>The check flag.</returns>
 		public static bool IsSubnormal(this Decimal64 x)
 		{
-			return NativeImpl.bid64_isSubnormal(x.Bits);
+			return NativeImpl.bid64IsSubnormal(x.Bits);
 		}
 
 		/// <summary>
-		/// Return true if and only if x is a signaling NaN.
+		/// Return <c>true</c> if and only if x is a signaling NaN.
 		/// </summary>
 		/// <returns>The check flag.</returns>
 		public static bool IsSignaling(this Decimal64 x)
 		{
-			return NativeImpl.bid64_isSignaling(x.Bits);
+			return NativeImpl.bid64IsSignaling(x.Bits);
 		}
 
 		/// <summary>
-		/// Return true if and only if x is a finite number, infinity, or
+		/// Return <c>true</c> if and only if x is a finite number, infinity, or
 		/// NaN that is canonical.
 		/// </summary>
 		/// <returns>The check flag.</returns>
 		public static bool IsCanonical(this Decimal64 x)
 		{
-			return NativeImpl.bid64_isCanonical(x.Bits);
+			return NativeImpl.bid64IsCanonical(x.Bits);
 		}
 
 		public static bool IsNaN(Decimal64 x)
 		{
-			return NativeImpl.bid64_isNaN(x.Bits);
+			return NativeImpl.bid64IsNaN(x.Bits);
 		}
 
 		public static bool IsInf(Decimal64 x)
 		{
-			return NativeImpl.bid64_isInf(x.Bits);
+			return NativeImpl.bid64IsInf(x.Bits);
 		}
 
 		public static Decimal64 Abs(Decimal64 x)
 		{
-			return new Decimal64(NativeImpl.bid64_abs(x.Bits));
+			return new Decimal64(NativeImpl.bid64Abs(x.Bits));
 		}
 
 		/// <summary>
@@ -635,7 +635,7 @@ namespace EPAM.Deltix.DFP
 		/// <returns>Combined value.</returns>
 		public static Decimal64 CopySign(Decimal64 x, Decimal64 y)
 		{
-			return new Decimal64(NativeImpl.bid64_copySign(x.Bits, y.Bits));
+			return new Decimal64(NativeImpl.bid64CopySign(x.Bits, y.Bits));
 		}
 
 		/// <summary>
@@ -648,7 +648,7 @@ namespace EPAM.Deltix.DFP
 		/// <returns>The value class.</returns>
 		public static int ClassOfValue(Decimal64 x)
 		{
-			return NativeImpl.bid64_class(x.Bits);
+			return NativeImpl.bid64Class(x.Bits);
 		}
 
 		/// <summary>
@@ -660,32 +660,32 @@ namespace EPAM.Deltix.DFP
 		/// <param name="x">First decimal value.</param>
 		/// <param name="y">Second decimal value.</param>
 		/// <returns>Comparison flag.</returns>
-		public static bool SameQuantum(Decimal64 x, Decimal64 y)
+		public static bool IsSameQuantum(Decimal64 x, Decimal64 y)
 		{
-			return NativeImpl.bid64_sameQuantum(x.Bits, y.Bits);
+			return NativeImpl.bid64SameQuantum(x.Bits, y.Bits);
 		}
 
 		/// <summary>
-		/// Return true if x and y are ordered (see the IEEE Standard 754-2008).
+		/// Return <c>true</c> if x and y are ordered (see the IEEE Standard 754-2008).
 		/// </summary>
 		/// <param name="x">First decimal value.</param>
 		/// <param name="y">Second decimal value.</param>
 		/// <returns>Comparison flag.</returns>
-		public static bool TotalOrder(Decimal64 x, Decimal64 y)
+		public static bool IsTotalOrder(Decimal64 x, Decimal64 y)
 		{
-			return NativeImpl.bid64_totalOrder(x.Bits, y.Bits);
+			return NativeImpl.bid64TotalOrder(x.Bits, y.Bits);
 		}
 
 		/// <summary>
-		/// Return true if the absolute values of x and y are ordered
+		/// Return <c>true</c> if the absolute values of x and y are ordered
 		/// (see the IEEE Standard 754-2008)
 		/// </summary>
 		/// <param name="x">First decimal value.</param>
 		/// <param name="y">Second decimal value.</param>
 		/// <returns>Comparison flag.</returns>
-		public static bool TotalOrderMag(Decimal64 x, Decimal64 y)
+		public static bool IsTotalOrderMag(Decimal64 x, Decimal64 y)
 		{
-			return NativeImpl.bid64_totalOrderMag(x.Bits, y.Bits);
+			return NativeImpl.bid64TotalOrderMag(x.Bits, y.Bits);
 		}
 
 		/// <summary>
@@ -695,7 +695,7 @@ namespace EPAM.Deltix.DFP
 		/// <returns>The value radix.</returns>
 		public static int Radix(Decimal64 x)
 		{
-			return NativeImpl.bid64_radix(x.Bits);
+			return NativeImpl.bid64Radix(x.Bits);
 		}
 
 		/// <summary>
@@ -706,7 +706,7 @@ namespace EPAM.Deltix.DFP
 		/// <returns>The remainder of dividing the arguments.</returns>
 		public static Decimal64 Rem(Decimal64 x, Decimal64 y)
 		{
-			return new Decimal64(NativeImpl.bid64_rem(x.Bits, y.Bits));
+			return new Decimal64(NativeImpl.bid64Rem(x.Bits, y.Bits));
 		}
 
 		/// <summary>
@@ -717,7 +717,7 @@ namespace EPAM.Deltix.DFP
 		/// <returns>The integral part of the logarithm of |x|.</returns>
 		public static int Ilogb(Decimal64 x)
 		{
-			return NativeImpl.bid64_ilogb(x.Bits);
+			return NativeImpl.bid64Ilogb(x.Bits);
 		}
 
 		/// <summary>
@@ -728,18 +728,18 @@ namespace EPAM.Deltix.DFP
 		/// <returns>The combined value.</returns>
 		public static Decimal64 Scalbn(Decimal64 x, int n)
 		{
-			return new Decimal64(NativeImpl.bid64_scalbn(x.Bits, n));
+			return new Decimal64(NativeImpl.bid64Scalbn(x.Bits, n));
 		}
 
 		/// <summary>
-		/// Returns the result of multiplying x (the significand) by 2 raised to the power of exp (the exponent).
+		/// Returns the result of multiplying x (the significand) by 10 raised to the power of exp (the exponent).
 		/// </summary>
 		/// <param name="x">Floating point value representing the significand.</param>
 		/// <param name="n">Value of the exponent.</param>
-		/// <returns>The x*2^exp value.</returns>
+		/// <returns>The x*10^exp value.</returns>
 		public static Decimal64 Ldexp(Decimal64 x, int n)
 		{
-			return new Decimal64(NativeImpl.bid64_ldexp(x.Bits, n));
+			return new Decimal64(NativeImpl.bid64Ldexp(x.Bits, n));
 		}
 
 		/// <summary>
@@ -760,7 +760,7 @@ namespace EPAM.Deltix.DFP
 		/// <returns>The quantized value.</returns>
 		public static Decimal64 Quantize(Decimal64 x, Decimal64 y)
 		{
-			return new Decimal64(NativeImpl.bid64_quantize(x.Bits, y.Bits));
+			return new Decimal64(NativeImpl.bid64Quantize(x.Bits, y.Bits));
 		}
 
 		/// <summary>
@@ -768,9 +768,9 @@ namespace EPAM.Deltix.DFP
 		/// to 32-bit binary floating-point format.
 		/// </summary>
 		/// <returns>The converted value.</returns>
-		public static float toBinary32(this Decimal64 x)
+		public static float ToBinary32(this Decimal64 x)
 		{
-			return NativeImpl.bid64_to_binary32(x.Bits);
+			return NativeImpl.bid64ToBinary32(x.Bits);
 		}
 
 		/// <summary>
@@ -778,19 +778,19 @@ namespace EPAM.Deltix.DFP
 		/// to 64-bit binary floating-point format.
 		/// </summary>
 		/// <returns>The converted value.</returns>
-		public static double toBinary64(this Decimal64 x)
+		public static double ToBinary64(this Decimal64 x)
 		{
-			return NativeImpl.bid64_to_binary64(x.Bits);
+			return NativeImpl.bid64ToBinary64(x.Bits);
 		}
 
 		/// <summary>
-		/// Returns the logarithm of |x|.
+		/// Returns the adjusted exponent of the absolute value.
 		/// </summary>
 		/// <param name="x">Value whose logarithm is calculated.</param>
-		/// <returns>The logarithm of x.</returns>
+		/// <returns>The adjusted logarithm of |x|.</returns>
 		public static Decimal64 Logb(Decimal64 x)
 		{
-			return new Decimal64(NativeImpl.bid64_logb(x.Bits));
+			return new Decimal64(NativeImpl.bid64Logb(x.Bits));
 		}
 
 		/// <summary>
@@ -801,7 +801,7 @@ namespace EPAM.Deltix.DFP
 		/// <returns>The combined value.</returns>
 		public static Decimal64 Scalbln(Decimal64 x, long n)
 		{
-			return new Decimal64(NativeImpl.bid64_scalbln(x.Bits, n));
+			return new Decimal64(NativeImpl.bid64Scalbln(x.Bits, n));
 		}
 
 		/// <summary>
@@ -811,28 +811,7 @@ namespace EPAM.Deltix.DFP
 		/// <returns>The rounded value.</returns>
 		public static Decimal64 NearByInt(Decimal64 x)
 		{
-			return new Decimal64(NativeImpl.bid64_nearbyint(x.Bits));
-		}
-
-		/// <summary>
-		/// Rounds the floating-point argument arg to an integer value in floating-point format, using the current rounding mode.
-		/// </summary>
-		/// <param name="x">Value to round.</param>
-		/// <returns>The rounded value.</returns>
-		public static long Llrint(Decimal64 x)
-		{
-			return NativeImpl.bid64_llrint(x.Bits);
-		}
-
-		/// <summary>
-		/// Computes the nearest integer value to arg (in floating-point format), rounding halfway cases away from zero,
-		/// regardless of the current rounding mode.
-		/// </summary>
-		/// <param name="x">Value to round.</param>
-		/// <returns>The rounded value.</returns>
-		public static long Llround(Decimal64 x)
-		{
-			return NativeImpl.bid64_llround(x.Bits);
+			return new Decimal64(NativeImpl.bid64Nearbyint(x.Bits));
 		}
 
 		/// <summary>
@@ -843,7 +822,7 @@ namespace EPAM.Deltix.DFP
 		/// <returns>The positive difference.</returns>
 		public static Decimal64 Fdim(Decimal64 x, Decimal64 y)
 		{
-			return new Decimal64(NativeImpl.bid64_fdim(x.Bits, y.Bits));
+			return new Decimal64(NativeImpl.bid64Fdim(x.Bits, y.Bits));
 		}
 
 		/// <summary>
@@ -856,7 +835,7 @@ namespace EPAM.Deltix.DFP
 		/// <returns>The quantum exponent.</returns>
 		public static int QuantExp(Decimal64 x)
 		{
-			return NativeImpl.bid64_quantexp(x.Bits);
+			return NativeImpl.bid64Quantexp(x.Bits);
 		}
 
 		/// <summary>
@@ -869,20 +848,7 @@ namespace EPAM.Deltix.DFP
 		/// <returns>The quantum.</returns>
 		public static Decimal64 Quantum(Decimal64 x)
 		{
-			return new Decimal64(NativeImpl.bid64_quantum(x.Bits));
-		}
-
-		/// <summary>
-		/// The function compute the quantum exponent of a finite argument. The numerical value of a finite number
-		/// is given by: (-1)^sign x coefficient x 10^exponent. The quantum of a finite number is given by
-		/// 1 x 10^exponent and represents the value of a unit in the least significant position of the coefficient
-		/// of a finite number. The quantum exponent is the exponent of the quantum (represented by exponent above).
-		/// </summary>
-		/// <param name="x">The value for operation.</param>
-		/// <returns>The quantum exponent.</returns>
-		public static long LlQuantExp(Decimal64 x)
-		{
-			return NativeImpl.bid64_llquantexp(x.Bits);
+			return new Decimal64(NativeImpl.bid64Quantum(x.Bits));
 		}
 	}
 }
