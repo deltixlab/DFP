@@ -23,7 +23,8 @@ namespace EPAM.Deltix.DFP.Test
 #if NET40
 		static readonly double log2 = Math.Log(2.0);
 
-		private static double MathLog2(double x) {
+		private static double MathLog2(double x)
+		{
 			return Math.Log(x) / log2;
 		}
 #else
@@ -990,7 +991,7 @@ namespace EPAM.Deltix.DFP.Test
 				var e = random.Next(-200, 200);
 				var rv = double.Parse(m + "e" + e);
 				var testValue = FromDouble(rv).ToBinary64();
-				Assert.AreEqual(testValue, rv);
+				Assert.AreEqual(testValue, rv, rv * 1e-12);
 			}
 		}
 
