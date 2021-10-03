@@ -4,7 +4,7 @@ Add the following dependency to your Java project (Gradle sample):
 
 ```groovy
 dependencies {
-    compile 'com.epam.deltix:dfp:0.11.01'
+    compile 'com.epam.deltix:dfp:0.11.21'
 }
 ```
 
