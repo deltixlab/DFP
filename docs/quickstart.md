@@ -13,8 +13,8 @@ Here is a very short example of DFP usage:
 ```java
 import deltix.dfp.Decimal64Utils;
 
-@Decimal long commission = Decimal64Utils.fromFixedPoint(8, 4) // 8 basis points, 0.0008
-@Decimal long price = Decimal64Utils.fromDouble (123.45)
+@Decimal long commission = Decimal64Utils.fromFixedPoint(8, 4); // 8 basis points, 0.0008
+@Decimal long price = Decimal64Utils.fromDouble (123.45);
 @Decimal long adjustedPrice = Decimal64Utils.add (price, Decimal64Utils.multiply (price, commission));
 ```
 
