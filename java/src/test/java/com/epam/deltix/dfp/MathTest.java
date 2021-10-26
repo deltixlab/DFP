@@ -8,6 +8,7 @@ import org.apache.commons.math3.special.Gamma;
 import java.security.SecureRandom;
 import java.util.Random;
 
+import static com.epam.deltix.dfp.Decimal64MathUtils.*;
 import static com.epam.deltix.dfp.TestUtils.assertDecimalEqual;
 import static com.epam.deltix.dfp.Decimal64Utils.*;
 
@@ -1000,16 +1001,6 @@ public class MathTest {
         assertDecimalEqual(parse("7"), logb(parse("3.14e+7")));
         assertDecimalEqual(parse("-3"), logb(parse("314e-5")));
         assertDecimalEqual(parse("-3"), logb(parse("-314e-5")));
-    }
-
-    @Test
-    public void testScalbln() {
-        final Random random = new Random(getRandomSeed());
-        for (int i = 0; i < N; ++i) {
-            final int x = random.nextInt();
-            final int y = random.nextInt(200) - 100;
-            assertDecimalEqual(parse(x + "e" + y), scalbln(fromInt64(x), y), "x=" + x + "; y=" + y);
-        }
     }
 
     @Test
