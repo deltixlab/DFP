@@ -36,12 +36,6 @@ sourceSets {
             }
         }
     }
-    test {
-        java {
-            srcDir "$rootDir/java/dfp/src/test"
-            srcDir "$rootDir/java/test-common"
-        }
-    }
     integrationTest {
         java {
             compileClasspath += main.output + test.output
