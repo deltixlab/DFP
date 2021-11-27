@@ -11,7 +11,7 @@ public class Decimal64Math {
      * @return Exponential value of x.
      */
     public static Decimal64 exp(final Decimal64 x) {
-        return new Decimal64(Decimal64MathUtils.exp(x.value));
+        return Decimal64.fromUnderlying(Decimal64MathUtils.exp(Decimal64.toUnderlying(x)));
     }
 
     /**
@@ -21,7 +21,7 @@ public class Decimal64Math {
      * @return 2 raised to the power of x.
      */
     public static Decimal64 exp2(final Decimal64 x) {
-        return new Decimal64(Decimal64MathUtils.exp2(x.value));
+        return Decimal64.fromUnderlying(Decimal64MathUtils.exp2(Decimal64.toUnderlying(x)));
     }
 
     /**
@@ -31,7 +31,7 @@ public class Decimal64Math {
      * @return 10 raised to the power of x.
      */
     public static Decimal64 exp10(final Decimal64 x) {
-        return new Decimal64(Decimal64MathUtils.exp10(x.value));
+        return Decimal64.fromUnderlying(Decimal64MathUtils.exp10(Decimal64.toUnderlying(x)));
     }
 
     /**
@@ -41,7 +41,7 @@ public class Decimal64Math {
      * @return e raised to the power of x, minus one.
      */
     public static Decimal64 expm1(final Decimal64 x) {
-        return new Decimal64(Decimal64MathUtils.expm1(x.value));
+        return Decimal64.fromUnderlying(Decimal64MathUtils.expm1(Decimal64.toUnderlying(x)));
     }
 
     /**
@@ -51,7 +51,7 @@ public class Decimal64Math {
      * @return Natural logarithm of x.
      */
     public static Decimal64 log(final Decimal64 x) {
-        return new Decimal64(Decimal64MathUtils.log(x.value));
+        return Decimal64.fromUnderlying(Decimal64MathUtils.log(Decimal64.toUnderlying(x)));
     }
 
     /**
@@ -61,7 +61,7 @@ public class Decimal64Math {
      * @return The binary logarithm of x.
      */
     public static Decimal64 log2(final Decimal64 x) {
-        return new Decimal64(Decimal64MathUtils.log2(x.value));
+        return Decimal64.fromUnderlying(Decimal64MathUtils.log2(Decimal64.toUnderlying(x)));
     }
 
     /**
@@ -71,7 +71,7 @@ public class Decimal64Math {
      * @return Common logarithm of x.
      */
     public static Decimal64 log10(final Decimal64 x) {
-        return new Decimal64(Decimal64MathUtils.log10(x.value));
+        return Decimal64.fromUnderlying(Decimal64MathUtils.log10(Decimal64.toUnderlying(x)));
     }
 
     /**
@@ -81,7 +81,7 @@ public class Decimal64Math {
      * @return The natural logarithm of (1+x).
      */
     public static Decimal64 log1p(final Decimal64 x) {
-        return new Decimal64(Decimal64MathUtils.log1p(x.value));
+        return Decimal64.fromUnderlying(Decimal64MathUtils.log1p(Decimal64.toUnderlying(x)));
     }
 
     /**
@@ -92,7 +92,7 @@ public class Decimal64Math {
      * @return The result of raising base to the power exponent.
      */
     public static Decimal64 pow(final Decimal64 x, final Decimal64 y) {
-        return new Decimal64(Decimal64MathUtils.pow(x.value, y.value));
+        return Decimal64.fromUnderlying(Decimal64MathUtils.pow(Decimal64.toUnderlying(x), Decimal64.toUnderlying(y)));
     }
 
     /**
@@ -103,7 +103,7 @@ public class Decimal64Math {
      * @return The remainder of dividing the arguments.
      */
     public static Decimal64 fmod(final Decimal64 x, final Decimal64 y) {
-        return new Decimal64(Decimal64MathUtils.fmod(x.value, y.value));
+        return Decimal64.fromUnderlying(Decimal64MathUtils.fmod(Decimal64.toUnderlying(x), Decimal64.toUnderlying(y)));
     }
 
     //OPN(bid64_modf, bid64_modf(x, iptr), BID_UINT64 x, BID_UINT64 *iptr)
@@ -116,7 +116,7 @@ public class Decimal64Math {
      * @return The square root of (x*x+y*y).
      */
     public static Decimal64 hypot(final Decimal64 x, final Decimal64 y) {
-        return new Decimal64(Decimal64MathUtils.hypot(x.value, y.value));
+        return Decimal64.fromUnderlying(Decimal64MathUtils.hypot(Decimal64.toUnderlying(x), Decimal64.toUnderlying(y)));
     }
 
     /**
@@ -126,7 +126,7 @@ public class Decimal64Math {
      * @return Sine of x radians.
      */
     public static Decimal64 sin(final Decimal64 x) {
-        return new Decimal64(Decimal64MathUtils.sin(x.value));
+        return Decimal64.fromUnderlying(Decimal64MathUtils.sin(Decimal64.toUnderlying(x)));
     }
 
     /**
@@ -136,7 +136,7 @@ public class Decimal64Math {
      * @return Cosine of x radians.
      */
     public static Decimal64 cos(final Decimal64 x) {
-        return new Decimal64(Decimal64MathUtils.cos(x.value));
+        return Decimal64.fromUnderlying(Decimal64MathUtils.cos(Decimal64.toUnderlying(x)));
     }
 
     /**
@@ -146,7 +146,7 @@ public class Decimal64Math {
      * @return Tangent of x radians.
      */
     public static Decimal64 tan(final Decimal64 x) {
-        return new Decimal64(Decimal64MathUtils.tan(x.value));
+        return Decimal64.fromUnderlying(Decimal64MathUtils.tan(Decimal64.toUnderlying(x)));
     }
 
     /**
@@ -156,7 +156,7 @@ public class Decimal64Math {
      * @return Principal arc sine of x, in the interval [-pi/2,+pi/2] radians.
      */
     public static Decimal64 asin(final Decimal64 x) {
-        return new Decimal64(Decimal64MathUtils.asin(x.value));
+        return Decimal64.fromUnderlying(Decimal64MathUtils.asin(Decimal64.toUnderlying(x)));
     }
 
     /**
@@ -166,7 +166,7 @@ public class Decimal64Math {
      * @return Principal arc cosine of x, in the interval [0,pi] radians.
      */
     public static Decimal64 acos(final Decimal64 x) {
-        return new Decimal64(Decimal64MathUtils.acos(x.value));
+        return Decimal64.fromUnderlying(Decimal64MathUtils.acos(Decimal64.toUnderlying(x)));
     }
 
     /**
@@ -176,7 +176,7 @@ public class Decimal64Math {
      * @return Principal arc tangent of x, in the interval [-pi/2,+pi/2] radians.
      */
     public static Decimal64 atan(final Decimal64 x) {
-        return new Decimal64(Decimal64MathUtils.atan(x.value));
+        return Decimal64.fromUnderlying(Decimal64MathUtils.atan(Decimal64.toUnderlying(x)));
     }
 
     /**
@@ -187,7 +187,7 @@ public class Decimal64Math {
      * @return Principal arc tangent of y/x, in the interval [-pi,+pi] radians.
      */
     public static Decimal64 atan2(final Decimal64 y, final Decimal64 x) {
-        return new Decimal64(Decimal64MathUtils.atan2(y.value, x.value));
+        return Decimal64.fromUnderlying(Decimal64MathUtils.atan2(Decimal64.toUnderlying(y), Decimal64.toUnderlying(x)));
     }
 
     /**
@@ -197,7 +197,7 @@ public class Decimal64Math {
      * @return Hyperbolic sine of x.
      */
     public static Decimal64 sinh(final Decimal64 x) {
-        return new Decimal64(Decimal64MathUtils.sinh(x.value));
+        return Decimal64.fromUnderlying(Decimal64MathUtils.sinh(Decimal64.toUnderlying(x)));
     }
 
     /**
@@ -207,7 +207,7 @@ public class Decimal64Math {
      * @return Hyperbolic cosine of x.
      */
     public static Decimal64 cosh(final Decimal64 x) {
-        return new Decimal64(Decimal64MathUtils.cosh(x.value));
+        return Decimal64.fromUnderlying(Decimal64MathUtils.cosh(Decimal64.toUnderlying(x)));
     }
 
     /**
@@ -217,7 +217,7 @@ public class Decimal64Math {
      * @return Hyperbolic tangent of x.
      */
     public static Decimal64 tanh(final Decimal64 x) {
-        return new Decimal64(Decimal64MathUtils.tanh(x.value));
+        return Decimal64.fromUnderlying(Decimal64MathUtils.tanh(Decimal64.toUnderlying(x)));
     }
 
     /**
@@ -227,7 +227,7 @@ public class Decimal64Math {
      * @return Area hyperbolic sine of x.
      */
     public static Decimal64 asinh(final Decimal64 x) {
-        return new Decimal64(Decimal64MathUtils.asinh(x.value));
+        return Decimal64.fromUnderlying(Decimal64MathUtils.asinh(Decimal64.toUnderlying(x)));
     }
 
     /**
@@ -237,7 +237,7 @@ public class Decimal64Math {
      * @return Nonnegative area hyperbolic cosine of x, in the interval [0,+INFINITY].
      */
     public static Decimal64 acosh(final Decimal64 x) {
-        return new Decimal64(Decimal64MathUtils.acosh(x.value));
+        return Decimal64.fromUnderlying(Decimal64MathUtils.acosh(Decimal64.toUnderlying(x)));
     }
 
     /**
@@ -247,7 +247,7 @@ public class Decimal64Math {
      * @return Area hyperbolic tangent of x.
      */
     public static Decimal64 atanh(final Decimal64 x) {
-        return new Decimal64(Decimal64MathUtils.atanh(x.value));
+        return Decimal64.fromUnderlying(Decimal64MathUtils.atanh(Decimal64.toUnderlying(x)));
     }
 
     /**
@@ -257,7 +257,7 @@ public class Decimal64Math {
      * @return Error function value for x.
      */
     public static Decimal64 erf(final Decimal64 x) {
-        return new Decimal64(Decimal64MathUtils.erf(x.value));
+        return Decimal64.fromUnderlying(Decimal64MathUtils.erf(Decimal64.toUnderlying(x)));
     }
 
     /**
@@ -267,7 +267,7 @@ public class Decimal64Math {
      * @return Complementary error function value for x.
      */
     public static Decimal64 erfc(final Decimal64 x) {
-        return new Decimal64(Decimal64MathUtils.erfc(x.value));
+        return Decimal64.fromUnderlying(Decimal64MathUtils.erfc(Decimal64.toUnderlying(x)));
     }
 
     /**
@@ -277,7 +277,7 @@ public class Decimal64Math {
      * @return Gamma function of x.
      */
     public static Decimal64 tgamma(final Decimal64 x) {
-        return new Decimal64(Decimal64MathUtils.tgamma(x.value));
+        return Decimal64.fromUnderlying(Decimal64MathUtils.tgamma(Decimal64.toUnderlying(x)));
     }
 
     /**
@@ -287,16 +287,16 @@ public class Decimal64Math {
      * @return Log-gamma function of x.
      */
     public static Decimal64 lgamma(final Decimal64 x) {
-        return new Decimal64(Decimal64MathUtils.lgamma(x.value));
+        return Decimal64.fromUnderlying(Decimal64MathUtils.lgamma(Decimal64.toUnderlying(x)));
     }
 
-//public static Decimal64 add(final Decimal64 x, final Decimal64 y) { return new Decimal64(Decimal64Utils.add(x.value, y.value)); }
+//public static Decimal64 add(final Decimal64 x, final Decimal64 y) { return new Decimal64(Decimal64Utils.add(Decimal64.toUnderlying(x), y.value)); }
 
-//public static Decimal64 sub(final Decimal64 x, final Decimal64 y) { return new Decimal64(Decimal64Utils.sub(x.value, y.value)); }
+//public static Decimal64 sub(final Decimal64 x, final Decimal64 y) { return new Decimal64(Decimal64Utils.sub(Decimal64.toUnderlying(x), y.value)); }
 
-//public static Decimal64 mul(final Decimal64 x, final Decimal64 y) { return new Decimal64(Decimal64Utils.mul(x.value, y.value)); }
+//public static Decimal64 mul(final Decimal64 x, final Decimal64 y) { return new Decimal64(Decimal64Utils.mul(Decimal64.toUnderlying(x), y.value)); }
 
-//public static Decimal64 div(final Decimal64 x, final Decimal64 y) { return new Decimal64(Decimal64Utils.div(x.value, y.value)); }
+//public static Decimal64 div(final Decimal64 x, final Decimal64 y) { return new Decimal64(Decimal64Utils.div(Decimal64.toUnderlying(x), y.value)); }
 
     /**
      * Decimal floating-point fused multiply-add: x*y+z
@@ -307,7 +307,7 @@ public class Decimal64Math {
      * @return The result of x*y+z
      */
     public static Decimal64 fma(final Decimal64 x, final Decimal64 y, final Decimal64 z) {
-        return new Decimal64(Decimal64MathUtils.fma(x.value, y.value, z.value));
+        return Decimal64.fromUnderlying(Decimal64MathUtils.fma(Decimal64.toUnderlying(x), Decimal64.toUnderlying(y), Decimal64.toUnderlying(z)));
     }
 
     /**
@@ -317,7 +317,7 @@ public class Decimal64Math {
      * @return Square root of x.
      */
     public static Decimal64 sqrt(final Decimal64 x) {
-        return new Decimal64(Decimal64MathUtils.sqrt(x.value));
+        return Decimal64.fromUnderlying(Decimal64MathUtils.sqrt(Decimal64.toUnderlying(x)));
     }
 
     /**
@@ -327,7 +327,7 @@ public class Decimal64Math {
      * @return Cubic root of x.
      */
     public static Decimal64 cbrt(final Decimal64 x) {
-        return new Decimal64(Decimal64MathUtils.cbrt(x.value));
+        return Decimal64.fromUnderlying(Decimal64MathUtils.cbrt(Decimal64.toUnderlying(x)));
     }
 
     /**
@@ -338,7 +338,7 @@ public class Decimal64Math {
      * @return The rounded value.
      */
     public static Decimal64 roundIntegralExact(final Decimal64 x) {
-        return new Decimal64(Decimal64MathUtils.roundIntegralExact(x.value));
+        return Decimal64.fromUnderlying(Decimal64MathUtils.roundIntegralExact(Decimal64.toUnderlying(x)));
     }
 
     /**
@@ -349,7 +349,7 @@ public class Decimal64Math {
      * @return The rounded value.
      */
     public static Decimal64 roundIntegralNearestEven(final Decimal64 x) {
-        return new Decimal64(Decimal64MathUtils.roundIntegralNearestEven(x.value));
+        return Decimal64.fromUnderlying(Decimal64MathUtils.roundIntegralNearestEven(Decimal64.toUnderlying(x)));
     }
 
     /**
@@ -360,7 +360,7 @@ public class Decimal64Math {
      * @return The rounded value.
      */
     public static Decimal64 roundIntegralNegative(final Decimal64 x) {
-        return new Decimal64(Decimal64MathUtils.roundIntegralNegative(x.value));
+        return Decimal64.fromUnderlying(Decimal64MathUtils.roundIntegralNegative(Decimal64.toUnderlying(x)));
     }
 
     /**
@@ -371,7 +371,7 @@ public class Decimal64Math {
      * @return The rounded value.
      */
     public static Decimal64 roundIntegralPositive(final Decimal64 x) {
-        return new Decimal64(Decimal64MathUtils.roundIntegralPositive(x.value));
+        return Decimal64.fromUnderlying(Decimal64MathUtils.roundIntegralPositive(Decimal64.toUnderlying(x)));
     }
 
     /**
@@ -382,7 +382,7 @@ public class Decimal64Math {
      * @return The rounded value.
      */
     public static Decimal64 roundIntegralZero(final Decimal64 x) {
-        return new Decimal64(Decimal64MathUtils.roundIntegralZero(x.value));
+        return Decimal64.fromUnderlying(Decimal64MathUtils.roundIntegralZero(Decimal64.toUnderlying(x)));
     }
 
     /**
@@ -393,15 +393,15 @@ public class Decimal64Math {
      * @return The rounded value.
      */
     public static Decimal64 roundIntegralNearestAway(final Decimal64 x) {
-        return new Decimal64(Decimal64MathUtils.roundIntegralNearestAway(x.value));
+        return Decimal64.fromUnderlying(Decimal64MathUtils.roundIntegralNearestAway(Decimal64.toUnderlying(x)));
     }
 
     public static Decimal64 nextUp(final Decimal64 x) {
-        return new Decimal64(Decimal64Utils.nextUp(x.value));
+        return Decimal64.fromUnderlying(Decimal64Utils.nextUp(Decimal64.toUnderlying(x)));
     }
 
     public static Decimal64 nextDown(final Decimal64 x) {
-        return new Decimal64(Decimal64Utils.nextDown(x.value));
+        return Decimal64.fromUnderlying(Decimal64Utils.nextDown(Decimal64.toUnderlying(x)));
     }
 
     /**
@@ -413,7 +413,7 @@ public class Decimal64Math {
      * @return Starting point value adjusted in Direction way.
      */
     public static Decimal64 nextAfter(final Decimal64 x, final Decimal64 y) {
-        return new Decimal64(Decimal64MathUtils.nextAfter(x.value, y.value));
+        return Decimal64.fromUnderlying(Decimal64MathUtils.nextAfter(Decimal64.toUnderlying(x), Decimal64.toUnderlying(y)));
     }
 
     /**
@@ -426,7 +426,7 @@ public class Decimal64Math {
      * @return The minimal value.
      */
     public static Decimal64 minNum(final Decimal64 x, final Decimal64 y) {
-        return new Decimal64(Decimal64MathUtils.minNum(x.value, y.value));
+        return Decimal64.fromUnderlying(Decimal64MathUtils.minNum(Decimal64.toUnderlying(x), Decimal64.toUnderlying(y)));
     }
 
     /**
@@ -438,7 +438,7 @@ public class Decimal64Math {
      * @return The value with minimal magnitude.
      */
     public static Decimal64 minNumMag(final Decimal64 x, final Decimal64 y) {
-        return new Decimal64(Decimal64MathUtils.minNumMag(x.value, y.value));
+        return Decimal64.fromUnderlying(Decimal64MathUtils.minNumMag(Decimal64.toUnderlying(x), Decimal64.toUnderlying(y)));
     }
 
     /**
@@ -452,7 +452,7 @@ public class Decimal64Math {
      * @return The maximal value.
      */
     public static Decimal64 maxNum(final Decimal64 x, final Decimal64 y) {
-        return new Decimal64(Decimal64MathUtils.maxNum(x.value, y.value));
+        return Decimal64.fromUnderlying(Decimal64MathUtils.maxNum(Decimal64.toUnderlying(x), Decimal64.toUnderlying(y)));
     }
 
     /**
@@ -464,7 +464,7 @@ public class Decimal64Math {
      * @return The value with maximal magnitude.
      */
     public static Decimal64 maxNumMag(final Decimal64 x, final Decimal64 y) {
-        return new Decimal64(Decimal64MathUtils.maxNumMag(x.value, y.value));
+        return Decimal64.fromUnderlying(Decimal64MathUtils.maxNumMag(Decimal64.toUnderlying(x), Decimal64.toUnderlying(y)));
     }
 
     /**
@@ -474,7 +474,7 @@ public class Decimal64Math {
      * @return The converted value.
      */
     public static Decimal64 fromInt32(final int x) {
-        return new Decimal64(Decimal64MathUtils.fromInt32(x));
+        return Decimal64.fromUnderlying(Decimal64MathUtils.fromInt32(x));
     }
 
     /**
@@ -484,7 +484,7 @@ public class Decimal64Math {
      * @return The converted value.
      */
     public static Decimal64 fromUInt32(final int x) {
-        return new Decimal64(Decimal64MathUtils.fromUInt32(x));
+        return Decimal64.fromUnderlying(Decimal64MathUtils.fromUInt32(x));
     }
 
     /**
@@ -494,7 +494,7 @@ public class Decimal64Math {
      * @return The converted value.
      */
     public static Decimal64 fromInt64(final long x) {
-        return new Decimal64(Decimal64MathUtils.fromInt64(x));
+        return Decimal64.fromUnderlying(Decimal64MathUtils.fromInt64(x));
     }
 
     /**
@@ -504,19 +504,19 @@ public class Decimal64Math {
      * @return The converted value.
      */
     public static Decimal64 fromUInt64(final long x) {
-        return new Decimal64(Decimal64MathUtils.fromUInt64(x));
+        return Decimal64.fromUnderlying(Decimal64MathUtils.fromUInt64(x));
     }
 
     public static boolean isNaN(final Decimal64 x) {
-        return Decimal64Utils.isNaN(x.value);
+        return Decimal64Utils.isNaN(Decimal64.toUnderlying(x));
     }
 
     public static boolean isInf(final Decimal64 x) {
-        return Decimal64MathUtils.isInf(x.value);
+        return Decimal64MathUtils.isInf(Decimal64.toUnderlying(x));
     }
 
     public static Decimal64 abs(final Decimal64 x) {
-        return new Decimal64(Decimal64Utils.abs(x.value));
+        return Decimal64.fromUnderlying(Decimal64Utils.abs(Decimal64.toUnderlying(x)));
     }
 
     /**
@@ -528,7 +528,7 @@ public class Decimal64Math {
      * @return Combined value.
      */
     public static Decimal64 copySign(final Decimal64 x, final Decimal64 y) {
-        return new Decimal64(Decimal64MathUtils.copySign(x.value, y.value));
+        return Decimal64.fromUnderlying(Decimal64MathUtils.copySign(Decimal64.toUnderlying(x), Decimal64.toUnderlying(y)));
     }
 
     /**
@@ -541,7 +541,7 @@ public class Decimal64Math {
      * @return The value class.
      */
     public static int classOfValue(final Decimal64 x) {
-        return Decimal64MathUtils.classOfValue(x.value);
+        return Decimal64MathUtils.classOfValue(Decimal64.toUnderlying(x));
     }
 
     /**
@@ -555,7 +555,7 @@ public class Decimal64Math {
      * @return Comparison flag.
      */
     public static boolean isSameQuantum(final Decimal64 x, final Decimal64 y) {
-        return Decimal64MathUtils.isSameQuantum(x.value, y.value);
+        return Decimal64MathUtils.isSameQuantum(Decimal64.toUnderlying(x), Decimal64.toUnderlying(y));
     }
 
     /**
@@ -566,7 +566,7 @@ public class Decimal64Math {
      * @return Comparison flag.
      */
     public static boolean isTotalOrder(final Decimal64 x, final Decimal64 y) {
-        return Decimal64MathUtils.isTotalOrder(x.value, y.value);
+        return Decimal64MathUtils.isTotalOrder(Decimal64.toUnderlying(x), Decimal64.toUnderlying(y));
     }
 
     /**
@@ -578,7 +578,7 @@ public class Decimal64Math {
      * @return Comparison flag.
      */
     public static boolean isTotalOrderMag(final Decimal64 x, final Decimal64 y) {
-        return Decimal64MathUtils.isTotalOrderMag(x.value, y.value);
+        return Decimal64MathUtils.isTotalOrderMag(Decimal64.toUnderlying(x), Decimal64.toUnderlying(y));
     }
 
     /**
@@ -588,7 +588,7 @@ public class Decimal64Math {
      * @return The value radix.
      */
     public static int radix(final Decimal64 x) {
-        return Decimal64MathUtils.radix(x.value);
+        return Decimal64MathUtils.radix(Decimal64.toUnderlying(x));
     }
 
     /**
@@ -599,7 +599,7 @@ public class Decimal64Math {
      * @return The remainder of dividing the arguments.
      */
     public static Decimal64 rem(final Decimal64 x, final Decimal64 y) {
-        return new Decimal64(Decimal64MathUtils.rem(x.value, y.value));
+        return Decimal64.fromUnderlying(Decimal64MathUtils.rem(Decimal64.toUnderlying(x), Decimal64.toUnderlying(y)));
     }
 
     /**
@@ -610,7 +610,7 @@ public class Decimal64Math {
      * @return The integral part of the logarithm of |x|.
      */
     public static int ilogb(final Decimal64 x) {
-        return Decimal64MathUtils.ilogb(x.value);
+        return Decimal64MathUtils.ilogb(Decimal64.toUnderlying(x));
     }
 
     /**
@@ -621,7 +621,7 @@ public class Decimal64Math {
      * @return The combined value.
      */
     public static Decimal64 scalbn(final Decimal64 x, final int n) {
-        return new Decimal64(Decimal64MathUtils.scalbn(x.value, n));
+        return Decimal64.fromUnderlying(Decimal64MathUtils.scalbn(Decimal64.toUnderlying(x), n));
     }
 
     /**
@@ -632,7 +632,7 @@ public class Decimal64Math {
      * @return The x*2^exp value.
      */
     public static Decimal64 ldexp(final Decimal64 x, final int n) {
-        return new Decimal64(Decimal64MathUtils.ldexp(x.value, n));
+        return Decimal64.fromUnderlying(Decimal64MathUtils.ldexp(Decimal64.toUnderlying(x), n));
     }
 
     /**
@@ -653,7 +653,7 @@ public class Decimal64Math {
      * @return The quantized value.
      */
     public static Decimal64 quantize(final Decimal64 x, final Decimal64 y) {
-        return new Decimal64(Decimal64MathUtils.quantize(x.value, y.value));
+        return Decimal64.fromUnderlying(Decimal64MathUtils.quantize(Decimal64.toUnderlying(x), Decimal64.toUnderlying(y)));
     }
 
     /**
@@ -663,7 +663,7 @@ public class Decimal64Math {
      * @return The logarithm of x.
      */
     public static Decimal64 logb(final Decimal64 x) {
-        return new Decimal64(Decimal64MathUtils.logb(x.value));
+        return Decimal64.fromUnderlying(Decimal64MathUtils.logb(Decimal64.toUnderlying(x)));
     }
 
     /**
@@ -673,7 +673,7 @@ public class Decimal64Math {
      * @return The rounded value.
      */
     public static Decimal64 nearByInt(final Decimal64 x) {
-        return new Decimal64(Decimal64MathUtils.nearByInt(x.value));
+        return Decimal64.fromUnderlying(Decimal64MathUtils.nearByInt(Decimal64.toUnderlying(x)));
     }
 
     /**
@@ -684,7 +684,7 @@ public class Decimal64Math {
      * @return The positive difference.
      */
     public static Decimal64 fdim(final Decimal64 x, final Decimal64 y) {
-        return new Decimal64(Decimal64MathUtils.fdim(x.value, y.value));
+        return Decimal64.fromUnderlying(Decimal64MathUtils.fdim(Decimal64.toUnderlying(x), Decimal64.toUnderlying(y)));
     }
 
     /**
@@ -697,7 +697,7 @@ public class Decimal64Math {
      * @return The quantum exponent.
      */
     public static int quantExp(final Decimal64 x) {
-        return Decimal64MathUtils.quantExp(x.value);
+        return Decimal64MathUtils.quantExp(Decimal64.toUnderlying(x));
     }
 
     /**
@@ -710,6 +710,6 @@ public class Decimal64Math {
      * @return The quantum.
      */
     public static Decimal64 quantum(final Decimal64 x) {
-        return new Decimal64(Decimal64MathUtils.quantum(x.value));
+        return Decimal64.fromUnderlying(Decimal64MathUtils.quantum(Decimal64.toUnderlying(x)));
     }
 }

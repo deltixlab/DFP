@@ -279,7 +279,7 @@ public class NativeWrappers {
         final int prefixLength = javaPrefix.length();
 
         final Path outPath =
-            Paths.get("java", "build", "generated", "sources", "nativeWrappers", "com", "epam", "deltix", "dfp");
+            Paths.get("java", "dfp", "build", "generated", "sources", "nativeWrappers", "com", "epam", "deltix", "dfp");
         Files.createDirectories(outPath);
 
         try (final BufferedWriter writer = Files.newBufferedWriter(outPath.resolve("NativeImpl.java"), StandardCharsets.UTF_8)) {
