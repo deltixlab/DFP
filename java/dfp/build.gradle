@@ -2,10 +2,15 @@ plugins {
     id "me.champeau.gradle.jmh" version "0.5.0" apply false
 }
 
+ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
+
 apply plugin: 'java-library'
 apply plugin: 'maven-publish'
 apply plugin: 'me.champeau.gradle.jmh'
-apply plugin: 'signing'
+
+if (isReleaseVersion) {
+    apply plugin: 'signing'
+}
 
 group = 'com.epam.deltix'
 
@@ -14,8 +19,6 @@ sourceCompatibility = 1.7
 repositories {
     mavenCentral()
 }
-
-ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
 
 java {
     withJavadocJar()
@@ -112,14 +115,16 @@ publishing {
     }
 }
 
-signing {
-    def signingKey = findProperty('SIGNING_PRIVATE_KEY') ?: System.getenv('SIGNING_PRIVATE_KEY') ?: "FakeUser"
-    def signingPassword = findProperty('SIGNING_PASSWORD') ?: System.getenv('SIGNING_PASSWORD') ?: "FakePass"
+if (isReleaseVersion) {
+    signing {
+        def signingKey = findProperty('SIGNING_PRIVATE_KEY') ?: System.getenv('SIGNING_PRIVATE_KEY') ?: "FakeUser"
+        def signingPassword = findProperty('SIGNING_PASSWORD') ?: System.getenv('SIGNING_PASSWORD') ?: "FakePass"
 
-    useInMemoryPgpKeys(signingKey, signingPassword)
-    sign publishing.publications.mavenJava
+        useInMemoryPgpKeys(signingKey, signingPassword)
+        sign publishing.publications.mavenJava
 
-    required { isReleaseVersion }
+        required { isReleaseVersion }
+    }
 }
 
 jar {
