@@ -143,8 +143,9 @@ jobs:
         with:
           name: java-jars
           path: |
-            ./*java/build/libs/*
-            ./*javaDecimalDemo/build/libs/*
+            ./*java/dfp/build/libs/*
+            ./*java/dfp-math/build/libs/*
+            ./*java/dfp/decimalDemo/build/libs/*
           retention-days: 7
 
   build-dotnet:
