@@ -1,3 +1,5 @@
+# Note: The main development was moved to the [epam/DFP](https://github.com/epam/DFP)
+
 # Decimal Floating Point Arithmetic for Java/.NET
 
 ## Description/Usage
